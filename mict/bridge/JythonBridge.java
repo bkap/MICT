@@ -1,8 +1,10 @@
 package mict.bridge;
+
 import javax.swing.*;
 import javax.script.*;
 import java.awt.Graphics;
 import mict.client.ClientState;
+
 public abstract class JythonBridge {
 
     private static final String SCRIPT_NAME = "javabridge";
@@ -32,6 +34,7 @@ public abstract class JythonBridge {
         }
         return null;
     }
+
     public static ClientConnection getConnection(String serverURL, Graphics g, ClientState state) {
         try {
             jython.eval("import " + SCRIPT_NAME + " as pystuff");
@@ -48,6 +51,4 @@ public abstract class JythonBridge {
         }
         return null;
     }
-
-    
 }

@@ -6,22 +6,11 @@ import mict.tools.Tool;
  * @author Ben Kaplan
  *
  */
-public abstract class ClientConnection {
+public abstract class ToolManager {
 	/**get the tools that the server supports
 	 * 
 	 * @return
 	 */
 	public abstract Tool[] getTools();
 	protected abstract void setTools(Tool[] tools);
-	/**send a message to the server
-	 * 
-	 * @param s
-	 * @return
-	 */
-	public abstract boolean sendToServer(String s);
-	/**wait for a message from the server
-	 * 
-	 * @return
-	 */
-	public abstract String receiveFromServer();
 }
