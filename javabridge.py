@@ -13,4 +13,16 @@ dispatcher = {"getTools":get_tools}
 def bridge(caller, *args, **kwargs) :
    return dispatcher[caller](*args, **kwargs)
 
-
+from mict.bridge import ClientConnection
+class ClientConn(ClientConnection):
+    def __init__(self, server, graphics):
+        self.server = server
+        self.graphics = graphics
+        self.maketools()
+    def maketools(self) :
+        self.tools = []
+    def getTools(self):
+        return self.tools
+    def sendToServer(self, s) :
+        pass
+        
