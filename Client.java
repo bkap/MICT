@@ -1,6 +1,10 @@
 import javax.swing.*;
 public class Client extends JApplet {
-    public Client() { }
+    public Client() { 
+        super();
+        this.add(JythonBridge.getTools("localhost",this.getGraphics()));
+
+    }
     
     public static void main(String[] args) {
         Client c = new Client();
