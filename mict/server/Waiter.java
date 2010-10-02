@@ -27,7 +27,7 @@ public class Waiter extends Thread {
 			in.close();
 			out.close();
 		} catch(IOexception e) {
-			System.err.println("Problem with closing connection to client. Soocket says: " + e.getMessage());
+			// Nothing to see here, move along.
 		}
 	}
 }
