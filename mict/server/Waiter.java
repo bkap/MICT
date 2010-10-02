@@ -1,4 +1,4 @@
-// package?
+package mict.server;
 
 import javax.net.ssl.*;
 import java.io.*;

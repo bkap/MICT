@@ -1,4 +1,4 @@
-//package edu.case.rdebase.mict, I presume. But that can be added later. For now, a flat package structure suits me just fine.
+package mict.server;
 
 import javax.net.ssl.*;
 import java.io.*;
