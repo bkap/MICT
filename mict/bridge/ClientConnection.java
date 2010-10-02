@@ -12,6 +12,7 @@ public abstract class ClientConnection {
 	 * @return
 	 */
 	public abstract Tool[] getTools();
+	protected abstract void setTools(Tool[] tools);
 	/**send a message to the server
 	 * 
 	 * @param s

@@ -9,11 +9,12 @@ public class Client extends JApplet {
 	 * 
 	 */
 	private static final long serialVersionUID = -6467296753041382320L;
-	
+	private ClientState state;
 	public Client() { 
         super();
         this.add(JythonBridge.getTools("localhost",this.getGraphics()));
-
+        state = new ClientState();
+        JythonBridge.getConnection("localhost", this.getGraphics(),state);
     }
     
     public static void main(String[] args) {

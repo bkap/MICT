@@ -42,6 +42,6 @@ public interface Tool {
 	
 	String getTooltip();
 	
-	String getName();
+	String getToolName();
 	
 }
