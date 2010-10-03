@@ -3,9 +3,10 @@ package mict.client;
 import javax.net.ssl.*;
 import java.io.*;
 
-public class ClientConnection extends Thread { // TODO thread?
-	public ClientConnection(Object controller, String server, int port) {
-		
+public class ClientConnection extends Thread {
+	private static int DEFAULT_PORT = 56234;
+
+	public ClientConnection(String server, int port) {
 		this.controller = controller;
 		this.serverport = port;
 		try {
@@ -20,19 +21,19 @@ public class ClientConnection extends Thread { // TODO thread?
 		
 	}
 
-	public ClientConnection(Object controller, String server) { // TODO @Ben figure out what part of the client-side architecture this should really be, and set the type accordingly
-		this(controller, server, DEFAULT_PORT);
+	public ClientConnection(String server) {
+		this(server, DEFAULT_PORT);
 	}
-	public void sendConnection(int ToolID, String command) {
-		//TODO: implement this method
-		
+
+	public void draw(String tool, String data) {
+		// TODO implement this method
 	}
+
 	private Object controller;
 	private SSLSocket waiter;
 	private PrintWriter out;
 	private BufferedReader in;
-	private int serverport = 56324;
-	private static int DEFAULT_PORT = 56234;
+
 	public void run() {
 		// DO WORK SON
 	}
