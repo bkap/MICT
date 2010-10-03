@@ -3,7 +3,6 @@ package mict.client;
 import javax.swing.*;
 
 import mict.bridge.JythonBridge;
-import mict.tools.Tool;
 public class Client extends JApplet {
     /**
 	 * 
@@ -14,7 +13,7 @@ public class Client extends JApplet {
         super();
         this.add(JythonBridge.getTools("localhost",this.getGraphics()));
         state = new ClientState();
-        JythonBridge.getConnection("localhost", this.getGraphics(),state);
+       
     }
     
     public static void main(String[] args) {
