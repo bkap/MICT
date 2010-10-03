@@ -3,7 +3,6 @@ package mict.bridge;
 import javax.swing.*;
 import javax.script.*;
 import java.awt.Graphics;
-import mict.client.ClientState;
 
 public abstract class JythonBridge {
 
@@ -35,20 +34,5 @@ public abstract class JythonBridge {
         return null;
     }
 
-    public static ClientConnection getConnection(String serverURL, Graphics g, ClientState state) {
-        try {
-            jython.eval("import " + SCRIPT_NAME + " as pystuff");
-            System.out.println("imported");
-            jython.put("graphics",g);
-            jython.put("state", state);
-            String command = "result = pystuff.ClientConn('" + serverURL + "', graphics,state)";
-            System.out.println(command);
-            jython.eval(command);
-            return (ClientConnection)jython.get("result");
-        } catch(ScriptException ex) {
-            System.err.println("failed to get tools");
-            ex.printStackTrace();
-        }
-        return null;
-    }
+
 }

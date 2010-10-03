@@ -1,6 +1,5 @@
 from javax.swing import JLabel, JPanel, JButton
 from mict.bridge import ClientConnection
-
 import tools
 def get_tools(*args, **kwargs) :
     server_url = args[0]
