@@ -1,0 +1,76 @@
+\documentclass[11pt,oneside,a4paper]{article}
+\usepackage{textcomp}
+\usepackage{setspace}
+\usepackage{graphicx}
+\title{Vision and Scope Document - EECS 393}
+\author{Don Huckle, Ben Kaplan, Mark Wyrzykowski, Rob Wiesler}
+\begin{document}
+\maketitle
+\tableofcontents
+\pagebreak
+
+\section{Business Requirements}
+\subsection{Project Background and Business Opportunity}
+In the new economy, there is an increasing trend toward worldwide collaboration on projects. Tools such as Google Docs and Microsoft's Office Web Apps allow people all across the world to edit documents, spreadsheets and presentations. However, no good tools exist for artists.
+\subsection{Objectives}
+\begin{itemize}
+\item[O-1:] Create a client/server-based image editor to allow users to edit their images from any computer
+\item[O-2:] Allow a user to share images with multiple users
+\item[O-3:] Allow a person to host their own image server
+\end{itemize}
+\subsection{Success Criteria}
+\begin{itemize}
+\item[SC-1:] Allow 4 users to simultaneously edit an image with less than 5 seconds lag (on a broadband Internet connection) between one user making an edit and that edit appearing on the other users’ screens.
+\item[SC-2:] Allow at least 30 users to be logged on simultaneously
+\item[SC-3:] Users are able to create a canvas that has a combined size larger than 300MB and are able to scroll around smoothly
+\end{itemize}
+\subsection{Risks}
+\begin{itemize}
+\item[R-1:] Too many people could use the server, causing it to overload
+\item[R-2:] Too few people could use the server, rendering the project meaningless
+\end{itemize}
+\subsection{Benefits}
+\begin{itemize}
+\item[B-1:] Free collaboration
+\item[B-2:] Simultaneous editing
+\item[B-3:] Easy document sharing without posting to a public forum
+\end{itemize}
+
+\section{Vision and Scope}
+\subsection{Vision Statement}
+The Multi-user Infinite Canvas Thingy (MICT) is a server-client collaborative image editor, aimed at users who wish to share and collaboratively edit images with as few functional limitations as possible.
+The size of the canvas is self extending as users continue to draw on it, making MICT's canvases theoretically infinite in size.
+Where most other image editors do not facilitate collaboration or else do not properly implement privacy controls, users of MICT will have private canvases which they may share with other users.
+\subsection{Major Features}
+\begin{itemize}
+\item[FE-1:] A server program that would host the canvases
+\item[FE-2:] A login system that would restrict access to the canvases to users who created the canvas and users that have been granted permission
+\item[FE-3:] A client program that allows the users to connect to the server and view the canvases that they have permission to access
+\item[FE-4:] A client image editing interface that allows the users to edit the canvases they have permission to access
+\item[FE-5:] An admin interface that allows designated administrators to control user access permissions and access all canvases. It also grants administrators access to program logs to assist in problem solving.
+\end{itemize}
+\subsection{Assumptions and Dependencies}
+\begin{itemize}
+\item[AS-1:] Users have access to an Internet-capable computer
+\item[AS-2:] Users have access to a high-speed connection
+\item[AS-3:] Users have a modern operating system and hardware
+\end{itemize}
+
+\section{Scope and Limitations}
+\subsection{Releases}
+\begin{center}
+\begin{tabular}{ | l | l | l | }
+\hline
+	\tiny{Feature}				& \tiny{20 October 2010}				& \tiny{22 November 2010} \\
+\hline
+\hline
+	\tiny{Server-side implementation}	& \tiny{basic server implemented}			& \tiny{server linked to database, optimized} \\
+	\tiny{Authentication and User Roles}	& \tiny{not implemented; anonymous users}		& \tiny{authentication system implemented, secured} \\
+	\tiny{Client-side implementation}	& \tiny{fully implemented}				& \tiny{implemented} \\
+	\tiny{Canvas viewer and editor}		& \tiny{view code complete, basic editing tools}	& \tiny{completed set of editing tools, permissions implemented} \\
+	\tiny{Administrative tools}		& \tiny{not implemented, no configurability}		& \tiny{administrative environment complete} \\
+\hline
+\end{tabular}
+\end{center}
+
+\end{document}

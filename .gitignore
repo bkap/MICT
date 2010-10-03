@@ -1,2 +1,7 @@
 *.class
 cachedir/*
+*.aux
+*.log
+*.toc
+*~
+*.swp
