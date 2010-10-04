@@ -13,4 +13,5 @@ public class ClientState {
 	public Graphics clipboard_graphics;
 	public Color selectedColor;
 	public ClientConnection socket;
+	public Graphics canvas_graphics;
 }
