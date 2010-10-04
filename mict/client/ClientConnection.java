@@ -47,7 +47,7 @@ public class ClientConnection extends Thread {
 			in.close();
 			out.close();
 		} catch(IOException e) {
-			// Nothing to see here, move along.
+			// These aren't the droids you're looking for
 		}
 	}
 }
