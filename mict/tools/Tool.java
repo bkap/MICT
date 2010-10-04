@@ -9,7 +9,7 @@ public interface Tool{
 	 * @param locationOnCanvas : the location on the canvas as a whole where the mouse was pressed
 	 * @param g : the graphics context in which to use the tool
 	 */
-	void mousePressed(Point locationOnScreen, Graphics g);
+	String mousePressed(Point locationOnScreen, Graphics g);
 	
 	/** this method will be called intermittently as the mouse is dragged across the screen during a mouse press.
 	 *  
@@ -17,7 +17,7 @@ public interface Tool{
 	 * @param locationOnCanvas: the point in the overall canvas where the user is
 	 * @param g the graphics context in which the tool will operate
 	 */
-	void mouseMoved(Point locationOnScreen, Graphics g);
+	String mouseMoved(Point locationOnScreen, Graphics g);
 	
 	/**this method will be called once the mouse has been picked up. At this point, the tool should be prepared to contact the
 	 * server to update the canvas
@@ -25,7 +25,7 @@ public interface Tool{
 	 * @param locationOnCanvas the location on the canvas that the user is currently viewing.
 	 * @param g the graphics context to draw on
 	 */
-	void mouseReleased(Point locationOnScreen, Graphics g);
+	String mouseReleased(Point locationOnScreen, Graphics g);
 	/**get a string representation of the tool's last action. 
 	 * 
 	 * @return a String to be sent across the network that will represent the tool's action

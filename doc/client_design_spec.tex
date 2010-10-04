@@ -16,10 +16,17 @@
   The Toolbox will contain a series of Tools. Each Tool (which extends mict.tools.Tool) shall be defined in Jython so that we can serialize the class and transmit it from the server to the client. This way, every client will support every tool the server has and we don't have to worry about a client possessing a tool that the server doesn't know how to process.
   \begin{itemize}
   \item
-  We will need to examine the various techniques for serializing classes to ensure that this is possible. Based on a preliminary analysis, this can be obtained with Java’s ObjectOutputStream.
+  We will need to examine the various techniques for serializing classes to
+  ensure that this is possible. Based on a preliminary analysis, this can be
+  obtained with Java’s ObjectOutputStream. These tools
+  will implement the functional requirements specified in section 3.2.2 of the
+  Software requirements specification.
+
   \item
-  Each tool will know how to serialize its commands so that we can send them to the server. They will also know their own name, associated icon, and tooltip. The tool needs to be entirely self-contained so the client doesn't need to know anything about how many tools there are, or what they do.
-  \item
+  Each tool will know how to serialize its commands so that we can send them to
+  the server. They will also know their own name, associated icon, and tooltip.
+  The tool needs to be entirely self-contained so the client doesn't need to
+  know anything about how many tools there are, or what they do.   \item
   The interface specification for the Tool is attached.
   \end{itemize}
   \item
@@ -33,7 +40,14 @@
   \item
       There will be a single Java class and a single Python module (JythonBridge.java and javabridge.py) to coordinate communications between Jython and Java components. Any Java component that wants to access something from Jython should go through JythonBridge. Because of the way Jython works, Python components can access the Java libraries directly if they need to extend them (for instance, extending Tools) but if they wish to get an instance of a Java object, they should go through javabridge
   \item
-     When the program is first launched, the Toolbox will be empty and the canvas will have 2 JTextFields, a JPasswordField, and a JButton. The first JTextfield will be used to enter the server to connect to. The second will be the username, and the JPasswordField will be used to enter the password. The JButton will tell the client to connect to the server specified with the given log-in credentials. If login is successful, the fields will be removed.
+     When the program is first launched, the Toolbox will be empty and the
+     canvas will have 2 JTextFields, a JPasswordField, and a JButton. The first
+     JTextfield will be used to enter the server to connect to. The second will
+     be the username, and the JPasswordField will be used to enter the
+     password. The JButton will tell the client to connect to the server
+     specified with the given log-in credentials. If login is successful, the
+     fields will be removed. This implements the Canvas.Connect requirement
+     mentioned in section 3.1 of the SRS document.
 \end{itemize}
 \end{document}
 
