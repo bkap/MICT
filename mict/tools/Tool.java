@@ -2,7 +2,7 @@ package mict.tools;
 import java.awt.Point;
 import java.awt.Graphics;
 import java.awt.Image;
-public interface Tool{
+public interface Tool {
 	/** this method will be called when the mouse is clicked on the canvas. It sets the initial 
 	 * 
 	 * @param locationOnScreen : the location on the canvas currently to update.
