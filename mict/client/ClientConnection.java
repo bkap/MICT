@@ -6,9 +6,10 @@ import java.io.*;
 public class ClientConnection extends Thread {
 	private static int DEFAULT_PORT = 56234;
 
-	public ClientConnection(String server, int port) {
+	public ClientConnection(String server, int port, Client parent) {
 		this.controller = controller;
 		this.serverport = port;
+		this.parent = parent;
 		try {
 			SSLSocketFactory sockfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
 			waiter = (SSLSocket)sockfactory.createSocket(server, port);
@@ -33,6 +34,7 @@ public class ClientConnection extends Thread {
 	private SSLSocket waiter;
 	private PrintWriter out;
 	private BufferedReader in;
+	private Client parent;
 
 	public void run() {
 		// DO WORK SON
