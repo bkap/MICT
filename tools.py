@@ -8,14 +8,14 @@ class PencilTool(Tool) :
         return self.getToolName()
     def mousePressed(locationOnScreen, g) :
         self.prev_point = locationOnScreen
-        self.points = [locationScreen]
-    
+        self.points = [locationOnScreen]
+        return "(%d,%d)" % (locationOnScreen.x, locationOnScreen.y)
     def mouseMoved(locationOnScreen, g) :
         g.drawLine(self.prev_point.x, self.prev_point.y, locationOnScreen.x,
         locationOnScreen.y)
         self.prev_point = locationOnScreen
         self.points.append(locationOnScreen)
-        
+        return "(%d, %d)" % (locationOnScreen.x, locationOnScreen.y)
     def mouseReleased(locationOnScreen, g) :
        pass
     def serialize(self) :
