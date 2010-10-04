@@ -14,4 +14,5 @@ public class ClientState {
 	public Color selectedColor;
 	public ClientConnection socket;
 	public Graphics canvas_graphics;
+	public long x=0, y=0;
 }
