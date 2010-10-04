@@ -9,7 +9,7 @@ import mict.client.ClientConnection;
 
 public class ClientState {
 	public Tool activeTool;
-	public Object clipboard;
+	public BufferedImage clipboard;
 	public Graphics clipboard_graphics;
 	public Color selectedColor;
 	public ClientConnection socket;
