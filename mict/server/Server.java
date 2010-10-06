@@ -17,7 +17,7 @@ public class Server extends Thread {
 		// load whatever parts of canvas need to be loaded
 
 		// Basically, do the crap that needs to be done before beginning to accept users.
-		private int serverport = 56324;
+		int serverport = 56324;
 		try {
 			SSLServerSocketFactory servsockfactory = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
 			servsock = (SSLServerSocket)servsockfactory.createServerSocket(serverport);
@@ -51,7 +51,7 @@ public class Server extends Thread {
 		// disconnect all users
 
 		System.out.print("Saving canvas and stopping server ...");
-		System.put.flush();
+		System.out.flush();
 
 		// save canvas
 

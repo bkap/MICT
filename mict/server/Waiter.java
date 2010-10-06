@@ -19,6 +19,12 @@ public class Waiter extends Thread {
 
 	public void run() {
 		// DO WORK, SON
+		// authenticate the user
+		while(true) { // general recieve loop
+			// determine type of message
+			// parse it!
+		}
+		// cleanup
 	}
 
 	protected void close() {
@@ -27,7 +33,7 @@ public class Waiter extends Thread {
 			patron.close();
 			in.close();
 			out.close();
-		} catch(IOexception e) {
+		} catch(IOException e) {
 			// Nothing to see here, move along.
 		}
 	}
