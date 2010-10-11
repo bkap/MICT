@@ -1,6 +1,7 @@
 package mict.client;
 
 import javax.swing.*;
+import java.awt.Image;
 import mict.bridge.JythonBridge;
 
 public class Client extends JApplet {
@@ -10,18 +11,34 @@ public class Client extends JApplet {
 		frame.setContentPane(c.getContentPane());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
+		c.start();
+		frame.pack();
+		
 		frame.setVisible(true);
 	}
 
 	private static final long serialVersionUID = -6467296753041382320L;
 
 	public Client() { 
-		add(JythonBridge.getTools("localhost", getContentPane().getGraphics()));
+		canvas = new JPanel();
+		canvas.setSize(100, 100);
+		canvas.setPreferredSize(canvas.getSize());
+		Box b = javax.swing.Box.createHorizontalBox();
+		toolbox = new ToolBox();
+		b.add(toolbox);
+		b.add(canvas);
+		this.add(b);
 	}
-
+	@Override
+	public void start() {
+		state.canvas_graphics = canvas.getGraphics();
+		System.out.println(canvas.getGraphics());
+		state.canvas_graphics.setColor(java.awt.Color.BLACK);
+	}
 	private ClientState state = new ClientState();
-
-	public jumpTo(long x, long y, Image bitmap) {
+	private JPanel canvas;
+	private ToolBox toolbox;
+	public void jumpTo(final long x, final long y, final Image bitmap) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				state.x = x;

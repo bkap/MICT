@@ -23,7 +23,7 @@ public class ClientConnection extends Thread {
 	}
 
 	public ClientConnection(String server) {
-		this(server, DEFAULT_PORT);
+		this(server, DEFAULT_PORT, null);
 	}
 
 	public void draw(String tool, String data) {
@@ -35,7 +35,8 @@ public class ClientConnection extends Thread {
 	private PrintWriter out;
 	private BufferedReader in;
 	private Client parent;
-
+	private int serverport;
+	
 	public void run() {
 		// DO WORK SON
 	}
@@ -49,5 +50,8 @@ public class ClientConnection extends Thread {
 		} catch(IOException e) {
 			// These aren't the droids you're looking for
 		}
+	}
+	public void sendConnection(String toolID, String message) {
+	
 	}
 }

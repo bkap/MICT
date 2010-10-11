@@ -19,7 +19,7 @@ public class ToolButton extends JButton {
 	private static final long serialVersionUID = -5088345052860020236L;
 
 	public ToolButton(Tool t, ClientState state) {
-		super(new ImageIcon(t.getImage()));
+		super(new ImageIcon(t.getIcon()));
 		this.t = t;
 		this.state = state;
 		this.setToolTipText(t.getTooltip());

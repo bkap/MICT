@@ -3,7 +3,8 @@ package mict.bridge;
 import javax.swing.*;
 import javax.script.*;
 import java.awt.Graphics;
-
+import java.util.List;
+import mict.tools.Tool;
 public abstract class JythonBridge {
 	private static final String SCRIPT_NAME = "javabridge";
 	private static ScriptEngine jython = new ScriptEngineManager().getEngineByName("jython");
@@ -37,7 +38,7 @@ public abstract class JythonBridge {
         jython.eval("from " + SCRIPT_NAME + " import tools_list");
         System.out.println("imported tools");
         return (List<Tool>)jython.get("tools_list");
-        catch(ScriptException e) {
+        }catch(ScriptException e) {
             return new java.util.ArrayList<Tool>();
         }
     }
@@ -45,11 +46,10 @@ public abstract class JythonBridge {
         try {
             jython.eval("import " + SCRIPT_NAME);
             jython.eval(SCRIPT_NAME + ".reload_tools()");
-            return List<Tool>jython.get(SCRIPT_NAME + ".tools_list");
-        } catch(ScriptExcetion e) {
+            return (List<Tool>)jython.get(SCRIPT_NAME + ".tools_list");
+        } catch(ScriptException e) {
             return new java.util.ArrayList<Tool>();
         }
     }
 
-    }
 }

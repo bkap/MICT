@@ -2,6 +2,7 @@ package mict.tools;
 import java.awt.Point;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.io.Serializable;
 public interface Tool extends Serializable {
 	/** this method will be called when the mouse is clicked on the canvas.
 	 * 
