@@ -44,4 +44,8 @@ public interface Tool {
 	/** provides the internal name of the tool
 	 */
 	String getToolID();
+    /*get a single string representing a full command. Most likely just a
+     * collection of indivudal points from the mouse events.
+     */
+    String serlialize();
 }
