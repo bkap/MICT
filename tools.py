@@ -59,7 +59,7 @@ class PencilTool(Tool) :
     def getTooltip(self) :
         return "Draw wherever the mouse goes"
     def getToolID(self) :
-        return 1
+        return "pencil"
 class RectangleTool(Tool) :
     def __init__(self, clientState = None) :
         super(RectangleTool, self).__init__()
@@ -93,7 +93,7 @@ class RectangleTool(Tool) :
         return "draw a rectangle with one corner\nwhere you click and
         another\ncorner where you release the mouse"
     def getToolID(self) :
-        return 2
+        return 'rect'
 def _get_tools() :
     #hacky way to get the list of tools
     tools = []
@@ -101,4 +101,4 @@ def _get_tools() :
         if issubclass(item, Tool) :
             tools.append(item)
     return tools
-tools = get_tools()
+tools = _get_tools()

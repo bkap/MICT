@@ -32,4 +32,24 @@ public abstract class JythonBridge {
 		}
 		return null;
 	}
+    public static List<Tool> getToolList() {
+        try {
+        jython.eval("from " + SCRIPT_NAME + " import tools_list");
+        System.out.println("imported tools");
+        return (List<Tool>)jython.get("tools_list");
+        catch(ScriptException e) {
+            return new java.util.ArrayList<Tool>();
+        }
+    }
+    public static List<Tool> updateToolList() {
+        try {
+            jython.eval("import " + SCRIPT_NAME);
+            jython.eval(SCRIPT_NAME + ".reload_tools()");
+            return List<Tool>jython.get(SCRIPT_NAME + ".tools_list");
+        } catch(ScriptExcetion e) {
+            return new java.util.ArrayList<Tool>();
+        }
+    }
+
+    }
 }

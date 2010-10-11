@@ -11,6 +11,11 @@ def get_tools(*args, **kwargs) :
     panel.add(JButton())
     return panel
 
+tools_list = tools.tools
+def reload_tools() :
+    global tools_list, tools
+    tools = reload(tools)
+    tools_list = tools.tools
 
 dispatcher = {"getTools":get_tools}
 def bridge(caller, *args, **kwargs) :
