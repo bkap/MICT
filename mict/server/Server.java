@@ -28,6 +28,7 @@ public class Server extends Thread {
 
 	protected Vector<Waiter> clients = new Vector<Waiter>();
 	private SSLServerSocket servsock;
+	private CanvasManager canvas;
 
 	public void run() {
 		// start serving the canvas!
@@ -45,6 +46,14 @@ public class Server extends Thread {
 		} catch(IOException e) {
 			System.out.println("Error in main loop: " + e.getMessage());
 		}
+	}
+
+	public CanvasManager getCanvas() {
+		return canvas;
+	}
+
+	private PermissionSet authenticate(String username, String password) {
+		// todo
 	}
 
 	public static void stopServer() {
