@@ -39,6 +39,33 @@ public class ClientConnection extends Thread {
 	
 	public void run() {
 		// DO WORK SON
+		// send username + ' ' + password + '\n'
+		String buffer = "";
+		String action = "";
+		while(true) {
+			int read = in.read();
+			if(read == -1) break;
+			if(read == ' ') {
+				if(action == "") action = buffer;
+				else dispatch(action, buffer);
+				buffer = "";
+			} else if(read == '\n') {
+				dispatch(action, buffer);
+				buffer = "";
+				action = "";
+			} else {
+				buffer += (char)read;
+			}
+		}
+		close();
+	}
+
+	private void dispatch(String action, String phrase) {
+		if(action.startsWith('.')) { // it's a tool
+			something.draw(x, y, action.substring(1), phrase, this); // TODO @ben fix this
+		} else { // it's not a tool
+			// TODO fill this out later
+		}
 	}
 
 	public void close() {

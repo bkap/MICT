@@ -19,6 +19,7 @@ public class Waiter extends Thread {
 	private long x = 0;
 	private long y = 0;
 	private PermissionSet perms;
+	private Vector<HistoryLayer> history = new Vector<HistoryLayer>();
 
 	public void run() {
 		// DO WORK, SON
@@ -70,8 +71,7 @@ public class Waiter extends Thread {
 
 	private void dispatch(String action, String phrase) {
 		if(action.startsWith('.')) { // it's a tool
-			String tool = action.substring(1);
-			parent.getCanvas().draw(x, y, tool, phrase, this);
+			history.add(parent.getCanvas().draw(x, y, action.substring(1), phrase, this));
 		} else { // it's not a tool
 			// TODO fill this out later
 		}
