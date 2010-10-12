@@ -1,21 +1,49 @@
 package mict.server;
 
 public class ChunkGraphics extends Graphics { // TODO implement the Graphics2D translation, too
-	public ChunkGraphics(Graphics g, Chunk c, long userx, long usery) {
+	public ChunkGraphics(Graphics g, Chunk c, long userx, long usery, CanvasManager parent) {
 		this.g = g;
 		this.c = c;
-		dx = userx - c.getX() * c.getWidth();
-		dy = usery - c.getY() * c.getHeight();
+		dx = c.getX() * c.getWidth() - userx ;
+		dy = c.getY() * c.getHeight() - usery ;
 		original = true;
+		this.parent = parent;
 	}
 
+	private CanvasManager parent;
 	private Graphics g;
 	private Chunk c;
 	private long dx, dy;
-	private original = false;
+	private original;
 
-	public Object checkRect(int x, int y, int w, int h) { // TODO fix diagonal duplication
-		// todo do the multidraw thing
+	/** returns an array of Graphics contexts that overlap with the given rectangle
+	 *
+	 * @param x the x-coordinate of the upper left-hand corner of the rectangle, in terms of this chunk
+	 * @param y the y-coordinate of the upper left-hand corner of the rectangle, in terms of this chunk
+	 * @param width the width of the rectangle
+	 * @param height the height of the rectangle
+	 */
+	public ChunkGraphics[][] extend(int x, int y, int w, int h) { // TODO fix diagonal duplication
+		if(!original) return new ChunkGraphics[0][0];
+		int cleft = c.getX() + (x - c.getWidth() + 1) / c.getWidth();
+		int ctop = c.getY() + (x - c.getHeight() + 1) / c.getHeight();
+		int cwidth = (w + c.getWidth() - 1) / c.getWidth();
+		int cheight = (w + c.getHeight() - 1) / c.getHeight();
+		ChunkGraphics[][] result = new ChunkGraphics[cwidth][cheight];
+		for(int i = 0; i < cwidth; i++) {
+			for(int j = 0; j < cheight; j++) {
+				Chunk c = parent.getChunk(i, j);
+				result[i][j] = new ChunkGraphics(
+					c.getGraphics(),
+					c,
+					dx - this.c.getX() * this.c.getWidth() + c.getX() * c.getWidth(),
+					dy - this.c.getY() * this.c.getHeight() + c.getY() * g.getHeight(),
+					parent
+				);
+				result[i][j].original = false;
+			}
+		}
+		return result;
 	}
 
 	public void clearRect(int x, int y, int width, int height) {
