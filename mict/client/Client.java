@@ -1,7 +1,11 @@
 package mict.client;
 
 import javax.swing.*;
+
+import java.awt.Graphics;
+import java.awt.Image;
 import mict.bridge.JythonBridge;
+import mict.tools.ToolManager;
 
 public class Client extends JApplet {
 	public static void main(String[] args) {
@@ -10,18 +14,34 @@ public class Client extends JApplet {
 		frame.setContentPane(c.getContentPane());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
+		c.start();
+		frame.pack();
+		
 		frame.setVisible(true);
 	}
 
 	private static final long serialVersionUID = -6467296753041382320L;
 
 	public Client() { 
-		add(JythonBridge.getTools("localhost", getContentPane().getGraphics()));
+		//JythonBridge.initialize();
+		canvas = new Canvas();
+		canvas.setSize(300, 300);
+		canvas.setPreferredSize(canvas.getSize());
+		canvas.addMouseListener(new CanvasObserver(state));
+		Box b = javax.swing.Box.createHorizontalBox();
+		ToolManager t = new ToolManager(state);
+		toolbox = new ToolBox(state, t);
+		b.add(toolbox);
+		b.add(canvas);
+		this.getContentPane().add(b);
 	}
-
 	private ClientState state = new ClientState();
-
-	public jumpTo(long x, long y, Image bitmap) {
+	private Canvas canvas;
+	private ToolBox toolbox;
+	public ClientState getClientState() {
+		return state;
+	}
+	public void jumpTo(final long x, final long y, final Image bitmap) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				state.x = x;
@@ -29,5 +49,8 @@ public class Client extends JApplet {
 				state.canvas_graphics.drawImage(bitmap, 0, 0, Client.this);
 			}
 		});
+	}
+	public Graphics getServerGraphics() {
+		return this.canvas.getServerGraphics();
 	}
 }

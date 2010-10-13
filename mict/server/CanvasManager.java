@@ -1,4 +1,6 @@
 package mict.server;
+import java.util.HashMap;
+import java.awt.Point;
 
 public class CanvasManager {
 	public CanvasManager(DatabaseLayer database) {

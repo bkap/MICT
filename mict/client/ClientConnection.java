@@ -23,7 +23,7 @@ public class ClientConnection extends Thread {
 	}
 
 	public ClientConnection(String server) {
-		this(server, DEFAULT_PORT);
+		this(server, DEFAULT_PORT, null);
 	}
 
 	public void draw(String tool, String data) {
@@ -35,14 +35,21 @@ public class ClientConnection extends Thread {
 	private PrintWriter out;
 	private BufferedReader in;
 	private Client parent;
-
+	private int serverport;
+	
 	public void run() {
 		// DO WORK SON
 		// send username + ' ' + password + '\n'
 		String buffer = "";
 		String action = "";
 		while(true) {
-			int read = in.read();
+			int read = -1;
+			try {
+				read = in.read();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			if(read == -1) break;
 			if(read == ' ') {
 				if(action == "") action = buffer;
@@ -60,8 +67,8 @@ public class ClientConnection extends Thread {
 	}
 
 	private void dispatch(String action, String phrase) {
-		if(action.startsWith('.')) { // it's a tool
-			something.draw(x, y, action.substring(1), phrase, this); // TODO @ben fix this
+		if(action.startsWith(".")) { // it's a tool
+			parent.getClientState().tools.getToolByID(action.substring(1)).draw(phrase, parent.getServerGraphics()); 
 		} else { // it's not a tool
 			// TODO fill this out later
 		}
@@ -76,5 +83,8 @@ public class ClientConnection extends Thread {
 		} catch(IOException e) {
 			// These aren't the droids you're looking for
 		}
+	}
+	public void sendConnection(String toolID, String message) {
+	
 	}
 }

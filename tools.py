@@ -5,20 +5,18 @@ import re
 point_re = re.compile(r"\((\d+),(\d+)\)")
 class PencilTool(Tool) :
     def __init__(self, clientState=None) :
-        super(PencilTool,self).__init__()
         self.client_state = clientState
         self.prev_point_draw = None
     def __repr__(self) :
         return self.getToolName()
     def mousePressed(self, locationOnScreen, g) :
         self.prev_point = locationOnScreen
-        self.points = [locationOnScreen]
+        self.points = [(locationOnScreen.x, locationOnScreen.y)]
         return "(%d,%d)" % (locationOnScreen.x, locationOnScreen.y)
     def mouseMoved(self, locationOnScreen, g) :
-        g.drawLine(self.prev_point.x, self.prev_point.y, locationOnScreen.x,
-        locationOnScreen.y)
-        self.prev_point = locationOnScreen
-        self.points.append(locationOnScreen)
+        self.points.append((locationOnScreen.x, locationOnScreen.y))
+        xpoints, ypoints = zip(self.points)
+        g.drawPolyLine(xpoints, ypoints, len(xpoints))
         return "(%d, %d)" % (locationOnScreen.x, locationOnScreen.y)
     def mouseReleased(self, locationOnScreen, g) :
        return "()"
@@ -62,7 +60,6 @@ class PencilTool(Tool) :
         return "pencil"
 class RectangleTool(Tool) :
     def __init__(self, clientState = None) :
-        super(RectangleTool, self).__init__()
         self.client_state = clientState
         self.start_point = None
         self.end_point = None
@@ -71,11 +68,22 @@ class RectangleTool(Tool) :
         self.end_point = None
         return "(%d, %d)" % (locationOnScreen.x, locationOnScreen.y)
     def mouseDragged(self, locationOnScreen, g) :
+        x1 = min(self.start_point.x, locationOnScreen.x)
+        y1 = min(self.start_point.y, locationOnScreen.y)
+        x2 = max(self.start_point.x, locationOnScreen.x)
+        y2 = max(self.start_point.y, locationOnScreen.y)
+        g.fillRect(x1, y1, (x2 - x1),
+        y2 - y1)
         return ''
     def mouseReleased(self, locationOnScreen, g) :
-        self.end_point = locationOnScreen
-        g.drawRect(self.start_point.x, self.start_point.y, self.end_point.x,
-        self.end_point.y)
+        x1 = min(self.start_point.x, locationOnScreen.x)
+        y1 = min(self.start_point.y, locationOnScreen.y)
+        x2 = max(self.start_point.x, locationOnScreen.x)
+        y2 = max(self.start_point.y, locationOnScreen.y)
+        self.start_point = Point(x1,y1)
+        self.end_point = Point(x2,y2)
+        g.fillRect(self.start_point.x, self.start_point.y, (self.end_point.x - self.start_point.x),
+        self.end_point.y - self.start_point.y)
         return "(%d, %d)" % (self.end_point.x, self.end_point.y)
     def serialize(self) :
         if not self.end_point :
@@ -83,22 +91,25 @@ class RectangleTool(Tool) :
             return ""
         return "(%d,%d);(%d,%d)" % (self.start_point.x, self.start_point.y,
             self.end_point.x, self.end_point.y)
-    def draw(slef, s, g) :
-       #TODO: implement this
+    def draw(self, s, g) :
+       points = s.split(';')
+       x1, y1 = points_re.match(points[0]).groups()
+       x2,y2 = points_re.match(posints[1]).groups()
     def getIcon(self) :
         pass
-    def getName(self) :
+    def getToolName(self) :
         return "rectangle"
     def getTooltip(self) :
-        return "draw a rectangle with one corner\nwhere you click and
+        return "draw a rectangle with one corner\nwhere you click and \
         another\ncorner where you release the mouse"
     def getToolID(self) :
         return 'rect'
 def _get_tools() :
     #hacky way to get the list of tools
     tools = []
-    for item in globals() :
-        if issubclass(item, Tool) :
+    for key, item in globals().iteritems() :
+        if isinstance(item, type) and issubclass(item, Tool) and item.__name__ != "Tool":
             tools.append(item)
+    print tools
     return tools
 tools = _get_tools()
