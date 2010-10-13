@@ -37,6 +37,8 @@ public class ToolBox extends JPanel {
 			ToolButton b = new ToolButton(t, state);
 			bg.add(b);
 		}
+		bg.setSelected(bg.getElements().nextElement().getModel(), true);
+		state.activeTool = ((ToolButton)bg.getElements().nextElement()).getTool();
 		JPanel toolPanel = new JPanel();
 		toolPanel.setLayout( new java.awt.GridLayout(bg.getButtonCount() / 2 + bg.getButtonCount() % 2,2));
 		java.util.Enumeration<AbstractButton> allButtons = bg.getElements();
@@ -53,7 +55,7 @@ public class ToolBox extends JPanel {
 	private class ColorIcon implements Icon {
 		
 		public int getIconHeight() {
-			return 16;
+			return 32;
 		}
 		
 		@Override
@@ -66,7 +68,7 @@ public class ToolBox extends JPanel {
 		}
 		@Override
 		public int getIconWidth() {
-			return 16;
+			return 32;
 		}
 		
 	}

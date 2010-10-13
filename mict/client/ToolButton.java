@@ -1,6 +1,5 @@
 package mict.client;
 
-import javax.swing.JButton;
 import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
 

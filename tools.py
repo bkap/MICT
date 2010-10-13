@@ -13,13 +13,16 @@ class PencilTool(Tool) :
         self.prev_point = locationOnScreen
         self.points = [(locationOnScreen.x, locationOnScreen.y)]
         return "(%d,%d)" % (locationOnScreen.x, locationOnScreen.y)
-    def mouseMoved(self, locationOnScreen, g) :
+    def mouseDragged(self, locationOnScreen, g) :
         self.points.append((locationOnScreen.x, locationOnScreen.y))
-        xpoints, ypoints = zip(self.points)
-        g.drawPolyLine(xpoints, ypoints, len(xpoints))
+        xpoints, ypoints = zip(*self.points)
+        print xpoints, ypoints
+        g.drawPolyline(xpoints, ypoints, len(xpoints))
         return "(%d, %d)" % (locationOnScreen.x, locationOnScreen.y)
     def mouseReleased(self, locationOnScreen, g) :
-       return "()"
+        xpoints, ypoints = zip(*self.points)
+        g.drawPolyline(xpoints, ypoints, len(xpoints))
+        return "()"
     def serialize(self) :
         return ';'.join(self.points)
     def draw(self, s, g) :

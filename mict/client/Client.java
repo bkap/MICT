@@ -25,15 +25,24 @@ public class Client extends JApplet {
 	public Client() { 
 		//JythonBridge.initialize();
 		canvas = new Canvas();
+		state.canvas = canvas;
 		canvas.setSize(300, 300);
 		canvas.setPreferredSize(canvas.getSize());
-		canvas.addMouseListener(new CanvasObserver(state));
+		CanvasObserver obs = new CanvasObserver(state);
+		canvas.addMouseListener(obs);
+		canvas.addMouseMotionListener(obs);
 		Box b = javax.swing.Box.createHorizontalBox();
 		ToolManager t = new ToolManager(state);
 		toolbox = new ToolBox(state, t);
 		b.add(toolbox);
 		b.add(canvas);
 		this.getContentPane().add(b);
+	}
+
+	@Override
+	public void start() {
+		state.canvas_graphics = canvas.getGraphics();
+		state.intermediate_graphics = canvas.getIntermediateGraphics();
 	}
 	private ClientState state = new ClientState();
 	private Canvas canvas;

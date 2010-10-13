@@ -1,14 +1,17 @@
 package mict.client;
 
 import java.awt.event.MouseEvent;
-import javax.swing.event.MouseInputListener;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+
+import java.awt.Graphics2D;
 import java.awt.Point;
 import javax.swing.JComponent;
 
-public class CanvasObserver implements MouseInputListener {
+public class CanvasObserver implements MouseListener, MouseMotionListener {
 
 	private ClientState state;
-
+	private boolean mousepress = false;
 	public CanvasObserver(ClientState state) {
 		this.state = state;
 	}
@@ -18,6 +21,7 @@ public class CanvasObserver implements MouseInputListener {
 	}
 
 	public void mousePressed(MouseEvent e) {
+		mousepress = true;
 		Point locationOnScreen = new Point(e.getX(), e.getY());
 	
 		JComponent source = ((JComponent)e.getSource());
@@ -29,11 +33,20 @@ public class CanvasObserver implements MouseInputListener {
 
 	public void mouseReleased(MouseEvent e) {
 		Point locationOnScreen = new Point(e.getX(), e.getY());
-		
+
 		JComponent source = ((JComponent)e.getSource());
 		java.awt.Graphics g = source.getGraphics();
+		if(state != null && state.canvas.equals(source)) {
+			g.clearRect(0, 0, source.getWidth(), source.getHeight());
+			state.intermediate_graphics.setColor(state.selectedColor);
+			state.activeTool.mouseReleased(locationOnScreen, state.intermediate_graphics);
+			state.canvas.paint(g);
+			
+		}
 		g.setColor(state.selectedColor);
 		state.activeTool.mouseReleased(locationOnScreen, g);
+		mousepress = false;
+		
 		if(state.socket != null) {
 			state.socket.sendConnection(state.activeTool.getToolID(), state.activeTool.serlialize());
 		}
@@ -51,11 +64,18 @@ public class CanvasObserver implements MouseInputListener {
 		Point locationOnScreen = new Point(e.getX(), e.getY());
 		JComponent source = ((JComponent)e.getSource());
 		java.awt.Graphics g = source.getGraphics();
-		System.out.println("dragged");
+		g.setColor(state.selectedColor);
+		if(state != null && state.canvas.equals(source)) {
+			g.clearRect(0, 0, source.getWidth(), source.getHeight());
+			state.canvas.paint(g);
+		}
 		state.activeTool.mouseDragged(locationOnScreen, g);
 	}
 
 	public void mouseMoved(MouseEvent e) {
+		if(mousepress) {
+			mouseDragged(e);
+		}
 		// TODO Auto-generated method stub
 	}
 }
