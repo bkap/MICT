@@ -22,6 +22,7 @@ public class CanvasObserver implements MouseInputListener {
 	
 		JComponent source = ((JComponent)e.getSource());
 		java.awt.Graphics g = source.getGraphics();
+		g.setColor(state.selectedColor);
 		state.activeTool.mousePressed(locationOnScreen, g);
 		
 	}
@@ -31,8 +32,11 @@ public class CanvasObserver implements MouseInputListener {
 		
 		JComponent source = ((JComponent)e.getSource());
 		java.awt.Graphics g = source.getGraphics();
+		g.setColor(state.selectedColor);
 		state.activeTool.mouseReleased(locationOnScreen, g);
-		state.socket.sendConnection(state.activeTool.getToolID(), state.activeTool.serlialize());
+		if(state.socket != null) {
+			state.socket.sendConnection(state.activeTool.getToolID(), state.activeTool.serlialize());
+		}
 	}
 
 	public void mouseEntered(MouseEvent e) {
@@ -47,6 +51,7 @@ public class CanvasObserver implements MouseInputListener {
 		Point locationOnScreen = new Point(e.getX(), e.getY());
 		JComponent source = ((JComponent)e.getSource());
 		java.awt.Graphics g = source.getGraphics();
+		System.out.println("dragged");
 		state.activeTool.mouseDragged(locationOnScreen, g);
 	}
 

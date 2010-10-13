@@ -27,6 +27,7 @@ public class Client extends JApplet {
 		canvas = new Canvas();
 		canvas.setSize(300, 300);
 		canvas.setPreferredSize(canvas.getSize());
+		canvas.addMouseListener(new CanvasObserver(state));
 		Box b = javax.swing.Box.createHorizontalBox();
 		ToolManager t = new ToolManager(state);
 		toolbox = new ToolBox(state, t);

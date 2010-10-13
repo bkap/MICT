@@ -30,6 +30,7 @@ public class ToolBox extends JPanel {
 	private ClientState state;
 	private ToolManager tools;
 	public ToolBox(ClientState state, ToolManager tools) {
+		this.state = state;
 		Box box = javax.swing.Box.createVerticalBox();
 		javax.swing.ButtonGroup bg = new javax.swing.ButtonGroup();
 		for(Tool t: tools.getAllTools()) {
@@ -74,8 +75,9 @@ public class ToolBox extends JPanel {
 			Color c = JColorChooser.showDialog(ToolBox.this, "Select Active Color", activeColor);
 			//this isn't working on the Mac
 			if(c != null) {
+				System.out.println("setting: " + c);
 				activeColor = c;
-				
+				state.selectedColor = c;
 			}
 		}
 	}

@@ -68,11 +68,22 @@ class RectangleTool(Tool) :
         self.end_point = None
         return "(%d, %d)" % (locationOnScreen.x, locationOnScreen.y)
     def mouseDragged(self, locationOnScreen, g) :
+        x1 = min(self.start_point.x, locationOnScreen.x)
+        y1 = min(self.start_point.y, locationOnScreen.y)
+        x2 = max(self.start_point.x, locationOnScreen.x)
+        y2 = max(self.start_point.y, locationOnScreen.y)
+        g.fillRect(x1, y1, (x2 - x1),
+        y2 - y1)
         return ''
     def mouseReleased(self, locationOnScreen, g) :
-        self.end_point = locationOnScreen
-        g.fillRect(self.start_point.x, self.start_point.y, self.end_point.x,
-        self.end_point.y)
+        x1 = min(self.start_point.x, locationOnScreen.x)
+        y1 = min(self.start_point.y, locationOnScreen.y)
+        x2 = max(self.start_point.x, locationOnScreen.x)
+        y2 = max(self.start_point.y, locationOnScreen.y)
+        self.start_point = Point(x1,y1)
+        self.end_point = Point(x2,y2)
+        g.fillRect(self.start_point.x, self.start_point.y, (self.end_point.x - self.start_point.x),
+        self.end_point.y - self.start_point.y)
         return "(%d, %d)" % (self.end_point.x, self.end_point.y)
     def serialize(self) :
         if not self.end_point :

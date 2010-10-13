@@ -32,6 +32,9 @@ public class ToolButton extends JToggleButton {
 		this.setToolTipText(t.getTooltip());
 		this.addActionListener(new ToolListener());
 	}
+	public Tool getTool() {
+		return t;
+	}
 
 	private class ToolListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
