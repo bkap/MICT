@@ -15,6 +15,11 @@ public class Server extends Thread {
 		// set config options from parameters
 		// read user information
 		// load whatever parts of canvas need to be loaded
+		String connstring = "";
+		String dbusername = "mict";
+		String dbpasswd = PrivateTemporaryConfigurationClass.dbpasswd; // Sorry, github.
+		DatabaseLayer database = new DatabaseLayer(connstring, dbusername, dbpasswd);
+		canvas = new CanvasManager(database);
 
 		// Basically, do the crap that needs to be done before beginning to accept users.
 		int serverport = 56324;

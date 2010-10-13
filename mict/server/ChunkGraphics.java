@@ -213,6 +213,6 @@ public class ChunkGraphics extends Graphics { // TODO implement the Graphics2D t
 
 	public void translate(int x, int y) {
 		g.translate(x, y); // TODO do I need to translate this?
-		// also: ``Dude, I heard you like to translate, so I put some Graphics in your ChunkGraphics so you can  translate while you translate
+		// also: ``Dude, I heard you like to translate, so I put some Graphics in your ChunkGraphics so you can translate while you translate
 	}
 }
