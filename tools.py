@@ -12,13 +12,12 @@ class PencilTool(Tool) :
         return self.getToolName()
     def mousePressed(self, locationOnScreen, g) :
         self.prev_point = locationOnScreen
-        self.points = [locationOnScreen]
+        self.points = [(locationOnScreen.x, locationOnScreen.y)]
         return "(%d,%d)" % (locationOnScreen.x, locationOnScreen.y)
     def mouseMoved(self, locationOnScreen, g) :
-        g.drawLine(self.prev_point.x, self.prev_point.y, locationOnScreen.x,
-        locationOnScreen.y)
-        self.prev_point = locationOnScreen
-        self.points.append(locationOnScreen)
+        self.points.append((locationOnScreen.x, locationOnScreen.y))
+        xpoints, ypoints = zip(self.points)
+        g.drawPolyLine(xpoints, ypoints, len(xpoints))
         return "(%d, %d)" % (locationOnScreen.x, locationOnScreen.y)
     def mouseReleased(self, locationOnScreen, g) :
        return "()"
@@ -74,7 +73,7 @@ class RectangleTool(Tool) :
         return ''
     def mouseReleased(self, locationOnScreen, g) :
         self.end_point = locationOnScreen
-        g.drawRect(self.start_point.x, self.start_point.y, self.end_point.x,
+        g.fillRect(self.start_point.x, self.start_point.y, self.end_point.x,
         self.end_point.y)
         return "(%d, %d)" % (self.end_point.x, self.end_point.y)
     def serialize(self) :
@@ -83,14 +82,16 @@ class RectangleTool(Tool) :
             return ""
         return "(%d,%d);(%d,%d)" % (self.start_point.x, self.start_point.y,
             self.end_point.x, self.end_point.y)
-    def draw(slef, s, g) :
-       #TODO: implement this
+    def draw(self, s, g) :
+       points = s.split(';')
+       x1, y1 = points_re.match(points[0]).groups()
+       x2,y2 = points_re.match(posints[1]).groups()
     def getIcon(self) :
         pass
     def getName(self) :
         return "rectangle"
     def getTooltip(self) :
-        return "draw a rectangle with one corner\nwhere you click and
+        return "draw a rectangle with one corner\nwhere you click and \
         another\ncorner where you release the mouse"
     def getToolID(self) :
         return 'rect'

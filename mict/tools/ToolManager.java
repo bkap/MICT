@@ -1,6 +1,5 @@
-package mict.server;
+package mict.tools;
 
-import mict.tools.Tool;
 import java.util.HashMap;
 import java.util.List;
 import mict.bridge.JythonBridge;

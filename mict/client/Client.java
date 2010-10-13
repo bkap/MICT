@@ -1,6 +1,8 @@
 package mict.client;
 
 import javax.swing.*;
+
+import java.awt.Graphics;
 import java.awt.Image;
 import mict.bridge.JythonBridge;
 
@@ -27,17 +29,18 @@ public class Client extends JApplet {
 		toolbox = new ToolBox();
 		b.add(toolbox);
 		b.add(canvas);
-		this.add(b);
+		this.getContentPane().add(b);
 	}
-	@Override
-	public void start() {
-		state.canvas_graphics = canvas.getGraphics();
-		System.out.println(canvas.getGraphics());
-		state.canvas_graphics.setColor(java.awt.Color.BLACK);
+	public void paint(Graphics g) {
+		g.fillRect(10, 10, 10, 10);
 	}
+
 	private ClientState state = new ClientState();
 	private JPanel canvas;
 	private ToolBox toolbox;
+	public ClientState getClientState() {
+		return state;
+	}
 	public void jumpTo(final long x, final long y, final Image bitmap) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {

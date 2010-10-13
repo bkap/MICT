@@ -43,7 +43,13 @@ public class ClientConnection extends Thread {
 		String buffer = "";
 		String action = "";
 		while(true) {
-			int read = in.read();
+			int read = -1;
+			try {
+				read = in.read();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			if(read == -1) break;
 			if(read == ' ') {
 				if(action == "") action = buffer;
@@ -61,8 +67,8 @@ public class ClientConnection extends Thread {
 	}
 
 	private void dispatch(String action, String phrase) {
-		if(action.startsWith('.')) { // it's a tool
-			something.draw(x, y, action.substring(1), phrase, this); // TODO @ben fix this
+		if(action.startsWith(".")) { // it's a tool
+			//parent.getClientState().draw(xaction.substring(1), phrase, this); // TODO @ben fix this
 		} else { // it's not a tool
 			// TODO fill this out later
 		}
