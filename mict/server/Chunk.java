@@ -1,6 +1,6 @@
 package mict.server;
 
-public class Chunk implements ImageObserver {
+public class Chunk implements ImageObserver, Serializable {
 	public Chunk(int x, int y, Image img) {
 		this.x = x;
 		this.y = y;
@@ -38,5 +38,9 @@ public class Chunk implements ImageObserver {
 	 */
 	public Graphics getGraphics() {
 		return img.getGraphics();
+	}
+
+	protected Image getImage() {
+		return img;
 	}
 }

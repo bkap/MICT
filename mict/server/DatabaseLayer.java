@@ -7,6 +7,7 @@ public class DatabaseLayer {
 		try {
 			Class.forName(driver);
 			con = DriverManager.getConnection(connection, username, password);
+			write = con.prepareStatement("insert into chunks values (?,?,?)");
 		} catch(ClassNotFoundException e) {
 			System.err.println("Driver class init is fail:\n" + e.getMessage());
 			System.exit(2);
@@ -15,8 +16,10 @@ public class DatabaseLayer {
 
 	private String driver = "org.postgresql.Driver";
 	private Connection con = null;
+	private PreparedStatement write;
+	private PreparedStatement read;
 
-	public void getChunk(int x, int y) {
+	public Chunk getChunk(int x, int y) {
 		Chunk result = null;
 		try {
 			String query = "SELECT etc"; // TODO do and stuff
@@ -29,5 +32,9 @@ public class DatabaseLayer {
 			System.err.println("SQL is fail:\n" +e.getMessage());
 		}
 		return result; // obviously this is wrong.
+	}
+
+	public void setChunk(Chunk c) {
+		// TODO
 	}
 }
