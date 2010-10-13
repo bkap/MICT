@@ -49,4 +49,7 @@ public class Client extends JApplet {
 			}
 		});
 	}
+	public Graphics getServerGraphics() {
+		return this.canvas.getServerGraphics();
+	}
 }

@@ -68,7 +68,7 @@ public class ClientConnection extends Thread {
 
 	private void dispatch(String action, String phrase) {
 		if(action.startsWith(".")) { // it's a tool
-			//parent.getClientState().draw(xaction.substring(1), phrase, this); // TODO @ben fix this
+			parent.getClientState().tools.getToolByID(action.substring(1)).draw(phrase, parent.getServerGraphics()); 
 		} else { // it's not a tool
 			// TODO fill this out later
 		}
