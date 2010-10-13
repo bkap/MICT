@@ -3,6 +3,7 @@ package mict.tools;
 import java.util.HashMap;
 import java.util.List;
 import mict.bridge.JythonBridge;
+import mict.client.ClientState;
 /** the ToolManager is used to create the list of tools. It then will also
  * select the appropriate tool based on the tool name. It is primarily used on
  * the server
@@ -12,12 +13,18 @@ public class ToolManager {
     private List<Tool> toolList;
     /** Creates a new ToolManager, which will query Jython for the list of tools
      */
-    public ToolManager() {
-        toolList = JythonBridge.getToolList();
+    public ToolManager(ClientState s) {
+    	System.out.println("tool manager");
+        toolList = JythonBridge.getToolList(s);
         tools = new HashMap<String, Tool>();
         for(Tool t: toolList) {
             tools.put(t.getToolID(), t);
+            System.out.println(t.getToolID());
         }
+        
+    }
+    public ToolManager() {
+    	this(null);
     }
     /** Get all of the Tools tracked by this ToolManager
      *

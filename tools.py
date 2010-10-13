@@ -5,7 +5,6 @@ import re
 point_re = re.compile(r"\((\d+),(\d+)\)")
 class PencilTool(Tool) :
     def __init__(self, clientState=None) :
-        super(PencilTool,self).__init__()
         self.client_state = clientState
         self.prev_point_draw = None
     def __repr__(self) :
@@ -61,7 +60,6 @@ class PencilTool(Tool) :
         return "pencil"
 class RectangleTool(Tool) :
     def __init__(self, clientState = None) :
-        super(RectangleTool, self).__init__()
         self.client_state = clientState
         self.start_point = None
         self.end_point = None
@@ -88,7 +86,7 @@ class RectangleTool(Tool) :
        x2,y2 = points_re.match(posints[1]).groups()
     def getIcon(self) :
         pass
-    def getName(self) :
+    def getToolName(self) :
         return "rectangle"
     def getTooltip(self) :
         return "draw a rectangle with one corner\nwhere you click and \
@@ -98,8 +96,9 @@ class RectangleTool(Tool) :
 def _get_tools() :
     #hacky way to get the list of tools
     tools = []
-    for item in globals() :
-        if issubclass(item, Tool) :
+    for key, item in globals().iteritems() :
+        if isinstance(item, type) and issubclass(item, Tool) and item.__name__ != "Tool":
             tools.append(item)
+    print tools
     return tools
 tools = _get_tools()

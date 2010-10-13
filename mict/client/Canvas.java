@@ -23,7 +23,9 @@ public class Canvas extends JPanel {
 		return this.serverCanvas.getGraphics();
 	}
 	public void paint(Graphics g) {
-		g.drawImage(serverCanvas, 0, 0, g.getColor(), this);
+		if(serverCanvas != null) {
+			g.drawImage(serverCanvas, 0, 0, g.getColor(), this);
+		}
 		super.paint(g);
 	}
 	

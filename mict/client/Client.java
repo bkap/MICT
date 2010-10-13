@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.Graphics;
 import java.awt.Image;
 import mict.bridge.JythonBridge;
+import mict.tools.ToolManager;
 
 public class Client extends JApplet {
 	public static void main(String[] args) {
@@ -22,21 +23,19 @@ public class Client extends JApplet {
 	private static final long serialVersionUID = -6467296753041382320L;
 
 	public Client() { 
-		canvas = new JPanel();
-		canvas.setSize(100, 100);
+		//JythonBridge.initialize();
+		canvas = new Canvas();
+		canvas.setSize(300, 300);
 		canvas.setPreferredSize(canvas.getSize());
 		Box b = javax.swing.Box.createHorizontalBox();
-		toolbox = new ToolBox();
+		ToolManager t = new ToolManager(state);
+		toolbox = new ToolBox(state, t);
 		b.add(toolbox);
 		b.add(canvas);
 		this.getContentPane().add(b);
 	}
-	public void paint(Graphics g) {
-		g.fillRect(10, 10, 10, 10);
-	}
-
 	private ClientState state = new ClientState();
-	private JPanel canvas;
+	private Canvas canvas;
 	private ToolBox toolbox;
 	public ClientState getClientState() {
 		return state;

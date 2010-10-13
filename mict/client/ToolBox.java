@@ -6,7 +6,12 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.util.ArrayList;
+
+import mict.tools.Tool;
+import mict.tools.ToolManager;
 /**
+ *
  *  This is the ToolBox component of the Client. It contains 2 panels: the tool panel and the color chooser.
  *  The Tool Panel is filled with {mict.client.ToolButton Tool buttons} that allow you to trigger the active tool.
  *  The color choosing panel allows the user to select the active color for new shapes.
@@ -22,10 +27,27 @@ public class ToolBox extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private Color activeColor = Color.BLACK;
 	private JButton colorButton;
-	public ToolBox() {
+	private ClientState state;
+	private ToolManager tools;
+	public ToolBox(ClientState state, ToolManager tools) {
+		Box box = javax.swing.Box.createVerticalBox();
+		javax.swing.ButtonGroup bg = new javax.swing.ButtonGroup();
+		for(Tool t: tools.getAllTools()) {
+			ToolButton b = new ToolButton(t, state);
+			bg.add(b);
+		}
+		JPanel toolPanel = new JPanel();
+		toolPanel.setLayout( new java.awt.GridLayout(bg.getButtonCount() / 2 + bg.getButtonCount() % 2,2));
+		java.util.Enumeration<AbstractButton> allButtons = bg.getElements();
+		while(allButtons.hasMoreElements()) {
+			toolPanel.add(allButtons.nextElement());
+		}
+		box.add(toolPanel);
+		box.add(Box.createVerticalGlue());
 		colorButton = new JButton(new ColorIcon());
-		this.add(colorButton);
+		box.add(colorButton);
 		colorButton.addActionListener(new ColorChooserListener());
+		this.add(box);
 	}
 	private class ColorIcon implements Icon {
 		
