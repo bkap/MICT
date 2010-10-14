@@ -7,3 +7,4 @@ cachedir/*
 *.swp
 *.autosave
 PrivateTemporaryConfigurationClass.java
+RDETest.java
