@@ -16,7 +16,6 @@ class PencilTool(Tool) :
     def mouseDragged(self, locationOnScreen, g) :
         self.points.append((locationOnScreen.x, locationOnScreen.y))
         xpoints, ypoints = zip(*self.points)
-        print xpoints, ypoints
         g.drawPolyline(xpoints, ypoints, len(xpoints))
         return "(%d, %d)" % (locationOnScreen.x, locationOnScreen.y)
     def mouseReleased(self, locationOnScreen, g) :

@@ -37,14 +37,15 @@ public class CanvasObserver implements MouseListener, MouseMotionListener {
 		JComponent source = ((JComponent)e.getSource());
 		java.awt.Graphics g = source.getGraphics();
 		if(state != null && state.canvas.equals(source)) {
-			g.clearRect(0, 0, source.getWidth(), source.getHeight());
-			state.intermediate_graphics.setColor(state.selectedColor);
-			state.activeTool.mouseReleased(locationOnScreen, state.intermediate_graphics);
-			state.canvas.paint(g);
+			
+			state.canvas.getServerGraphics().setColor(state.selectedColor);
+			System.out.println(state.canvas.getServerGraphics().getColor());
+			state.activeTool.mouseReleased(locationOnScreen, state.canvas.getServerGraphics());
+			
 			
 		}
 		g.setColor(state.selectedColor);
-		state.activeTool.mouseReleased(locationOnScreen, g);
+		//state.activeTool.mouseReleased(locationOnScreen, g);
 		mousepress = false;
 		
 		if(state.socket != null) {

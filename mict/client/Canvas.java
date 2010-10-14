@@ -16,31 +16,28 @@ public class Canvas extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private Image serverCanvas;
-	private BufferedImage intermediateImage;
+	private BufferedImage serverCanvas;
+	private Graphics2D bufferedGraphics;
 	public Canvas() {
 	}
-	public void setServerCanvas(Image serverCanvas) {
+	public void setServerCanvas(BufferedImage serverCanvas) {
 		this.serverCanvas = serverCanvas;
 	}
-	public Graphics getIntermediateGraphics() {
-		if(intermediateImage == null) {
-			intermediateImage = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
-			intermediateImage.getGraphics().setColor(new Color(0,0,0,255));
-			intermediateImage.getGraphics().fillRect(0, 0, getWidth(), getHeight());
-			System.out.println(getWidth() + " " + getHeight());
-			
+	public Graphics2D getServerGraphics() {
+		if(bufferedGraphics != null) {
+			return bufferedGraphics;
 		}
-		return this.intermediateImage.getGraphics();
-	}
-	public Graphics getServerGraphics() {
-		return this.serverCanvas.getGraphics();
+		bufferedGraphics = this.serverCanvas.createGraphics();
+		return bufferedGraphics;
 	}
 	public void paint(Graphics g) {
+		//super.paint(g);
+		
 		if(serverCanvas != null) {
-			g.drawImage(serverCanvas, 0, 0, g.getColor(), this);
+
+			g.drawImage(serverCanvas, 0, 0, this);
+			
 		}
-		g.drawImage(intermediateImage,0,0,this);
 		
 	}
 	

@@ -12,7 +12,6 @@ public class ClientState {
 	public Tool activeTool;
 	public BufferedImage clipboard;
 	public Graphics clipboard_graphics;
-	public Graphics intermediate_graphics;
 	public Canvas canvas;
 	public Color selectedColor = Color.BLACK;
 	public ClientConnection socket;
