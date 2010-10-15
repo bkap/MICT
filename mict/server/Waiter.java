@@ -18,6 +18,8 @@ public class Waiter extends Thread {
 	private BufferedReader in;
 	private long x = 0;
 	private long y = 0;
+	private long w = 1024;
+	private long h = 1024;
 	private PermissionSet perms;
 	private Vector<HistoryLayer> history = new Vector<HistoryLayer>();
 
@@ -75,6 +77,14 @@ public class Waiter extends Thread {
 		} else { // it's not a tool
 			// TODO fill this out later
 		}
+	}
+
+	/** checks to see if the given four-member long[] intersects with the user's viewing area
+	 */
+	public boolean intersects(long[] rect) {
+		return
+			!(rect[0] + rect[2] < x || rect[0] > x + w) &&
+			!(rect[1] + rect[3] < y || rect[1] > y + h);
 	}
 
 	protected void move(long x, long y) {

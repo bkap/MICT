@@ -49,12 +49,13 @@ public class Chunk implements ImageObserver, Serializable {
 		return true;
 	}
 
-	/** returns the graphics context for the internal image representation
-	 *
-	 * WARNING: does not return a ChunkGraphics object. This method is not magic!
+	/** returns the graphics context for the internal image representation, translated for tiling correction
 	 */
-	public Graphics getGraphics() {
-		return img.getGraphics();
+	public Graphics getGraphics(long userx, long usery) {
+		Graphics c =  img.getGraphics();
+		c.translate(userx + x * getWidth()); // TODO PERMUTE
+		c.translate(usery + y * getHeight()); // TODO PERMUTE
+		return c;
 	}
 
 	public Image getImage() {

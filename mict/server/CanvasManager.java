@@ -3,10 +3,12 @@ import java.util.HashMap;
 import java.awt.Point;
 
 public class CanvasManager {
-	public CanvasManager(DatabaseLayer database) {
+	public CanvasManager(DatabaseLayer database, Server parent) {
 		this.database = database;
+		this.parent = parent;
 	}
 
+	private server parent;
 	private DatabaseLayer database;
 	private ToolManager tools;
 	private HashMap<Point, Chunk> cache = new HashMap<Point, Chunk>();
@@ -17,10 +19,15 @@ public class CanvasManager {
 			// TODO COMPLAIN
 			return;	
 		}
-		List<ChunkGraphics> gs = null // TODO implement
+		LinkedList<Graphics> gs = new LinkedList<Graphics>();
+		long[] area = t.getAffectedArea(data);
 		// do the d[r]ew
-		// holla back
-		
+		List<Waiter> users = parent.getUsers();
+		for(Waiter u : users) {
+			if(!u.intersects(area)) continue;
+			if(u == user) continue;
+			u.sendCanvasChange(x, y, tool, data);
+		}
 	}
 
 	public Chunk getChunk(int x, int y) {

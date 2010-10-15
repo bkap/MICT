@@ -53,6 +53,10 @@ public class Server extends Thread {
 		}
 	}
 
+	public List<Waiter> getUsers() {
+		return users.clone();
+	}
+
 	public CanvasManager getCanvas() {
 		return canvas;
 	}
