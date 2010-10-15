@@ -2,7 +2,7 @@ from java.awt import Point, Graphics, Image
 from mict.tools import Tool
 import re
 
-point_re = re.compile(r"\((\d+),(\d+)\)")
+point_re = re.compile(r"\( *(\d+), *(\d+) *\)")
 class PencilTool(Tool) :
     def __init__(self, clientState=None) :
         self.client_state = clientState
@@ -25,6 +25,8 @@ class PencilTool(Tool) :
     def serialize(self) :
         return ';'.join(self.points)
     def draw(self, s, g) :
+        if s == "()" :
+            return
         points = s.split(';')
         prev_point = None
         if len(points) > 1 :
@@ -94,9 +96,28 @@ class RectangleTool(Tool) :
         return "(%d,%d);(%d,%d)" % (self.start_point.x, self.start_point.y,
             self.end_point.x, self.end_point.y)
     def draw(self, s, g) :
-       points = s.split(';')
-       x1, y1 = point_re.match(points[0]).groups()
-       x2,y2 = point_re.match(posints[1]).groups()
+        if s == "()"  or s == "":
+            return
+        points = s.split(';')
+        if len(points) > 1 :
+           x1, y1 = point_re.match(points[0]).groups()
+           x2,y2 = point_re.match(posints[1]).groups()
+           x1,x2 = tuple(sorted(int(x1),int(x2)))
+           y1,y2 = tuple(sorted(int(y1),int(y2)))
+           g.fillRect(x1,y1, (x2-x1),(y2-y1))
+        else :
+            if not self.start_point :
+                print s
+                self.start_point = [int(x) for x in point_re.match(s).groups()]
+                print "got groups"
+            else :
+                print s
+                x1,y1 = point_re.match(s).groups()
+                x1,x2 = tuple(sorted((int(x1),self.start_point[0])))
+                y1,y2 = tuple(sorted((int(y1), self.start_point[1])))
+                self.start_point = None
+                g.fillRect(x1,y1,(x2-x1),(y2-y1))
+            
     def getIcon(self) :
         pass
     def getToolName(self) :

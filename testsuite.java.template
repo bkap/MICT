@@ -8,7 +8,7 @@ public class ToolTest {
     private Point[] locations;
     private ToolManager manager;
     private ToolManager manager2;
-    private DebugGraphics testGraphics;
+    private Graphics testGraphics;
     private BufferedImage clientImage;
     private BufferedImage resultImage;
     public ToolTest() {
@@ -26,7 +26,8 @@ public class ToolTest {
     public void setup() {
         manager = new ToolManager();
         manager2 = new ToolManager();
-        testGraphics = new DebugGraphics();
+        testGraphics = new
+        BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB).getGraphics();
         clientImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
         resultImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
     }
