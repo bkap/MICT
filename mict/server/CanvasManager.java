@@ -8,10 +8,19 @@ public class CanvasManager {
 	}
 
 	private DatabaseLayer database;
+	private ToolManager tools;
 	private HashMap<Point, Chunk> cache = new HashMap<Point, Chunk>();
 
 	public HistoryLayer draw(long x, long y, String tool, String data, Waiter user) {
-		// TODO
+		Tool t = tools.getToolByID(tool);
+		if(t == null) {
+			// TODO COMPLAIN
+			return;	
+		}
+		List<ChunkGraphics> gs = null // TODO implement
+		// do the d[r]ew
+		// holla back
+		
 	}
 
 	public Chunk getChunk(int x, int y) {

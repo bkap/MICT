@@ -57,7 +57,7 @@ public class Chunk implements ImageObserver, Serializable {
 		return img.getGraphics();
 	}
 
-	protected Image getImage() {
+	public Image getImage() {
 		return img;
 	}
 
