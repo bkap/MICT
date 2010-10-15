@@ -19,7 +19,6 @@ public class ToolManager {
         tools = new HashMap<String, Tool>();
         for(Tool t: toolList) {
             tools.put(t.getToolID(), t);
-            System.out.println(t.getToolID());
         }
         
     }

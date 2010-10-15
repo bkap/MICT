@@ -8,7 +8,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
-import mict.bridge.JythonBridge;
 import mict.tools.ToolManager;
 /**
  * The Client is the main class for the client side. It consists of a Canvas and a Toolbox. It also does the work to bridge those.
@@ -57,6 +56,12 @@ public class Client extends JApplet {
 	public void start() {
 		state.canvas_graphics = canvas.getGraphics();
 		//Replace this with server query stuff
+		String servername = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
+		if(servername != null) {
+
+			state.socket = new ClientConnection(servername);
+		}
+		//later change this to exit
 		canvas.setServerCanvas(new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_ARGB));
 		Graphics2D g = canvas.getServerGraphics();
 		g.setColor(new Color(255,255,255,255));
@@ -75,6 +80,7 @@ public class Client extends JApplet {
 				state.x = x;
 				state.y = y;
 				state.canvas_graphics.drawImage(bitmap, 0, 0, Client.this);
+				
 			}
 		});
 	}

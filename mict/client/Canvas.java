@@ -1,14 +1,11 @@
 package mict.client;
 
 import javax.swing.JPanel;
-import java.awt.Image;
-import java.awt.Color;
+
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
+
 public class Canvas extends JPanel {
 	
 	/**
@@ -34,9 +31,7 @@ public class Canvas extends JPanel {
 		//super.paint(g);
 		
 		if(serverCanvas != null) {
-
 			g.drawImage(serverCanvas, 0, 0, this);
-			
 		}
 		
 	}

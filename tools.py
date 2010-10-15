@@ -95,8 +95,8 @@ class RectangleTool(Tool) :
             self.end_point.x, self.end_point.y)
     def draw(self, s, g) :
        points = s.split(';')
-       x1, y1 = points_re.match(points[0]).groups()
-       x2,y2 = points_re.match(posints[1]).groups()
+       x1, y1 = point_re.match(points[0]).groups()
+       x2,y2 = point_re.match(posints[1]).groups()
     def getIcon(self) :
         pass
     def getToolName(self) :
