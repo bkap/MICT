@@ -23,7 +23,7 @@ class PencilTool(Tool) :
         g.drawPolyline(xpoints, ypoints, len(xpoints))
         return "()"
     def serialize(self) :
-        return ';'.join(self.points)
+        return ';'.join("(%d,%d)" % point for point in self.points)
     def draw(self, s, g) :
         if s == "()" :
             return
@@ -38,6 +38,7 @@ class PencilTool(Tool) :
                     #we were sent bad data
                     return False
                 x,y = point_match.groups()
+                x,y = int(x), int(y)
                 if prev_point :
                     g.drawLine(prev_point[0], prev_point[1], x, y)
                 prev_point = (x,y)
@@ -51,6 +52,7 @@ class PencilTool(Tool) :
         #we're in the middle of a draw
         match = point_re.match(s)
         x, y = match.groups()
+        x, y = int(x), int(y)
         if self.prev_point_draw :
             g.drawLine(self.prev_point_draw[0], self.prev_point_draw[1],x,y)
         self.prev_point_draw = (x,y)
