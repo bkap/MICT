@@ -19,9 +19,17 @@ public class CanvasManager {
 			// TODO COMPLAIN
 			return;	
 		}
-		LinkedList<Graphics> gs = new LinkedList<Graphics>();
 		long[] area = t.getAffectedArea(data);
-		// do the d[r]ew
+		int left = (area[0] - Chunk.getWidth() + 1) / Chunk.getWidth();
+		int top = (area[1] - Chunk.getHeight() + 1) / Chunk.getHeight();
+		int right = left + (area[2] + Chunk.getWidth() - 1) / Chunk.getWidth();
+		int bottom = top + (area[3] + Chunk.getHeight() - 1) / Chunk.getHeight();
+		for(int i = left; i < right; i++) {
+			for(int j = top; j < bottom; j++) {
+				Graphics g = getChunk(i, j).getGraphics(x, y)
+				t.draw(data, g);
+			}
+		}
 		List<Waiter> users = parent.getUsers();
 		for(Waiter u : users) {
 			if(!u.intersects(area)) continue;
