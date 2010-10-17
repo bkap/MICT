@@ -35,6 +35,13 @@ public interface Tool extends Serializable {
 	 */
 	void draw(String s, Graphics g);
 	
+	/** given an encoded draw action, return a rectangle (x, y, w, h) that covers entirely the area of canvas changed by the decoded action
+	 *
+	 * @param phrase a string containing raw data provided by the user's version of the Tool
+	 *
+	 * @return an array describing a rectangular area afftected by the given phrase. Takes form { long xleft, long ytop, long width, long height }
+	long[] getAfftectedArea(String phrase);
+
 	Image getIcon();
 	
 	String getTooltip();
@@ -46,8 +53,9 @@ public interface Tool extends Serializable {
 	/** provides the internal name of the tool
 	 */
 	String getToolID();
-    /*get a single string representing a full command. Most likely just a
-     * collection of indivudal points from the mouse events.
-     */
-    String serlialize();
+
+	/*get a single string representing a full command. Most likely just a
+	 * collection of indivudal points from the mouse events.
+	 */
+	String serlialize();
 }
