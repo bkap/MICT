@@ -40,6 +40,7 @@ public interface Tool extends Serializable {
 	 * @param phrase a string containing raw data provided by the user's version of the Tool
 	 *
 	 * @return an array describing a rectangular area afftected by the given phrase. Takes form { long xleft, long ytop, long width, long height }
+	 */
 	long[] getAfftectedArea(String phrase);
 
 	Image getIcon();
@@ -56,6 +57,11 @@ public interface Tool extends Serializable {
 
 	/*get a single string representing a full command. Most likely just a
 	 * collection of indivudal points from the mouse events.
+	 *
+	 * Usage (@RDE):
+	 * This function should not exist. Instead:
+	 * - For drawing, please send each phrase immediately. DO NOT KEEP INTERNAL STATE, EXCEPT FOR UI ELEMENTS
+	 * - For history, assign an external agent to collate tool phrases into a full command. Or, preferrably, pass the undo() command to the server, and accept the corresponding rect_set() command.
 	 */
-	String serlialize();
+	//String serlialize();
 }

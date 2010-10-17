@@ -49,7 +49,7 @@ public class CanvasObserver implements MouseListener, MouseMotionListener {
 		mousepress = false;
 		
 		if(state.socket != null) {
-			state.socket.sendConnection(state.activeTool.getToolID(), state.activeTool.serlialize());
+			state.socket.sendConnection(state.activeTool.getToolID(), state.activeTool.serialize());
 		}
 	}
 

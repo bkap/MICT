@@ -23,7 +23,7 @@ class PencilTool(Tool) :
         g.drawPolyline(xpoints, ypoints, len(xpoints))
         return "()"
     def serialize(self) :
-        return ';'.join(self.points)
+        return ';'.join("(%d,%d)" % point for point in self.points)
     def draw(self, s, g) :
         if s == "()" :
             return
@@ -36,12 +36,12 @@ class PencilTool(Tool) :
                 if not point_match :
                     #this is an error, shouldn't happen. Figure out what to do
                     #we were sent bad data
-                    return False
+                    return
                 x,y = point_match.groups()
+                x,y = int(x), int(y)
                 if prev_point :
                     g.drawLine(prev_point[0], prev_point[1], x, y)
                 prev_point = (x,y)
-            return True
         #at this point, we know it's just a single point that's been given
         if(s == "()") :
             #this signifies a mouse released event
@@ -51,6 +51,7 @@ class PencilTool(Tool) :
         #we're in the middle of a draw
         match = point_re.match(s)
         x, y = match.groups()
+        x, y = int(x), int(y)
         if self.prev_point_draw :
             g.drawLine(self.prev_point_draw[0], self.prev_point_draw[1],x,y)
         self.prev_point_draw = (x,y)
@@ -101,9 +102,9 @@ class RectangleTool(Tool) :
         points = s.split(';')
         if len(points) > 1 :
            x1, y1 = point_re.match(points[0]).groups()
-           x2,y2 = point_re.match(posints[1]).groups()
-           x1,x2 = tuple(sorted(int(x1),int(x2)))
-           y1,y2 = tuple(sorted(int(y1),int(y2)))
+           x2,y2 = point_re.match(points[1]).groups()
+           x1,x2 = tuple(sorted((int(x1),int(x2))))
+           y1,y2 = tuple(sorted((int(y1),int(y2))))
            g.fillRect(x1,y1, (x2-x1),(y2-y1))
         else :
             if not self.start_point :
