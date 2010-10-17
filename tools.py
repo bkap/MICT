@@ -141,7 +141,7 @@ class OvalTool(Tool) :
         y1 = min(self.start_point.y, locationOnScreen.y)
         x2 = max(self.start_point.x, locationOnScreen.x)
         y2 = max(self.start_point.y, locationOnScreen.y)
-        g.fillRect(x1, y1, (x2 - x1),
+        g.fillOval(x1, y1, (x2 - x1),
         y2 - y1)
         return ''
     def mouseReleased(self, locationOnScreen, g) :
