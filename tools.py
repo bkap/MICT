@@ -126,7 +126,69 @@ class RectangleTool(Tool) :
         return "draw a rectangle with one corner\nwhere you click and \
         another\ncorner where you release the mouse"
     def getToolID(self) :
-        return 'rect'
+        return 'rect'   
+class LineTool(Tool) :
+    def __init__(self, clientState = None) :
+        self.client_state = clientState
+        self.start_point = None
+        self.end_point = None
+    def mousePressed(self, locationOnScreen, g) :
+        self.start_point = locationOnScreen
+        self.end_point = None
+        return "(%d, %d)" % (locationOnScreen.x, locationOnScreen.y)
+    def mouseDragged(self, locationOnScreen, g) :
+        x1 = min(self.start_point.x, locationOnScreen.x)
+        y1 = min(self.start_point.y, locationOnScreen.y)
+        x2 = max(self.start_point.x, locationOnScreen.x)
+        y2 = max(self.start_point.y, locationOnScreen.y)
+        g.drawLine(x1, y1, (x2 - x1), (y2 - y1))
+        return ''
+    def mouseReleased(self, locationOnScreen, g) :
+        x1 = min(self.start_point.x, locationOnScreen.x)
+        y1 = min(self.start_point.y, locationOnScreen.y)
+        x2 = max(self.start_point.x, locationOnScreen.x)
+        y2 = max(self.start_point.y, locationOnScreen.y)
+        self.start_point = Point(x1,y1)
+        self.end_point = Point(x2,y2)
+        g.drawLine(self.start_point.x, self.start_point.y, (self.end_point.x - self.start_point.x),
+        self.end_point.y - self.start_point.y)
+        return "(%d, %d)" % (self.end_point.x, self.end_point.y)
+    def serialize(self) :
+        if not self.end_point :
+            #this should not happen.
+            return ""
+        return "(%d,%d);(%d,%d)" % (self.start_point.x, self.start_point.y,
+            self.end_point.x, self.end_point.y)
+    def draw(self, s, g) :
+        if s == "()"  or s == "":
+            return
+        points = s.split(';')
+        if len(points) > 1 :
+           x1, y1 = point_re.match(points[0]).groups()
+           x2,y2 = point_re.match(points[1]).groups()
+           x1,x2 = tuple(sorted((int(x1),int(x2))))
+           y1,y2 = tuple(sorted((int(y1),int(y2))))
+           g.drawLine(x1,y1, (x2-x1),(y2-y1))
+        else :
+            if not self.start_point :
+                print s
+                self.start_point = [int(x) for x in point_re.match(s).groups()]
+                print "got groups"
+            else :
+                print s
+                x1,y1 = point_re.match(s).groups()
+                x1,x2 = tuple(sorted((int(x1),self.start_point[0])))
+                y1,y2 = tuple(sorted((int(y1), self.start_point[1])))
+                self.start_point = None
+                g.drawLine(x1,y1,(x2-x1),(y2-y1))            
+    def getIcon(self) :
+        pass
+    def getToolName(self) :
+        return "line"
+    def getTooltip(self) :
+        return "draw a line from the point where you click to the point where\n you release the mouse"
+    def getToolID(self) :
+        return 'line'    
 class OvalTool(Tool) :
     def __init__(self, clientState = None) :
         self.client_state = clientState
