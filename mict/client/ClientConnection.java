@@ -65,7 +65,7 @@ public class ClientConnection extends Thread {
 
 	private void dispatch(String action, String phrase) {
 		if(action.startsWith(".")) { // it's a tool
-			parent.getClientState().tools.getToolByID(action.substring(1)).draw(phrase, parent.getServerGraphics()); 
+			parent.getClientState().tools.getToolByID(action.substring(1)).draw(phrase, parent.getCanvasGraphics()); 
 		} else { // it's not a tool
 			if(action.startsWith("imgrect")) {
 				String coords = action.substring("imgrect".length);

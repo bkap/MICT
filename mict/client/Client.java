@@ -49,7 +49,7 @@ public class Client extends JApplet {
 	}
 
 	private ClientState state = new ClientState();
-	private Canvas canvas = new Canvas();
+	private Canvas canvas = new Canvas(this);
 	private ToolBox toolbox;
 
 	@Override
