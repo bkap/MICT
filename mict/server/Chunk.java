@@ -18,6 +18,18 @@ public class Chunk implements ImageObserver, Serializable {
 		return HEIGHT;
 	}
 
+	public static int[] getAffectedChunks(long x, long y, long w, long h) {
+		int left = (x - getWidth() + 1) / getWidth();
+		int top = (y - getHeight() + 1) / getHeight();
+		int right = left + (w + getWidth() - 1) / getWidth();
+		int bottom = top + (h + getHeight() - 1) / getHeight();
+		return new int[] {left, top, right, bottom};
+	}
+
+	public static int[] getAffectedChunks(int[] rect) {
+		return getAffectedChunks(rect[0], rect[1], rect[2], rect[3]);
+	}
+
 	public Chunk(int x, int y, Image img) {
 		this.x = x;
 		this.y = y;

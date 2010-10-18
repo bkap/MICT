@@ -93,7 +93,24 @@ public class Waiter extends Thread {
 	}
 
 	public void sendCanvasRectangle(long x, long y, long width, long height) {
-		
+		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_ARGB);
+		int[] area = Chunk.getAffectedChunks(x, y, width, height);
+		Graphics g = img.getGraphics();
+		for(int i = area[0]; i < area[2]; i++) {
+			for(int j = area[1]; j < area[3]; j++) {
+				Image tile = getChunk(i, j).getImage();
+				g.drawImage(
+					tile,
+					i * Chunk.getWidth() - x,
+					j * Chunk.getHeight() - y,
+					null
+				);
+			}
+		}
+		// do I have to wait? probably. ick.
+		out.print("imgrect" + x + '.' + y + " ");
+		ImageIO.write(img, "png", new EscapingOutputStream(out));
+		out.println();
 	}
 
 	public void sendMoveOrder(long x, long y) {

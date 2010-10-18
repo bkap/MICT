@@ -70,6 +70,15 @@ public class ClientConnection extends Thread {
 		if(action.startsWith(".")) { // it's a tool
 			parent.getClientState().tools.getToolByID(action.substring(1)).draw(phrase, parent.getServerGraphics()); 
 		} else { // it's not a tool
+			if(action.startsWith("imgrect")) {
+				String coords = action.substring("imgrect".length);
+				int index = coords.indexOf('.');
+				long x = Long.parseLong(coords.substring(0,index));
+				long y = Long.parseLong(coords.substring(index+1));
+				ByteArrayImputStream in = new ByteArrayInputStream(phrase.getBytes());
+				BufferedImage img = ImangeIO.read(new EscapingInputStream(in));
+				// TODO ask ben for correct way to draw this to the canvas
+			}
 			// TODO fill this out later
 		}
 	}

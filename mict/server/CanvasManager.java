@@ -19,14 +19,10 @@ public class CanvasManager {
 			// TODO COMPLAIN
 			return;	
 		}
-		long[] area = t.getAffectedArea(data);
-		int left = (area[0] - Chunk.getWidth() + 1) / Chunk.getWidth();
-		int top = (area[1] - Chunk.getHeight() + 1) / Chunk.getHeight();
-		int right = left + (area[2] + Chunk.getWidth() - 1) / Chunk.getWidth();
-		int bottom = top + (area[3] + Chunk.getHeight() - 1) / Chunk.getHeight();
-		for(int i = left; i < right; i++) {
-			for(int j = top; j < bottom; j++) {
-				Graphics g = getChunk(i, j).getGraphics(x, y)
+		int[] area = Chunk.getAffectedChunks(t.getAffectedArea(data));
+		for(int i = area[0]; i < area[2]; i++) {
+			for(int j = area[1]; j < area[3]; j++) {
+				Graphics g = getChunk(i, j).getGraphics(x, y);
 				t.draw(data, g);
 			}
 		}
