@@ -15,7 +15,5 @@ public class ClientState {
 	public Canvas canvas;
 	public Color selectedColor = Color.BLACK;
 	public ClientConnection socket;
-	public Graphics canvas_graphics;
-	public long x=0, y=0;
 	public ToolManager tools;
 }

@@ -7,33 +7,47 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 public class Canvas extends JPanel {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	private BufferedImage serverCanvas;
-	private Graphics2D bufferedGraphics;
+	private static final long serialVersionUID = 1L; // @Ben: do we really need this? I mean, Canvas isn't even Serializable.
+
 	public Canvas() {
-	}
-	public void setServerCanvas(BufferedImage serverCanvas) {
-		this.serverCanvas = serverCanvas;
-	}
-	public Graphics2D getServerGraphics() {
-		if(bufferedGraphics != null) {
-			return bufferedGraphics;
-		}
-		bufferedGraphics = this.serverCanvas.createGraphics();
-		return bufferedGraphics;
-	}
-	public void paint(Graphics g) {
-		//super.paint(g);
-		
-		if(serverCanvas != null) {
-			g.drawImage(serverCanvas, 0, 0, this);
-		}
-		
+		setCanvas(new BufferedImage(width, height, BufferedImage.TYPE_ARGB));
+		setArtifactCanvas(new BufferedImage(width, height, BufferedImage.TYPE_ARGB));
 	}
 	
+	private long x = 0L;
+	private long y = 0L;
+	private BufferedImage canvas;
+	private BufferedImage artifacts;
+	private Graphics2D canvasGraphics;
+	private Graphics2D artifactsGraphics;
+
+	public long getX() {
+		return x;
+	}
+
+	public long getY() {
+		return y;
+	}
+
+	public void setCanvas(BufferedImage canvas) {
+		this.canvas = canvas;
+		canvasGraphics = (Graphics2D)canvas.getGraphics();
+	}
+
+	public void setArtifactCanvas(BufferedImage canvas) {
+		this.artifacts = canvas;
+		artifactsGraphics = (Graphics2D)artifacts.getGraphics();
+	}
+
+	public Graphics2D getCanvasGraphics() {
+		return canvasGraphics();
+	}
+
+	public Graphics2D getArtifactCanvasGraphics() {
+		return artifactsGraphics();
+	}
+
+	public void paint(Graphics g) {
+		g.drawImage(serverCanvas, 0, 0, this);
+	}
 }

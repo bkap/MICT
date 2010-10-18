@@ -9,10 +9,11 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import mict.tools.ToolManager;
+
 /**
  * The Client is the main class for the client side. It consists of a Canvas and a Toolbox. It also does the work to bridge those.
  * All initialization should happen here.
- * It is an Applet, but can be run as an application by sticking it's contentPane in a JFrame.
+ * It is an Applet, but can be run as an application by sticking its contentPane in a JFrame.
  * @author bkaplan
  *
  */
@@ -33,7 +34,6 @@ public class Client extends JApplet {
 
 	public Client() { 
 		//JythonBridge.initialize();
-		canvas = new Canvas();
 		state.canvas = canvas;
 		canvas.setSize(300, 300);
 		canvas.setPreferredSize(canvas.getSize());
@@ -48,43 +48,37 @@ public class Client extends JApplet {
 		this.getContentPane().add(b);
 	}
 
+	private ClientState state = new ClientState();
+	private Canvas canvas = new Canvas();
+	private ToolBox toolbox;
+
 	@Override
 	/**
-	 * any initialization on graphical stuff should go here because the Swing event thread isn't created
-	 * when the  constructor is called 
+	 * any initialization on graphical stuff should go here because the
+	 * Swing event thread isn't created when the  constructor is called 
 	 */
 	public void start() {
-		state.canvas_graphics = canvas.getGraphics();
-		//Replace this with server query stuff
 		String servername = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
-		if(servername != null) {
-
-			state.socket = new ClientConnection(servername);
-		}
-		//later change this to exit
-		canvas.setServerCanvas(new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_ARGB));
-		Graphics2D g = canvas.getServerGraphics();
-		g.setColor(new Color(255,255,255,255));
-		g.fillRect(0,0,canvas.getWidth(), canvas.getHeight());
-		//
+		if(servername == null) servername = localhost;
+		state.socket = new ClientConnection(servername, "username", "password", this);
+		state.socket.requestCanvasRect(canvas.getX(), canvas.getY(), canvas.getWidth(), canvas.getHeight());
 	}
-	private ClientState state = new ClientState();
-	private Canvas canvas;
-	private ToolBox toolbox;
+
 	public ClientState getClientState() {
 		return state;
 	}
-	public void jumpTo(final long x, final long y, final Image bitmap) {
+
+	/*public void jumpTo(final long x, final long y, final Image bitmap) { // what the hell is this.
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				state.x = x;
 				state.y = y;
 				state.canvas_graphics.drawImage(bitmap, 0, 0, Client.this);
-				
 			}
 		});
-	}
+	}*/
+
 	public Graphics getServerGraphics() {
-		return this.canvas.getServerGraphics();
+		return canvas.getCanvasGraphics();
 	}
 }

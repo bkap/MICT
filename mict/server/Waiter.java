@@ -75,6 +75,18 @@ public class Waiter extends Thread {
 		if(action.startsWith('.')) { // it's a tool
 			history.add(parent.getCanvas().draw(x, y, action.substring(1), phrase, this));
 		} else { // it's not a tool
+			if(action.startsWith("imgrect")) {
+				int index = phrase.indexOf('.');
+				long x = Long.parseLong(phrase.substring(0,index));
+				phrase = phrase.substring(index+1);
+				index = phrase.indexOf('.');
+				long y = Long.parseLong(phrase.substring(0,index));
+				phrase = phrase.substring(index+1);
+				index = phrase.indexOf('.');
+				long w = Long.parseLong(phrase.substring(0,index));
+				long h = Long.parseLong(phrase.substring(index+1));
+				sendCanvasRectangle(x, y, w, h);
+			}
 			// TODO fill this out later
 		}
 	}

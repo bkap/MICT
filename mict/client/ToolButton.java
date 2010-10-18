@@ -14,23 +14,23 @@ import java.awt.event.ActionEvent;
  *
  */
 public class ToolButton extends JToggleButton {
-	private Tool t;
-	private ClientState state;
-
 	private static final long serialVersionUID = -5088345052860020236L;
 
 	public ToolButton(Tool t, ClientState state) {
-		super();
 		if(t.getIcon() != null) {
-			this.setIcon(new ImageIcon(t.getIcon()));
+			setIcon(new ImageIcon(t.getIcon()));
 		} else {
-			this.setText(t.getToolName());
+			setText(t.getToolName());
 		}
 		this.t = t;
 		this.state = state;
 		this.setToolTipText(t.getTooltip());
 		this.addActionListener(new ToolListener());
 	}
+
+	private Tool t;
+	private ClientState state;
+
 	public Tool getTool() {
 		return t;
 	}

@@ -6,7 +6,7 @@ import java.io.*;
 public class ClientConnection extends Thread {
 	private static int DEFAULT_PORT = 56234;
 
-	public ClientConnection(String server, int port, Client parent) {
+	public ClientConnection(String server, int port, String username, String passwd, Client parent) {
 		this.controller = controller;
 		this.serverport = port;
 		this.parent = parent;
@@ -15,19 +15,17 @@ public class ClientConnection extends Thread {
 			waiter = (SSLSocket)sockfactory.createSocket(server, port);
 			out = new PrintWriter(new OutputStreamWriter(waiter.getOutputStream()));
 			in = new BufferedReader(new InputStreamReader(waiter.getInputStream()));
+			out.println(username + ' ' + passwd);
 		} catch(IOException e) {
-			System.err.println("Could not open connection to server: " + e.getMessage());
+			System.err.println("Could not open connection to server: ");
+			e.printStackTrace(err);
 		}
 		setDaemon(true);
 		
 	}
 
-	public ClientConnection(String server) {
-		this(server, DEFAULT_PORT, null);
-	}
-
-	public void draw(String tool, String data) {
-		// TODO implement this method
+	public ClientConnection(String server, String username, String passwd, Client parent) {
+		this(server, DEFAULT_PORT, username, passwd, parent);
 	}
 
 	private Object controller;
@@ -39,7 +37,6 @@ public class ClientConnection extends Thread {
 	
 	public void run() {
 		// DO WORK SON
-		// send username + ' ' + password + '\n'
 		String buffer = "";
 		String action = "";
 		while(true) {
@@ -77,10 +74,14 @@ public class ClientConnection extends Thread {
 				long y = Long.parseLong(coords.substring(index+1));
 				ByteArrayImputStream in = new ByteArrayInputStream(phrase.getBytes());
 				BufferedImage img = ImangeIO.read(new EscapingInputStream(in));
-				// TODO ask ben for correct way to draw this to the canvas
+				parent.
 			}
 			// TODO fill this out later
 		}
+	}
+
+	public void requestCanvasRect(long x, long y, long width, long height) {
+		out.println("imgrect " + x + '.' + y + '.' + width + '.' + height);
 	}
 
 	public void close() {
@@ -93,7 +94,8 @@ public class ClientConnection extends Thread {
 			// These aren't the droids you're looking for
 		}
 	}
-	public void sendConnection(String toolID, String message) {
-	
+
+	public void draw(String tool, String data) {
+		// TODO implement this method
 	}
 }
