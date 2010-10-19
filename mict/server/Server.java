@@ -6,7 +6,7 @@ import java.util.*;
 
 public class Server extends Thread {
 	public static void main(String[] args) {
-		new Server(null).start();
+		new Server(args).start();
 	}
 
 	public Server(String[] options) { // todo pass a configuration set based on args
@@ -15,11 +15,11 @@ public class Server extends Thread {
 		// set config options from parameters
 		// read user information
 		// load whatever parts of canvas need to be loaded
-		String connstring = "";
+		String connstring = "jdbc:postgresql:mict";
 		String dbusername = "mict";
 		String dbpasswd = PrivateTemporaryConfigurationClass.dbpasswd; // Sorry, github.
 		DatabaseLayer database = new DatabaseLayer(connstring, dbusername, dbpasswd);
-		canvas = new CanvasManager(database);
+		canvas = new CanvasManager(database, this);
 
 		// Basically, do the crap that needs to be done before beginning to accept users.
 		int serverport = 56324;
@@ -49,20 +49,22 @@ public class Server extends Thread {
 				w.start();
 			}
 		} catch(IOException e) {
-			System.out.println("Error in main loop: " + e.getMessage());
+			System.out.println("Error in main loop:");
+			e.printStackTrace(System.err);
 		}
 	}
 
-	public List<Waiter> getUsers() {
-		return users.clone();
+	public Waiter[] getUsers() {
+		return (Waiter[])clients.toArray();
 	}
 
 	public CanvasManager getCanvas() {
 		return canvas;
 	}
 
-	private PermissionSet authenticate(String username, String password) {
+	public Object /*PermissionSet*/ authenticate(String username, String password) {
 		// todo
+		return null;
 	}
 
 	public static void stopServer() {

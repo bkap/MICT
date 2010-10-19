@@ -1,37 +1,44 @@
 package mict.server;
-import java.util.HashMap;
-import java.awt.Point;
 
-public class CanvasManager {
+import java.awt.*;
+import java.awt.image.*;
+import java.util.*;
+import java.util.List;
+
+import mict.tools.*;
+
+public class CanvasManager implements ImageObserver {
 	public CanvasManager(DatabaseLayer database, Server parent) {
 		this.database = database;
 		this.parent = parent;
 	}
 
-	private server parent;
+	private Server parent;
 	private DatabaseLayer database;
 	private ToolManager tools;
 	private HashMap<Point, Chunk> cache = new HashMap<Point, Chunk>();
 
-	public HistoryLayer draw(long x, long y, String tool, String data, Waiter user) {
+	public Object /*HistoryLayer*/ draw(long x, long y, String tool, String data, Waiter user) {
 		Tool t = tools.getToolByID(tool);
 		if(t == null) {
 			// TODO COMPLAIN
-			return;	
+			return null;	
 		}
-		int[] area = Chunk.getAffectedChunks(t.getAffectedArea(data));
+		long[] rect = t.getAffectedArea(data);
+		int[] area = Chunk.getAffectedChunks(rect);
 		for(int i = area[0]; i < area[2]; i++) {
 			for(int j = area[1]; j < area[3]; j++) {
-				Graphics g = getChunk(i, j).getGraphics(x, y);
+				Graphics2D g = getChunk(i, j).getGraphics(x, y);
 				t.draw(data, g);
 			}
 		}
-		List<Waiter> users = parent.getUsers();
+		Waiter[] users = parent.getUsers();
 		for(Waiter u : users) {
-			if(!u.intersects(area)) continue;
+			if(!u.intersects(rect)) continue;
 			if(u == user) continue;
 			u.sendCanvasChange(x, y, tool, data);
 		}
+		return null;
 	}
 
 	public Chunk getChunk(int x, int y) {
@@ -41,8 +48,33 @@ public class CanvasManager {
 	}
 
 	private Chunk load(int x, int y) {
-		Chunk c = database.get(x, y);
-		cache.add(new Point(x, y), c);
+		Chunk c = database.getChunk(x, y);
+		cache.put(new Point(x, y), c);
 		// TODO if we need to remove an old chunk, do it here
+		return c;
+	}
+
+	public BufferedImage getCanvasRect(long x, long y, long width, long height) {
+		BufferedImage img = new BufferedImage((int)width, (int)height, BufferedImage.TYPE_INT_ARGB);
+		int[] area = Chunk.getAffectedChunks(x, y, width, height);
+		Graphics g = img.getGraphics();
+		for(int i = area[0]; i < area[2]; i++) {
+			for(int j = area[1]; j < area[3]; j++) {
+				Image tile = database.getChunk(i, j).getImage();
+				g.drawImage(
+					tile,
+					(int)(i * Chunk.getWidth() - x),
+					(int)(j * Chunk.getHeight() - y),
+					this
+				);
+			}
+		}
+		// do I have to wait? probably. ick.
+		return img;
+	}
+
+	public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
+		// if there is more intelligent behavior than this, X.
+		return false;
 	}
 }

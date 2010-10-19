@@ -1,12 +1,9 @@
 package mict.server;
 
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
-import java.io.Serializable;
+import java.awt.*;
+import java.awt.image.*;
 
-public class Chunk implements ImageObserver, Serializable {
+public class Chunk implements ImageObserver {
 	public static final int WIDTH = 1024;
 	public static final int HEIGHT = 1024;
 
@@ -19,14 +16,14 @@ public class Chunk implements ImageObserver, Serializable {
 	}
 
 	public static int[] getAffectedChunks(long x, long y, long w, long h) {
-		int left = (x - getWidth() + 1) / getWidth();
-		int top = (y - getHeight() + 1) / getHeight();
-		int right = left + (w + getWidth() - 1) / getWidth();
-		int bottom = top + (h + getHeight() - 1) / getHeight();
+		int left = (int)(x - getWidth() + 1) / getWidth();
+		int top = (int)(y - getHeight() + 1) / getHeight();
+		int right = left + (int)(w + getWidth() - 1) / getWidth();
+		int bottom = top + (int)(h + getHeight() - 1) / getHeight();
 		return new int[] {left, top, right, bottom};
 	}
 
-	public static int[] getAffectedChunks(int[] rect) {
+	public static int[] getAffectedChunks(long[] rect) {
 		return getAffectedChunks(rect[0], rect[1], rect[2], rect[3]);
 	}
 
@@ -63,10 +60,9 @@ public class Chunk implements ImageObserver, Serializable {
 
 	/** returns the graphics context for the internal image representation, translated for tiling correction
 	 */
-	public Graphics getGraphics(long userx, long usery) {
-		Graphics c =  img.getGraphics();
-		c.translate(userx + x * getWidth()); // TODO PERMUTE
-		c.translate(usery + y * getHeight()); // TODO PERMUTE
+	public Graphics2D getGraphics(long userx, long usery) {
+		Graphics2D c =  (Graphics2D)img.getGraphics();
+		c.translate((int)(userx + x * getWidth()), (int)(usery + y * getHeight())); // TODO PERMUTE
 		return c;
 	}
 

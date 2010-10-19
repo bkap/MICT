@@ -3,7 +3,7 @@ package mict.networking;
 import java.io.*;
 
 public class EscapingOutputStream extends FilterOutputStream {
-	public EscapingOutputStream(Outputstream out) {
+	public EscapingOutputStream(OutputStream out) {
 		super(out);
 	}
 
