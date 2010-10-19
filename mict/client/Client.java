@@ -36,6 +36,8 @@ public class Client extends JApplet {
 		//JythonBridge.initialize();
 		state.canvas = canvas;
 		canvas.setSize(300, 300);
+		canvas.setCanvas(new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_ARGB));
+		canvas.setArtifactCanvas(new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_ARGB));
 		canvas.setPreferredSize(canvas.getSize());
 		Box b = javax.swing.Box.createHorizontalBox();
 		ToolManager t = new ToolManager(state);

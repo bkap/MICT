@@ -14,8 +14,6 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 
 	public Canvas(Client parent) {
 		this.parent = parent;
-		setCanvas(new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB));
-		setArtifactCanvas(new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB));
 		addMouseListener(this);
 		addMouseMotionListener(this);
 	}
