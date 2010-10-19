@@ -56,7 +56,11 @@ public class Server extends Thread {
 	}
 
 	public Waiter[] getUsers() {
-		return (Waiter[])clients.toArray();
+		Waiter[] users = new Waiter[clients.size()];
+		for(int i = 0; i < users.length; i++) {
+			users[i] = clients.get(i);
+		}
+		return users;
 	}
 
 	public CanvasManager getCanvas() {
