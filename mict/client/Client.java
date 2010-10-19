@@ -37,9 +37,6 @@ public class Client extends JApplet {
 		state.canvas = canvas;
 		canvas.setSize(300, 300);
 		canvas.setPreferredSize(canvas.getSize());
-		CanvasObserver obs = new CanvasObserver(state);
-		canvas.addMouseListener(obs);
-		canvas.addMouseMotionListener(obs);
 		Box b = javax.swing.Box.createHorizontalBox();
 		ToolManager t = new ToolManager(state);
 		toolbox = new ToolBox(state, t);
@@ -59,9 +56,9 @@ public class Client extends JApplet {
 	 */
 	public void start() {
 		String servername = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
-		if(servername == null) servername = localhost;
+		if(servername == null) servername = "localhost";
 		state.socket = new ClientConnection(servername, "username", "password", this);
-		state.socket.requestCanvasRect(canvas.getX(), canvas.getY(), canvas.getWidth(), canvas.getHeight());
+		state.socket.requestCanvasRect(canvas.getUserX(), canvas.getUserY(), canvas.getWidth(), canvas.getHeight());
 	}
 
 	public ClientState getClientState() {
@@ -78,7 +75,11 @@ public class Client extends JApplet {
 		});
 	}*/
 
-	public Graphics getServerGraphics() {
+	public Canvas getCanvas() {
+		return canvas;
+	}
+
+	public Graphics2D getCanvasGraphics() {
 		return canvas.getCanvasGraphics();
 	}
 }

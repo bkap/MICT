@@ -1,5 +1,7 @@
 package mict.networking;
 
+import java.io.*;
+
 public class EscapingInputStream extends FilterInputStream {
 	public EscapingInputStream(InputStream in) {
 		super(in);
@@ -20,7 +22,7 @@ public class EscapingInputStream extends FilterInputStream {
 		while(next < len) {
 			int read = read();
 			if(read < 0) break;
-			b[next++] = read;
+			b[next++] = (byte)read;
 		}
 		if(next == off) return -1;
 		return next - off;

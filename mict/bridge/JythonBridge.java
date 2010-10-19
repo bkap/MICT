@@ -1,16 +1,16 @@
 package mict.bridge;
 
+import java.awt.Graphics;
+import java.util.List;
 import javax.swing.*;
 import javax.script.*;
 
 import org.python.core.Py;
 import org.python.core.PySystemState;
 
-import java.awt.Graphics;
-import java.util.List;
-
 import mict.client.ClientState;
 import mict.tools.Tool;
+
 public abstract class JythonBridge {
 	private static final String SCRIPT_NAME = "javabridge";
 	private static ScriptEngine jython = new ScriptEngineManager().getEngineByName("jython");

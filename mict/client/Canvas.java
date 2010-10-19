@@ -1,9 +1,9 @@
 package mict.client;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import javax.swing.JPanel;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.*;
+import javax.swing.*;
 
 public class Canvas extends JPanel implements MouseListener, MouseMotionListener {
 	private static final long serialVersionUID = 1L; // @Ben: do we really need this? I mean, Canvas isn't even Serializable.
@@ -14,8 +14,8 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 
 	public Canvas(Client parent) {
 		this.parent = parent;
-		setCanvas(new BufferedImage(width, height, BufferedImage.TYPE_ARGB));
-		setArtifactCanvas(new BufferedImage(width, height, BufferedImage.TYPE_ARGB));
+		setCanvas(new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB));
+		setArtifactCanvas(new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB));
 		addMouseListener(this);
 		addMouseMotionListener(this);
 	}
@@ -28,11 +28,11 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	private Graphics2D canvasGraphics;
 	private Graphics2D artifactsGraphics;
 
-	public long getX() {
+	public long getUserX() {
 		return x;
 	}
 
-	public long getY() {
+	public long getUserY() {
 		return y;
 	}
 
@@ -47,11 +47,11 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	}
 
 	public Graphics2D getCanvasGraphics() {
-		return canvasGraphics();
+		return canvasGraphics;
 	}
 
 	public Graphics2D getArtifactCanvasGraphics() {
-		return artifactsGraphics();
+		return artifactsGraphics;
 	}
 
 	public void paint(Graphics g) {

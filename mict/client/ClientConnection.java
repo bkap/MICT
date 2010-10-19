@@ -1,7 +1,11 @@
 package mict.client;
 
-import javax.net.ssl.*;
 import java.io.*;
+import java.awt.image.*;
+import javax.imageio.*;
+import javax.net.ssl.*;
+
+import mict.networking.*;
 
 public class ClientConnection extends Thread {
 	private static int DEFAULT_PORT = 56234;
@@ -18,10 +22,9 @@ public class ClientConnection extends Thread {
 			out.println(username + ' ' + passwd);
 		} catch(IOException e) {
 			System.err.println("Could not open connection to server: ");
-			e.printStackTrace(err);
+			e.printStackTrace(System.err);
 		}
 		setDaemon(true);
-		
 	}
 
 	public ClientConnection(String server, String username, String passwd, Client parent) {
@@ -68,13 +71,14 @@ public class ClientConnection extends Thread {
 			parent.getClientState().tools.getToolByID(action.substring(1)).draw(phrase, parent.getCanvasGraphics()); 
 		} else { // it's not a tool
 			if(action.startsWith("imgrect")) {
-				String coords = action.substring("imgrect".length);
+				String coords = action.substring("imgrect".length());
 				int index = coords.indexOf('.');
 				long x = Long.parseLong(coords.substring(0,index));
 				long y = Long.parseLong(coords.substring(index+1));
-				ByteArrayImputStream in = new ByteArrayInputStream(phrase.getBytes());
-				BufferedImage img = ImangeIO.read(new EscapingInputStream(in));
-				parent.
+				ByteArrayInputStream in = new ByteArrayInputStream(phrase.getBytes());
+				BufferedImage img = ImageIO.read(new EscapingInputStream(in));
+				Canvas c = parent.getCanvas();
+				c.getCanvasGraphics().drawImage(img, (int)(x - c.getUserX()), (int)(y - c.getUserY()), c);
 			}
 			// TODO fill this out later
 		}
