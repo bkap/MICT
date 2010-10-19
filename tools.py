@@ -164,22 +164,31 @@ class LineTool(Tool) :
 	def mouseHovered(self, locationOnScreen, g) :
 		return ""
 	def mouseDragged(self, locationOnScreen, g) :
-		x1 = min(self.start_point.x, locationOnScreen.x)
-		y1 = min(self.start_point.y, locationOnScreen.y)
-		x2 = max(self.start_point.x, locationOnScreen.x)
-		y2 = max(self.start_point.y, locationOnScreen.y)
-		g.drawLine(x1, y1, x2 - x1, y2 - y1)
+		x1 = self.start_point.x
+		y1 = self.start_point.y
+		x2 = locationOnScreen.x
+		y2 = locationOnScreen.y
+		g.setColor(self.client_state.selectedColor)
+		g.drawLine(x1, y1, x2, y2)
 		return ""
+	def _getmetadata(self) :
+		''' gets the color and the thickness (currently hardcoded to 1 since
+		that isn't implemented yet'''
+		
+		return "%d;%d" % (self.client_state.selectedColor.getRGB(), 1)
 	def mouseReleased(self, locationOnScreen, g) :
-		x1 = min(self.start_point.x, locationOnScreen.x)
-		y1 = min(self.start_point.y, locationOnScreen.y)
-		x2 = max(self.start_point.x, locationOnScreen.x)
-		y2 = max(self.start_point.y, locationOnScreen.y)
-		return "(%d,%d);(%d,%d) " % (x1, y1, x2 - x1, y2 - y1)
+		x1 = self.start_point.x
+		y1 = self.start_point.y
+		x2 = locationOnScreen.x
+		y2 = locationOnScreen.y
+		return self._getmetadata() + "|" + "(%d,%d);(%d,%d) " % (x1, y1, x2, y2)
 	def draw(self, s, g) :
 		if s == "" :
 			return
-		points = s.split(';')
+		metadata, points = s.split('|')
+		color, size = metadata.split(';')
+		color, size = int(color), int(size)
+		points = points.split(';')
 		match = point_re.match(points[0])
 		if match is None:
 			return
@@ -190,6 +199,7 @@ class LineTool(Tool) :
 			return
 		x2, y2 = match.groups()
 		x2, y2 = int(x2), int(y2)
+		g.setColor(Color(color))
 		g.drawLine(x1, y1, x2, y2)
 	def getAffectedArea(self, phrase) :
 		points = phrase.split(';')
