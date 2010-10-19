@@ -60,18 +60,20 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	public void mouseClicked(MouseEvent e) {} // DO NOT USE
 
 	public void mousePressed(MouseEvent e) {
-		// tool.mouseX, related
+		render(e, MOUSE_PRESSED);
 	}
 
 	public void mouseReleased(MouseEvent e) {
-		// tool.mouseX, related
+		render(e, MOUSE_RELEASED);
 	}
 
 	public void mouseEntered(MouseEvent e) {} // I don't think there's a use for this, but I could be wrong
 
 	public void mouseExited(MouseEvent e) {} // I don't think there's a use for this, but I could be wrong
 
-	public void mouseDragged(MouseEvent e) {}
+	public void mouseDragged(MouseEvent e) {
+		render(e, MOUSE_DRAGGED);
+	}
 
 	public void mouseMoved(MouseEvent e) {
 		render(e, MOUSE_HOVERED);
