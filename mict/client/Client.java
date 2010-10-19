@@ -77,6 +77,7 @@ public class Client extends JApplet {
 			}
 			canvas.setCanvas(b);
 		}
+		state.socket.start();
 	}
 
 	public ClientState getClientState() {

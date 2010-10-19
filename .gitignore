@@ -8,3 +8,5 @@ cachedir/*
 *.autosave
 PrivateTemporaryConfigurationClass.java
 RDETest.java
+.passwd*
+mictrdebasekeystore

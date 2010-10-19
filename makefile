@@ -1,9 +1,20 @@
-build:
-	javac -classpath /opt/mict/mict/:/opt/mict/mict/* -Xlint:unchecked mict/client/Client.java
-	javac -classpath /opt/mict/mict/:/opt/mict/mict/* -Xlint:unchecked mict/server/Server.java
+STORE = mictrdebasekeystore
+PASSWD = $(shell cat .passwd.mictrdebasekeystore)
+SSL_DEBUG = -Djava.protocol.handler.pkgs=com.sun.net.ssl.internal.www.protocol -Djavax.net.debug=ssl
+KEY_PASSWD = -Djavax.net.ssl.keyStorePassword=$(PASSWD)
+KEY_STORE = -Djavax.net.ssl.keyStore=$(STORE)
+TRUST_PASSWD = -Djavax.net.ssl.keyStorePassword=$(PASSWD)
+TRUST_STORE = -Djavax.net.ssl.trustStore=$(STORE)
+CLASSPATH = -classpath /opt/mict/mict/:/opt/mict/mict/*:/usr/share/java/*
+BUILD_OPTIONS = -Xlint:unchecked
+DEBUG = 
 
-run:	build
-	java -classpath /opt/mict/mict/:/opt/mict/mict/* mict.client.Client
+build:
+	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/client/Client.java
+	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/server/Server.java
 
 runserver:	build
-	java -classpath /opt/mict/mict/:/opt/mict/mict/*:/usr/share/java/* mict.server.Server
+	java $(CLASSPATH) $(KEY_STORE) $(KEY_PASSWD) $(DEBUG) mict.server.Server
+
+runclient:	build
+	java $(CLASSPATH) $(TRUST_STORE) $(TRUST_PASSWD) $(DEBUG) mict.client.Client
