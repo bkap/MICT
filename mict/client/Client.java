@@ -36,8 +36,6 @@ public class Client extends JApplet {
 		//JythonBridge.initialize();
 		state.canvas = canvas;
 		canvas.setSize(300, 300);
-		canvas.setCanvas(new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_ARGB));
-		canvas.setArtifactCanvas(new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_ARGB));
 		canvas.setPreferredSize(canvas.getSize());
 		Box b = javax.swing.Box.createHorizontalBox();
 		ToolManager t = new ToolManager(state);
@@ -58,9 +56,27 @@ public class Client extends JApplet {
 	 */
 	public void start() {
 		String servername = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
-		if(servername == null) servername = "localhost";
+		if(servername == null) servername = "";
 		state.socket = new ClientConnection(servername, "username", "password", this);
 		state.socket.requestCanvasRect(canvas.getUserX(), canvas.getUserY(), canvas.getWidth(), canvas.getHeight());
+		BufferedImage b = new BufferedImage(canvas.getWidth(), canvas.getHeight(),BufferedImage.TYPE_INT_ARGB);
+		canvas.setArtifactCanvas(b);
+		for(int x = 0; x < b.getWidth(); x++) {
+			for(int y = 0; y < b.getHeight(); y++) {
+				Color c = new Color(0,0,0,0);
+				b.setRGB(x, y, c.getRGB());
+			}
+		}
+		if(servername == "" ) {
+			b = new BufferedImage(canvas.getWidth(), canvas.getHeight(),BufferedImage.TYPE_INT_ARGB);
+			for(int x = 0; x < b.getWidth(); x++) {
+				for(int y = 0; y < b.getHeight(); y++) {
+					Color c = new Color(255,255,255,255);
+					b.setRGB(x, y, c.getRGB());
+				}
+			}
+			canvas.setCanvas(b);
+		}
 	}
 
 	public ClientState getClientState() {

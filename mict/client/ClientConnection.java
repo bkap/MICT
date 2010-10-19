@@ -14,6 +14,7 @@ public class ClientConnection extends Thread {
 		this.controller = controller;
 		this.serverport = port;
 		this.parent = parent;
+		if(server != "") {
 		try {
 			SSLSocketFactory sockfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
 			waiter = (SSLSocket)sockfactory.createSocket(server, port);
@@ -23,6 +24,7 @@ public class ClientConnection extends Thread {
 		} catch(IOException e) {
 			System.err.println("Could not open connection to server: ");
 			e.printStackTrace(System.err);
+		}
 		}
 		setDaemon(true);
 	}
@@ -42,6 +44,7 @@ public class ClientConnection extends Thread {
 		// DO WORK SON
 		String buffer = "";
 		String action = "";
+		if(in == null) { return; }
 		while(true) {
 			int read = -1;
 			try {
@@ -67,6 +70,7 @@ public class ClientConnection extends Thread {
 	}
 
 	private void dispatch(String action, String phrase) {
+		if(out == null) { return; }
 		if(action.startsWith(".")) { // it's a tool
 			parent.getClientState().tools.getToolByID(action.substring(1)).draw(phrase, parent.getCanvasGraphics()); 
 		} else { // it's not a tool
@@ -90,7 +94,9 @@ public class ClientConnection extends Thread {
 	}
 
 	public void requestCanvasRect(long x, long y, long width, long height) {
+		if(out != null) {
 		out.println("imgrect " + x + '.' + y + '.' + width + '.' + height);
+		}
 	}
 
 	public void close() {
