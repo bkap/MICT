@@ -8,7 +8,7 @@ import javax.net.ssl.*;
 import mict.networking.*;
 
 public class ClientConnection extends Thread {
-	private static int DEFAULT_PORT = 56234;
+	private static int DEFAULT_PORT = 56324;
 
 	public ClientConnection(String server, int port, String username, String passwd, Client parent) {
 		this.controller = controller;
@@ -40,6 +40,8 @@ public class ClientConnection extends Thread {
 	
 	public void run() {
 		// DO WORK SON
+		Canvas canvas = parent.getCanvas();
+		requestCanvasRect(canvas.getUserX(), canvas.getUserY(), canvas.getWidth(), canvas.getHeight());
 		String buffer = "";
 		String action = "";
 		while(true) {

@@ -9,3 +9,4 @@ cachedir/*
 PrivateTemporaryConfigurationClass.java
 RDETest.java
 .passwd*
+mictrdebasekeystore

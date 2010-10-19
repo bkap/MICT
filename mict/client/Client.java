@@ -60,7 +60,7 @@ public class Client extends JApplet {
 		String servername = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
 		if(servername == null) servername = "localhost";
 		state.socket = new ClientConnection(servername, "username", "password", this);
-		state.socket.requestCanvasRect(canvas.getUserX(), canvas.getUserY(), canvas.getWidth(), canvas.getHeight());
+		state.socket.start();
 	}
 
 	public ClientState getClientState() {
