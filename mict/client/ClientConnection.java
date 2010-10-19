@@ -93,6 +93,7 @@ public class ClientConnection extends Thread {
 	}
 
 	public void requestCanvasRect(long x, long y, long width, long height) {
+		System.out.println("asking for rectangle @(" + x + ',' + y + ") at " + width + " by " + height);
 		out.println("imgrect " + x + '.' + y + '.' + width + '.' + height);
 	}
 
@@ -108,6 +109,7 @@ public class ClientConnection extends Thread {
 	}
 
 	public void sendDraw(String tool, String data) {
+		System.out.println("Drawing! ." + tool + ' ' + data);
 		out.println('.' + tool + ' ' + data);
 	}
 }
