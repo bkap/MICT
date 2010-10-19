@@ -12,7 +12,7 @@ public class Waiter extends Thread {
 		this.patron = patron;
 		this.parent = parent;
 		ostream = patron.getOutputStream();
-		out = new PrintWriter(new OutputStreamWriter(ostream));
+		out = new PrintWriter(new OutputStreamWriter(ostream), true);
 		in = new BufferedReader(new InputStreamReader(patron.getInputStream()));
 		setDaemon(true);
 	}
@@ -83,7 +83,9 @@ public class Waiter extends Thread {
 	}
 
 	private void dispatch(String action, String phrase) {
+		System.out.println("Dispatching phrase: " + action + " " + phrase);
 		if(action.startsWith(".")) { // it's a tool
+			System.out.println("Drawing with tool " + action.substring(1));
 			/*history.add(*/parent.getCanvas().draw(x, y, action.substring(1), phrase, this); //);
 		} else { // it's not a tool
 			if(action.startsWith("imgrect")) {
@@ -96,10 +98,13 @@ public class Waiter extends Thread {
 				index = phrase.indexOf('.');
 				long w = Long.parseLong(phrase.substring(0,index));
 				long h = Long.parseLong(phrase.substring(index+1));
+				System.out.println("Stitching and sharing a rectangualr portion of the canvas @(" + x + ',' + y + ") at " + w + " by " + h);
 				sendCanvasRectangle(x, y, w, h);
+			} else {
+				System.out.println("Oops, that action doesn't exist.");
 			}
-			// TODO fill this out later
 		}
+		System.out.println();
 	}
 
 	/** checks to see if the given four-member long[] intersects with the user's viewing area
@@ -137,7 +142,8 @@ public class Waiter extends Thread {
 	}
 
 	public void sendCanvasChange(long x, long y, String tool, String data) {
-		out.println('.' + tool + '@' + x + ',' + y + ' ' + data);
+		System.out.println("Sending a change back to the user");
+		send('.' + tool + '@' + x + ',' + y, data);
 	}
 
 	protected void send(String type, String data) {
@@ -158,6 +164,7 @@ public class Waiter extends Thread {
 	}*/
 
 	protected void close() {
+		System.out.println("Client is leaving!");
 		parent.clients.remove(this);
 		try {
 			patron.close();
@@ -165,6 +172,7 @@ public class Waiter extends Thread {
 			out.close();
 		} catch(IOException e) {
 			// Nothing to see here, move along.
+			System.out.println("Nothing to see here, move along.");
 		}
 	}
 }

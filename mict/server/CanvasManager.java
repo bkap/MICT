@@ -15,10 +15,11 @@ public class CanvasManager implements ImageObserver {
 
 	private Server parent;
 	private DatabaseLayer database;
-	private ToolManager tools;
+	private ToolManager tools = new ToolManager();
 	private HashMap<Point, Chunk> cache = new HashMap<Point, Chunk>();
 
 	public Object /*HistoryLayer*/ draw(long x, long y, String tool, String data, Waiter user) {
+		System.out.println("CM: drawing a thing!");
 		Tool t = tools.getToolByID(tool);
 		if(t == null) {
 			// TODO COMPLAIN
@@ -55,6 +56,7 @@ public class CanvasManager implements ImageObserver {
 	}
 
 	public BufferedImage getCanvasRect(long x, long y, long width, long height) {
+		System.out.println("CM: Constructing a rectangular area of canvas to send to a user. How exciting!");
 		BufferedImage img = new BufferedImage((int)width, (int)height, BufferedImage.TYPE_INT_ARGB);
 		int[] area = Chunk.getAffectedChunks(x, y, width, height);
 		Graphics g = img.getGraphics();
@@ -75,6 +77,7 @@ public class CanvasManager implements ImageObserver {
 
 	public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
 		// if there is more intelligent behavior than this, X.
+		System.out.println("CM: imageupdate: img=" + img + " infoflags=" + infoflags + " @(" + x + ',' + y + ") at " + width + " by " + height);
 		return false;
 	}
 }

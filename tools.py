@@ -27,6 +27,7 @@ class PencilTool(Tool) :
 		if s == "" :
 			return
 		points = s.split(';')
+		print "tools.py: pencil.draw:", s
 		match = point_re.match(points[0])
 		x1, y1 = match.groups()
 		x1, y1 = int(x1), int(y1)
@@ -35,9 +36,7 @@ class PencilTool(Tool) :
 		x2, y2 = int(x2), int(y2)
 		g.drawLine(x1, y1, x2, y2)
 	def getAffectedArea(self, phrase) :
-		if s == "" :
-			return
-		points = s.split(';')
+		points = phrase.split(';')
 		match = point_re.match(points[0])
 		x1, y1 = match.groups()
 		x1, y1 = int(x1), int(y1)
@@ -92,9 +91,7 @@ class RectangleTool(Tool) :
 		x2, y2 = int(x2), int(y2)
 		g.drawRect(x1, y1, x2, y2)
 	def getAffectedArea(self, phrase) :
-		if s == "" :
-			return
-		points = s.split(';')
+		points = phrase.split(';')
 		match = point_re.match(points[0])
 		x1, y1 = match.groups()
 		x1, y1 = int(x1), int(y1)
@@ -149,9 +146,7 @@ class LineTool(Tool) :
 		x2, y2 = int(x2), int(y2)
 		g.drawLine(x1, y1, x2, y2)
 	def getAffectedArea(self, phrase) :
-		if s == "" :
-			return
-		points = s.split(';')
+		points = phrase.split(';')
 		match = point_re.match(points[0])
 		x1, y1 = match.groups()
 		x1, y1 = int(x1), int(y1)
@@ -206,9 +201,7 @@ class OvalTool(Tool) :
 		x2, y2 = int(x2), int(y2)
 		g.drawOval(x1, y1, x2, y2)
 	def getAffectedArea(self, phrase) :
-		if s == "" :
-			return
-		points = s.split(';')
+		points = phrase.split(';')
 		match = point_re.match(points[0])
 		x1, y1 = match.groups()
 		x1, y1 = int(x1), int(y1)

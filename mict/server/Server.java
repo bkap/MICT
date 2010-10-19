@@ -47,6 +47,7 @@ public class Server extends Thread {
 				Waiter w = new Waiter(sock, this);
 				clients.add(w);
 				w.start();
+				System.out.println("Got a client to connect!");
 			}
 		} catch(IOException e) {
 			System.out.println("Error in main loop:");
@@ -64,6 +65,7 @@ public class Server extends Thread {
 
 	public Object /*PermissionSet*/ authenticate(String username, String password) {
 		// todo
+		System.out.println("Authenticating user " + username + " with password " + password + ": success by default.");
 		return null;
 	}
 

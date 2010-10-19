@@ -17,7 +17,7 @@ public class ClientConnection extends Thread {
 		try {
 			SSLSocketFactory sockfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
 			waiter = (SSLSocket)sockfactory.createSocket(server, port);
-			out = new PrintWriter(new OutputStreamWriter(waiter.getOutputStream()));
+			out = new PrintWriter(new OutputStreamWriter(waiter.getOutputStream()), true);
 			in = new BufferedReader(new InputStreamReader(waiter.getInputStream()));
 			out.println(username + ' ' + passwd);
 		} catch(IOException e) {
@@ -69,6 +69,7 @@ public class ClientConnection extends Thread {
 	}
 
 	private void dispatch(String action, String phrase) {
+		System.out.println("Dispatching: " + action + ' ' + phrase);
 		if(action.startsWith(".")) { // it's a tool
 			parent.getClientState().tools.getToolByID(action.substring(1)).draw(phrase, parent.getCanvasGraphics()); 
 		} else { // it's not a tool
@@ -106,7 +107,7 @@ public class ClientConnection extends Thread {
 		}
 	}
 
-	public void draw(String tool, String data) {
-		// TODO implement this method
+	public void sendDraw(String tool, String data) {
+		out.println('.' + tool + ' ' + data);
 	}
 }

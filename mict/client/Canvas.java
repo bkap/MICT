@@ -25,6 +25,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	private BufferedImage artifacts;
 	private Graphics2D canvasGraphics;
 	private Graphics2D artifactsGraphics;
+	private boolean inside = false;
 
 	public long getUserX() {
 		return x;
@@ -67,9 +68,13 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		render(e, MOUSE_RELEASED);
 	}
 
-	public void mouseEntered(MouseEvent e) {} // I don't think there's a use for this, but I could be wrong
+	public void mouseEntered(MouseEvent e) {
+		inside = true;
+	}
 
-	public void mouseExited(MouseEvent e) {} // I don't think there's a use for this, but I could be wrong
+	public void mouseExited(MouseEvent e) {
+		inside = false;
+	}
 
 	public void mouseDragged(MouseEvent e) {
 		render(e, MOUSE_DRAGGED);
@@ -80,6 +85,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	}
 
 	public void render(MouseEvent e, int type) {
+		if(!inside) return;
 		ClientState state = parent.getClientState();
 		String phrase;
 		switch(type) {
@@ -98,7 +104,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		default:
 			return;
 		}
-		state.socket.draw(state.activeTool.getToolID(), phrase);
+		state.socket.sendDraw(state.activeTool.getToolID(), phrase);
 		state.activeTool.draw(phrase, canvasGraphics);
 	}
 }
