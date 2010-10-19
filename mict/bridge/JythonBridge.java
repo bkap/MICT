@@ -32,29 +32,28 @@ public abstract class JythonBridge {
 		engineSys.path.append(Py.newString((JythonBridge.class.getResource("pylib")).getPath()));
 		Py.setSystemState(engineSys);
 		jython = new ScriptEngineManager().getEngineByName("python");
-		
 	}
 
-    public static List<Tool> getToolList(ClientState s) {
-        try {
-        jython.eval("from " + SCRIPT_NAME + " import get_tools");
-        System.out.println("imported tools");
-        jython.put("state", s);
-        return (List<Tool>)jython.eval("get_tools(state)");
-        }catch(ScriptException e) 
-        {
-        	e.printStackTrace();
-            return new java.util.ArrayList<Tool>();
-        }
-    }
-    public static List<Tool> updateToolList() {
-        try {
-            jython.eval("import " + SCRIPT_NAME);
-            jython.eval(SCRIPT_NAME + ".reload_tools()");
-            return (List<Tool>)jython.get(SCRIPT_NAME + ".tools_list");
-        } catch(ScriptException e) {
-            return new java.util.ArrayList<Tool>();
-        }
-    }
+	public static List<Tool> getToolList(ClientState s) {
+		try {
+			jython.eval("from " + SCRIPT_NAME + " import get_tools");
+			System.out.println("imported tools");
+			jython.put("state", s);
+			return (List<Tool>)jython.eval("get_tools(state)");
+		} catch(ScriptException e) {
+			System.err.println("Script fails ate getting tool list:");
+			e.printStackTrace(System.err);
+			return new java.util.ArrayList<Tool>();
+		}
+	}
 
+	public static List<Tool> updateToolList() {
+		try {
+			jython.eval("import " + SCRIPT_NAME);
+			jython.eval(SCRIPT_NAME + ".reload_tools()");
+			return (List<Tool>)jython.get(SCRIPT_NAME + ".tools_list");
+		} catch(ScriptException e) {
+			return new java.util.ArrayList<Tool>();
+		}
+	}
 }

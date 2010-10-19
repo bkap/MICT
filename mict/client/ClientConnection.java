@@ -71,14 +71,19 @@ public class ClientConnection extends Thread {
 			parent.getClientState().tools.getToolByID(action.substring(1)).draw(phrase, parent.getCanvasGraphics()); 
 		} else { // it's not a tool
 			if(action.startsWith("imgrect")) {
-				String coords = action.substring("imgrect".length());
-				int index = coords.indexOf('.');
-				long x = Long.parseLong(coords.substring(0,index));
-				long y = Long.parseLong(coords.substring(index+1));
-				ByteArrayInputStream in = new ByteArrayInputStream(phrase.getBytes());
-				BufferedImage img = ImageIO.read(new EscapingInputStream(in));
-				Canvas c = parent.getCanvas();
-				c.getCanvasGraphics().drawImage(img, (int)(x - c.getUserX()), (int)(y - c.getUserY()), c);
+				try {
+					String coords = action.substring("imgrect".length());
+					int index = coords.indexOf('.');
+					long x = Long.parseLong(coords.substring(0,index));
+					long y = Long.parseLong(coords.substring(index+1));
+					ByteArrayInputStream in = new ByteArrayInputStream(phrase.getBytes());
+					BufferedImage img = ImageIO.read(new EscapingInputStream(in));
+					Canvas c = parent.getCanvas();
+					c.getCanvasGraphics().drawImage(img, (int)(x - c.getUserX()), (int)(y - c.getUserY()), c);
+				} catch(IOException e) {
+					System.err.println("Wow, that really should never have happened:");
+					e.printStackTrace(System.err);
+				}
 			}
 			// TODO fill this out later
 		}
