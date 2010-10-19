@@ -95,25 +95,31 @@ class RectangleTool(Tool) :
 		y1 = min(self.start_point.y, locationOnScreen.y)
 		x2 = max(self.start_point.x, locationOnScreen.x)
 		y2 = max(self.start_point.y, locationOnScreen.y)
-		g.drawRect(x1, y1, x2 - x1, y2 - y1)
+		g.setColor(self.client_state.selectedColor)
+		g.fillRect(x1, y1, x2 - x1, y2 - y1)
 		return ""
 	def mouseReleased(self, locationOnScreen, g) :
 		x1 = min(self.start_point.x, locationOnScreen.x)
 		y1 = min(self.start_point.y, locationOnScreen.y)
 		x2 = max(self.start_point.x, locationOnScreen.x)
 		y2 = max(self.start_point.y, locationOnScreen.y)
-		return "(%d,%d);(%d,%d) " % (x1, y1, x2 - x1, y2 - y1)
+		return self._getmetadata() + "|" + "(%d,%d);(%d,%d) " % (x1, y1, x2 - x1, y2 - y1)
+	def _getmetadata(self) :
+		return "%d" % self.client_state.selectedColor.getRGB()
+	
 	def draw(self, s, g) :
 		if s == "" :
 			return
-		points = s.split(';')
+		metadata, points = s.split('|')
+		points = points.split(';')
+		g.setColor(Color(int(metadata)))
 		match = point_re.match(points[0])
 		x1, y1 = match.groups()
 		x1, y1 = int(x1), int(y1)
 		match = point_re.match(points[1])
 		x2, y2 = match.groups()
 		x2, y2 = int(x2), int(y2)
-		g.drawRect(x1, y1, x2, y2)
+		g.fillRect(x1, y1, x2, y2)
 	def getAffectedArea(self, phrase) :
 		points = phrase.split(';')
 		match = point_re.match(points[0])

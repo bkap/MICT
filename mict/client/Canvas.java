@@ -44,6 +44,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	public void setArtifactCanvas(BufferedImage canvas) {
 		this.artifacts = canvas;
 		artifactsGraphics = (Graphics2D)artifacts.getGraphics();
+		artifactsGraphics.setBackground(new Color(0,0,0,0));
 	}
 
 	public Graphics2D getCanvasGraphics() {
@@ -69,9 +70,11 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     }
 
 	public void mouseReleased(MouseEvent e) {
+		artifactsGraphics.clearRect(0, 0, getWidth(), getHeight());
 		ClientState state = parent.getClientState();
 	    String phrase = state.activeTool.mouseReleased(e.getPoint(), artifactsGraphics);
         canvasDraw(phrase);
+        this.paint(this.getGraphics());
     }
 
 
@@ -84,6 +87,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	}
 
 	public void mouseDragged(MouseEvent e) {
+		artifactsGraphics.clearRect(0, 0, getWidth(), getHeight());
 		ClientState state = parent.getClientState();
         String phrase = state.activeTool.mouseDragged(e.getPoint(), artifactsGraphics);
         canvasDraw(phrase);
@@ -96,7 +100,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
     private void canvasDraw(String phrase) {
 
 		ClientState state = parent.getClientState();
-        state.socket.draw(state.activeTool.getToolID(), phrase);
+        state.socket.sendDraw(state.activeTool.getToolID(), phrase);
         state.activeTool.draw(phrase, canvasGraphics);
     }
 	public void render(MouseEvent e, int type) {

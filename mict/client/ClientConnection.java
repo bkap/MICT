@@ -114,6 +114,7 @@ public class ClientConnection extends Thread {
 	}
 
 	public void sendDraw(String tool, String data) {
+		if(out == null) { return; }
 		out.println('.' + tool + ' ' + data);
 	}
 }
