@@ -1,48 +1,61 @@
 package mict.tools;
 import java.awt.Point;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
-public interface Tool{
-	/** this method will be called when the mouse is clicked on the canvas. It sets the initial 
+import java.io.Serializable;
+public interface Tool extends Serializable {
+
+	/** this method will be called when the mouse is clicked on the canvas.
 	 * 
 	 * @param locationOnScreen : the location on the canvas currently to update.
-	 * @param locationOnCanvas : the location on the canvas as a whole where the mouse was pressed
-	 * @param g : the graphics context in which to use the tool
+	 * @param g : the graphics context corresponding to the artifact layer of the canvas UI
 	 */
-	void mousePressed(Point locationOnScreen, Graphics g);
+	String mousePressed(Point locationOnScreen, Graphics2D g);
 	
 	/** this method will be called intermittently as the mouse is dragged across the screen during a mouse press.
 	 *  
 	 * @param locationOnScreen: the location of the mouse on the canvas currently
-	 * @param locationOnCanvas: the point in the overall canvas where the user is
-	 * @param g the graphics context in which the tool will operate
+	 * @param g : the graphics context corresponding to the artifact layer of the canvas UI
 	 */
-	void mouseMoved(Point locationOnScreen, Graphics g);
+	String mouseDragged(Point locationOnScreen, Graphics2D g);
 	
-	/**this method will be called once the mouse has been picked up. At this point, the tool should be prepared to contact the
-	 * server to update the canvas
+	/** this method will be called intermittently as the mouse is moved across the screen while no buttons are being pressed
+	 *  
+	 * @param locationOnScreen: the location of the mouse on the canvas currently
+	 * @param g : the graphics context corresponding to the artifact layer of the canvas UI
+	 */
+	String mouseHovered(Point locationOnScreen, Graphics2D g);
+	
+	/** this method will be called once the mouse has been picked up. At this point, the tool should be prepared to contact the server to update the canvas
 	 * @param locationOnScreen the location on the graphics context that the user is drawing on
-	 * @param locationOnCanvas the location on the canvas that the user is currently viewing.
-	 * @param g the graphics context to draw on
+	 * @param g : the graphics context corresponding to the artifact layer of the canvas UI
 	 */
-	void mouseReleased(Point locationOnScreen, Graphics g);
-	/**get a string representation of the tool's last action. 
-	 * 
-	 * @return a String to be sent across the network that will represent the tool's action
-	 */
-	String serialize();
-	/**given the serialized string of the tool (the string that is sent to the server), update the graphics context accordingly
+	String mouseReleased(Point locationOnScreen, Graphics2D g);
+
+	/** given the serialized string of the tool (the string that is sent to the server), update the graphics context accordingly
 	 * 
 	 * @param s the String containing the serialized form of this tool's action
 	 * @param g the graphics context to draw the data on
 	 */
-	void drawFromString(String s, Graphics g);
+	void draw(String s, Graphics2D g);
 	
-	Image getImage();
+	/** given an encoded draw action, return a rectangle (x, y, w, h) that covers entirely the area of canvas changed by the decoded action
+	 *
+	 * @param phrase a string containing raw data provided by the user's version of the Tool
+	 *
+	 * @return an array describing a rectangular area afftected by the given phrase. Takes form { long xleft, long ytop, long width, long height }
+	 */
+	long[] getAffectedArea(String phrase);
+
+	Image getIcon();
 	
 	String getTooltip();
 	
+	/** provides the human-readable name of the tool (e.g. for tooltexts)
+	 */
 	String getToolName();
 
-	int getToolID();
+	/** provides the internal name of the tool
+	 */
+	String getToolID();
 }

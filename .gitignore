@@ -5,3 +5,8 @@ cachedir/*
 *.toc
 *~
 *.swp
+*.autosave
+PrivateTemporaryConfigurationClass.java
+RDETest.java
+.passwd*
+mictrdebasekeystore

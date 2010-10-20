@@ -1,0 +1,40 @@
+    @org.junit.Test
+    public void test%(tool)sA() {
+        Tool t = manager.getToolByID("%(tool)s");
+        Tool t2 = manager2.getToolByID("%(tool)s");
+        Graphics clientGraphics = clientImage.getGraphics();
+        Graphics resultGraphics = resultImage.getGraphics();
+        String builder = t.mousePressed(locations[0], testGraphics);
+        t2.draw(builder,resultGraphics);
+        for(int i = 1; i < locations.length - 1; i++) {
+            t2.draw(t.mouseDragged(locations[i], testGraphics),resultGraphics);
+        }
+        builder = t.mouseReleased(locations[locations.length - 1],clientGraphics);
+        t2.draw(builder, resultGraphics);
+        for(int x = 0; x < clientImage.getWidth(); x++) {
+            for(int y = 0; y < clientImage.getHeight(); y++) {
+                Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
+            }
+        }
+    }
+
+    @Test
+    public void test%(tool)sB() {
+        Tool t = manager.getToolByID("%(tool)s");
+        Tool t2 = manager2.getToolByID("%(tool)s");
+        Graphics clientGraphics = clientImage.getGraphics();
+        Graphics resultGraphics = resultImage.getGraphics();
+        String builder = t.mousePressed(locations[0], testGraphics);
+        for(int i = 1; i < locations.length - 1; i++) {
+            t.mouseDragged(locations[i], testGraphics);
+        }
+        t.mouseReleased(locations[locations.length - 1],clientGraphics);
+        t2.draw(t.serialize(), resultGraphics);
+        
+        for(int x = 0; x < clientImage.getWidth(); x++) {
+            for(int y = 0; y < clientImage.getHeight(); y++) {
+                System.out.println(clientImage.getRGB(x,y));
+                Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
+            }
+        }
+    }
