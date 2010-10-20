@@ -1,5 +1,5 @@
-STORE = mictrdebasekeystore
-PASSWD = $(shell cat .passwd.mictrdebasekeystore)
+STORE = rdebasekeystore
+PASSWD = $(shell cat .passwd.rdebasekeystore)
 SSL_DEBUG = -Djava.protocol.handler.pkgs=com.sun.net.ssl.internal.www.protocol -Djavax.net.debug=ssl
 KEY_PASSWD = -Djavax.net.ssl.keyStorePassword=$(PASSWD)
 KEY_STORE = -Djavax.net.ssl.keyStore=$(STORE)

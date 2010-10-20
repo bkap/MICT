@@ -15,7 +15,7 @@ public class Server extends Thread {
 		// set config options from parameters
 		// read user information
 		// load whatever parts of canvas need to be loaded
-		String connstring = "jdbc:postgresql://rdebase.com/mict?ssl=true";
+		String connstring = "jdbc:postgresql://rdebase.com/mict?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory";
 		String dbusername = "mict";
 		String dbpasswd = PrivateTemporaryConfigurationClass.dbpasswd; // Sorry, github.
 		DatabaseLayer database = new DatabaseLayer(connstring, dbusername, dbpasswd);
@@ -27,7 +27,8 @@ public class Server extends Thread {
 			SSLServerSocketFactory servsockfactory = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
 			servsock = (SSLServerSocket)servsockfactory.createServerSocket(serverport);
 		} catch(IOException e) {
-			System.out.println("Error starting server: " + e.getMessage());
+			System.out.println("Error starting server:");
+			e.printStackTrace(System.err);
 		}
 	}
 
