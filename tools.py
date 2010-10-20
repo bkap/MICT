@@ -4,6 +4,63 @@ import re
 from java.awt.image import BufferedImage
 point_re = re.compile(r"\( *(\d+), *(\d+) *\) *")
 
+class PanTool(Tool) :
+	def __init__(self, clientState = None) :
+		self.client_state = clientState
+		self.start_point = None
+		self.makeImage()
+
+	def makeImage(self) :
+		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
+		g = self.image.getGraphics()
+		g.setColor(Color(0,0,0))
+		g.drawLine(16,0,16,32)
+		g.drawLine(0,16,32,16)
+		g.drawLine(16,0,10,6)
+		g.drawLine(16,0,22,6)
+		g.drawLine(0,16,6,10)
+		g.drawLine(0,16,6,22)
+		g.drawLine(16,32,10,26)
+		g.drawLine(16,32,22,26)
+		g.drawLine(32,16,26,10)
+		g.drawLine(32,16,26,22)
+
+	def mousePressed(self, locationOnScreen, g) :
+		self.start_point = locationOnScreen
+		return ""
+
+	def mouseHovered(self, locationOnScreen, g) :
+		return ""
+
+	def mouseDragged(self, locationOnScreen, g) :
+		x1 = self.start_point.x
+		y1 = self.start_point.y
+		x2 = locationOnScreen.x
+		y2 = locationOnScreen.y
+		return "(%d,%d)" % (x2-x1, y2-y1)
+
+	def mouseReleased(self, locationOnScreen, g) :
+		x1 = self.start_point.x
+		y1 = self.start_point.y
+		x2 = locationOnScreen.x
+		y2 = locationOnScreen.y
+		return "(%d,%d)" % (x2-x1, y2-y1)
+
+	def draw(self, s, g) :
+		return ""
+
+	def getIcon(self) :
+		return self.image
+
+	def getToolName(self) :
+		return "Pan"
+
+	def getTooltip(self) :
+		return "move to a new section of the canvas defined by the starting point and the point at which the mouse was released"
+
+	def getToolID(self) :
+		return 'pan'	
+
 class PencilTool(Tool) :
 	def __init__(self, clientState=None) :
 		self.client_state = clientState
@@ -112,6 +169,96 @@ class PencilTool(Tool) :
 		ay2 = max(y1, y2)
 		return [ax1, ay1, ax2 - ax1, ay2 - ay1]
 
+class LineTool(Tool) :
+	def __init__(self, clientState = None) :
+		self.client_state = clientState
+		self.start_point = None
+		self.makeImage()
+
+	def makeImage(self) :
+		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
+		g = self.image.getGraphics()
+		g.setColor(Color(0,0,0))
+		g.drawLine(0,0,32,32)
+
+	def mousePressed(self, locationOnScreen, g) :
+		self.start_point = locationOnScreen
+		return ""
+
+	def mouseHovered(self, locationOnScreen, g) :
+		return ""
+
+	def mouseDragged(self, locationOnScreen, g) :
+		x1 = self.start_point.x
+		y1 = self.start_point.y
+		x2 = locationOnScreen.x
+		y2 = locationOnScreen.y
+		g.setColor(self.client_state.selectedColor)
+		g.drawLine(x1, y1, x2, y2)
+		return ""
+
+	def _getmetadata(self) :
+		''' gets the color and the thickness (currently hardcoded to 1 since
+		that isn't implemented yet'''
+
+		return "%d;%d" % (self.client_state.selectedColor.getRGB(), 1)
+
+	def mouseReleased(self, locationOnScreen, g) :
+		x1 = self.start_point.x
+		y1 = self.start_point.y
+		x2 = locationOnScreen.x
+		y2 = locationOnScreen.y
+		return self._getmetadata() + "|" + "(%d,%d);(%d,%d) " % (x1, y1, x2, y2)
+
+	def draw(self, s, g) :
+		if s == "" :
+			return
+		metadata, points = s.split('|')
+		color, size = metadata.split(';')
+		color, size = int(color), int(size)
+		points = points.split(';')
+		match = point_re.match(points[0])
+		if match is None:
+			return
+		x1, y1 = match.groups()
+		x1, y1 = int(x1), int(y1)
+		match = point_re.match(points[1])
+		if match is None:
+			return
+		x2, y2 = match.groups()
+		x2, y2 = int(x2), int(y2)
+		g.setColor(Color(color))
+		g.drawLine(x1, y1, x2, y2)
+	def getAffectedArea(self, phrase) :
+		points = phrase.split('|')[1].split(';')
+		match = point_re.match(points[0])
+		if match is None:
+			return
+		x1, y1 = match.groups()
+		x1, y1 = int(x1), int(y1)
+		match = point_re.match(points[1])
+		if match is None:
+			return
+		x2, y2 = match.groups()
+		x2, y2 = int(x2), int(y2)
+		ax1 = min(x1, x2)
+		ay1 = min(y1, y2)
+		ax2 = max(x1, x2)
+		ay2 = max(y1, y2)
+		return [ax1, ay1, ax2 - ax1, ay2 - ay1]
+
+	def getIcon(self) :
+		return self.image
+
+	def getToolName(self) :
+		return "Line"
+
+	def getTooltip(self) :
+		return "draw a line from the point where you click to the point where\n you release the mouse"
+
+	def getToolID(self) :
+		return 'line'	
+
 class RectangleTool(Tool) :
 	def __init__(self, clientState = None) :
 		self.client_state = clientState
@@ -122,7 +269,7 @@ class RectangleTool(Tool) :
 		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
 		g = self.image.getGraphics()
 		g.setColor(Color(0,0,0))
-		g.drawRect(0,0,32,32)
+		g.drawRect(0,0,31,31)
 
 	def mousePressed(self, locationOnScreen, g) :
 		self.start_point = locationOnScreen
@@ -148,7 +295,7 @@ class RectangleTool(Tool) :
 		return self._getmetadata() + "|" + "(%d,%d);(%d,%d) " % (x1, y1, x2 - x1, y2 - y1)
 	def _getmetadata(self) :
 		return "%d" % self.client_state.selectedColor.getRGB()
-	
+
 	def draw(self, s, g) :
 		if s == "" :
 			return
@@ -196,7 +343,6 @@ class RectangleTool(Tool) :
 
 	def getToolID(self) :
 		return 'rect'   
-
 
 class FilledRectangleTool(Tool) :
 	def __init__(self, clientState = None) :
@@ -282,96 +428,6 @@ class FilledRectangleTool(Tool) :
 
 	def getToolID(self) :
 		return 'fillRect'   
-
-class LineTool(Tool) :
-	def __init__(self, clientState = None) :
-		self.client_state = clientState
-		self.start_point = None
-		self.makeImage()
-
-	def makeImage(self) :
-		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
-		g = self.image.getGraphics()
-		g.setColor(Color(0,0,0))
-		g.drawLine(0,0,32,32)
-
-	def mousePressed(self, locationOnScreen, g) :
-		self.start_point = locationOnScreen
-		return ""
-
-	def mouseHovered(self, locationOnScreen, g) :
-		return ""
-
-	def mouseDragged(self, locationOnScreen, g) :
-		x1 = self.start_point.x
-		y1 = self.start_point.y
-		x2 = locationOnScreen.x
-		y2 = locationOnScreen.y
-		g.setColor(self.client_state.selectedColor)
-		g.drawLine(x1, y1, x2, y2)
-		return ""
-
-	def _getmetadata(self) :
-		''' gets the color and the thickness (currently hardcoded to 1 since
-		that isn't implemented yet'''
-		
-		return "%d;%d" % (self.client_state.selectedColor.getRGB(), 1)
-
-	def mouseReleased(self, locationOnScreen, g) :
-		x1 = self.start_point.x
-		y1 = self.start_point.y
-		x2 = locationOnScreen.x
-		y2 = locationOnScreen.y
-		return self._getmetadata() + "|" + "(%d,%d);(%d,%d) " % (x1, y1, x2, y2)
-
-	def draw(self, s, g) :
-		if s == "" :
-			return
-		metadata, points = s.split('|')
-		color, size = metadata.split(';')
-		color, size = int(color), int(size)
-		points = points.split(';')
-		match = point_re.match(points[0])
-		if match is None:
-			return
-		x1, y1 = match.groups()
-		x1, y1 = int(x1), int(y1)
-		match = point_re.match(points[1])
-		if match is None:
-			return
-		x2, y2 = match.groups()
-		x2, y2 = int(x2), int(y2)
-		g.setColor(Color(color))
-		g.drawLine(x1, y1, x2, y2)
-	def getAffectedArea(self, phrase) :
-		points = phrase.split('|')[1].split(';')
-		match = point_re.match(points[0])
-		if match is None:
-			return
-		x1, y1 = match.groups()
-		x1, y1 = int(x1), int(y1)
-		match = point_re.match(points[1])
-		if match is None:
-			return
-		x2, y2 = match.groups()
-		x2, y2 = int(x2), int(y2)
-		ax1 = min(x1, x2)
-		ay1 = min(y1, y2)
-		ax2 = max(x1, x2)
-		ay2 = max(y1, y2)
-		return [ax1, ay1, ax2 - ax1, ay2 - ay1]
-
-	def getIcon(self) :
-		return self.image
-
-	def getToolName(self) :
-		return "Line"
-
-	def getTooltip(self) :
-		return "draw a line from the point where you click to the point where\n you release the mouse"
-
-	def getToolID(self) :
-		return 'line'	
 
 class FilledOvalTool(Tool) :
 	def __init__(self, clientState = None) :
@@ -545,53 +601,6 @@ class OvalTool(Tool) :
 	def getToolID(self) :
 		return 'oval'	
 
-class PanTool(Tool) :
-	def __init__(self, clientState = None) :
-		self.client_state = clientState
-		self.start_point = None
-		self.makeImage()
-
-	def makeImage(self) :
-		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
-		g = self.image.getGraphics()
-		g.setColor(Color(0,0,0))
-		g.drawLine(16,0,16,16)
-
-	def mousePressed(self, locationOnScreen, g) :
-		self.start_point = locationOnScreen
-		return ""
-
-	def mouseHovered(self, locationOnScreen, g) :
-		return ""
-
-	def mouseDragged(self, locationOnScreen, g) :
-		x1 = self.start_point.x
-		y1 = self.start_point.y
-		x2 = locationOnScreen.x
-		y2 = locationOnScreen.y
-		return "(%d,%d)" % (x2-x1, y2-y1)
-
-	def mouseReleased(self, locationOnScreen, g) :
-		x1 = self.start_point.x
-		y1 = self.start_point.y
-		x2 = locationOnScreen.x
-		y2 = locationOnScreen.y
-		return "(%d,%d)" % (x2-x1, y2-y1)
-
-	def draw(self, s, g) :
-		return ""
-
-	def getIcon(self) :
-		return self.image
-
-	def getToolName(self) :
-		return "Pan"
-
-	def getTooltip(self) :
-		return "move to a new section of the canvas defined by the starting point and the point at which the mouse was released"
-
-	def getToolID(self) :
-		return 'pan'	
 
 def _get_tools() :
 	#hacky way to get the list of tools
