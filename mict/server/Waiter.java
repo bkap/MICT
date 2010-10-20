@@ -88,8 +88,15 @@ public class Waiter extends Thread {
 	private void dispatch(String action, String phrase) {
 		System.out.println("Dispatching phrase: " + action + " " + phrase);
 		if(action.startsWith(".")) { // it's a tool
-			System.out.println("Drawing with tool " + action.substring(1));
-			/*history.add(*/parent.getCanvas().draw(x, y, action.substring(1), phrase, this); //);
+			String tool = action.substring(1);
+			if(tool.equals("pan")) {
+				int index = phrase.indexOf(',');
+				int dx = phrase.substring(0,index);
+				int dy = phrase.substring(index+1);
+				move(x + dx, y + dy);
+			} else {
+				/*history.add(*/parent.getCanvas().draw(x, y, tool, phrase, this); //);
+			}
 		} else { // it's not a tool
 			if(action.startsWith("imgrect")) {
 				int index = phrase.indexOf('.');

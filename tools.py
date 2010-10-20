@@ -49,7 +49,6 @@ class PencilTool(Tool) :
 		return ""
 
 	def draw(self, s, g) :
-		#TODO: need to redo this method to use the new scheme
 		if  s == "":
 			return
 		try :
@@ -569,17 +568,17 @@ class PanTool(Tool) :
 		y1 = self.start_point.y
 		x2 = locationOnScreen.x
 		y2 = locationOnScreen.y
-		return "(%d,%d)" % (x2-x1, y2-y1)
+		return "%d,%d" % (x2-x1, y2-y1)
 
 	def mouseReleased(self, locationOnScreen, g) :
 		x1 = self.start_point.x
 		y1 = self.start_point.y
 		x2 = locationOnScreen.x
 		y2 = locationOnScreen.y
-		return "(%d,%d)" % (x2-x1, y2-y1)
+		return "%d,%d" % (x2-x1, y2-y1)
 
 	def draw(self, s, g) :
-		return ""
+		return
 
 	def getIcon(self) :
 		return self.image
