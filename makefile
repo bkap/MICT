@@ -9,14 +9,21 @@ CLASSPATH = -classpath .:jython.jar:/usr/share/java/*
 BUILD_OPTIONS = -Xlint:unchecked
 DEBUG = 
 
-build: buildclient buildserver
+build:			buildclient buildserver
 	
-buildclient:
-	javac -classpath .:jython.jar $(BUILD_OPTIONS) mict/client/Client.java
-buildserver:
-	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/server/Server.java
-runserver:	build
+buildclient:	buildcommon
+	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/client/*.java
+
+buildserver:	buildcommon
+	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/server/*.java
+
+buildcommon:
+	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/networking/*.java
+	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/tools/*.java
+	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/bridge/*.java
+
+runserver:		build
 	java $(CLASSPATH) $(KEY_STORE) $(KEY_PASSWD) $(DEBUG) mict.server.Server
 
-runclient:	buildclient
+runclient:		buildclient
 	java $(CLASSPATH) $(TRUST_STORE) $(TRUST_PASSWD) $(DEBUG) mict.client.Client
