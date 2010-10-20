@@ -82,16 +82,19 @@ public class ClientConnection extends Thread {
 					int index = coords.indexOf('.');
 					long x = Long.parseLong(coords.substring(0,index));
 					long y = Long.parseLong(coords.substring(index+1));
+					System.out.println("Attempting to draw server-provided rectangle at @(" + x + ',' + y + ").");
 					ByteArrayInputStream in = new ByteArrayInputStream(phrase.getBytes());
 					BufferedImage img = ImageIO.read(new EscapingInputStream(in));
 					Canvas c = parent.getCanvas();
 					c.getCanvasGraphics().drawImage(img, (int)(x - c.getUserX()), (int)(y - c.getUserY()), c);
+					c.repaint();
 				} catch(IOException e) {
 					System.err.println("Wow, that really should never have happened:");
 					e.printStackTrace(System.err);
 				}
 			}
 			// TODO fill this out later
+			else System.out.println("nothing happened. Improper action string, could not be handled.");
 		}
 	}
 

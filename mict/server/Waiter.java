@@ -11,8 +11,7 @@ public class Waiter extends Thread {
 	public Waiter(SSLSocket patron, Server parent) throws IOException {
 		this.patron = patron;
 		this.parent = parent;
-		ostream = patron.getOutputStream();
-		out = new PrintWriter(new OutputStreamWriter(ostream), true);
+		out = new PrintWriter(patron.getOutputStream());
 		in = new BufferedReader(new InputStreamReader(patron.getInputStream()));
 		setDaemon(true);
 	}
@@ -20,7 +19,6 @@ public class Waiter extends Thread {
 	private SSLSocket patron;
 	private Server parent;
 	private PrintWriter out;
-	private OutputStream ostream; // this only exists for the sake of EscapingOutputStream, plz do not abuse
 	private BufferedReader in;
 	private long x = 0;
 	private long y = 0;
@@ -125,7 +123,7 @@ public class Waiter extends Thread {
 			BufferedImage img = parent.getCanvas().getCanvasRect(x, y, width, height);
 			out.print("imgrect" + x + '.' + y + " ");
 			out.flush();
-			ImageIO.write(img, "png", new EscapingOutputStream(ostream));
+			ImageIO.write(img, "png", new EscapingOutputStream(ostream)); // TODO create ostream as a bytearrayoutputstream, send bytes through properly
 			out.println();
 		} catch(IOException e) {
 			System.err.println("Bad operation while quilting a canvas patch:");
