@@ -15,16 +15,16 @@ public class ClientConnection extends Thread {
 		this.serverport = port;
 		this.parent = parent;
 		if(server != "") {
-		try {
-			SSLSocketFactory sockfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
-			waiter = (SSLSocket)sockfactory.createSocket(server, port);
-			out = new PrintWriter(new OutputStreamWriter(waiter.getOutputStream()), true);
-			in = new BufferedReader(new InputStreamReader(waiter.getInputStream()));
-			out.println(username + ' ' + passwd);
-		} catch(IOException e) {
-			System.err.println("Could not open connection to server: ");
-			e.printStackTrace(System.err);
-		}
+			try {
+				SSLSocketFactory sockfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
+				waiter = (SSLSocket)sockfactory.createSocket(server, port);
+				out = new PrintWriter(new OutputStreamWriter(waiter.getOutputStream()), true);
+				in = new BufferedReader(new InputStreamReader(waiter.getInputStream()));
+				out.println(username + ' ' + passwd);
+			} catch(IOException e) {
+				System.err.println("Could not open connection to server: ");
+				e.printStackTrace(System.err);
+			}
 		}
 		setDaemon(true);
 	}
@@ -43,7 +43,6 @@ public class ClientConnection extends Thread {
 	public void run() {
 		// DO WORK SON
 		Canvas canvas = parent.getCanvas();
-		requestCanvasRect(canvas.getUserX(), canvas.getUserY(), canvas.getWidth(), canvas.getHeight());
 		String buffer = "";
 		String action = "";
 		if(in == null) { return; }
@@ -98,8 +97,8 @@ public class ClientConnection extends Thread {
 
 	public void requestCanvasRect(long x, long y, long width, long height) {
 		if(out != null) {
-		System.out.println("asking for rectangle @(" + x + ',' + y + ") at " + width + " by " + height);
-		out.println("imgrect " + x + '.' + y + '.' + width + '.' + height);
+			System.out.println("asking for rectangle @(" + x + ',' + y + ") at " + width + " by " + height);
+			out.println("imgrect " + x + '.' + y + '.' + width + '.' + height);
 		}
 	}
 

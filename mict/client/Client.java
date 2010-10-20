@@ -59,24 +59,12 @@ public class Client extends JApplet {
 		if(servername == null) servername = "";
 		state.socket = new ClientConnection(servername, "username", "password", this);
 		state.socket.requestCanvasRect(canvas.getUserX(), canvas.getUserY(), canvas.getWidth(), canvas.getHeight());
-		BufferedImage b = new BufferedImage(canvas.getWidth(), canvas.getHeight(),BufferedImage.TYPE_INT_ARGB);
-		canvas.setArtifactCanvas(b);
-		for(int x = 0; x < b.getWidth(); x++) {
-			for(int y = 0; y < b.getHeight(); y++) {
-				Color c = new Color(0,0,0,0);
-				b.setRGB(x, y, c.getRGB());
-			}
-		}
-		if(servername == "" ) {
-			b = new BufferedImage(canvas.getWidth(), canvas.getHeight(),BufferedImage.TYPE_INT_ARGB);
-			for(int x = 0; x < b.getWidth(); x++) {
-				for(int y = 0; y < b.getHeight(); y++) {
-					Color c = new Color(255,255,255,255);
-					b.setRGB(x, y, c.getRGB());
-				}
-			}
-			canvas.setCanvas(b);
-		}
+		canvas.setCanvas(new BufferedImage(canvas.getWidth(), canvas.getHeight(),BufferedImage.TYPE_INT_ARGB));
+		canvas.setArtifactCanvas(new BufferedImage(canvas.getWidth(), canvas.getHeight(),BufferedImage.TYPE_INT_ARGB));
+		Color c = Color.WHITE;
+		Graphics g = canvas.getCanvasGraphics();
+		g.setColor(c);
+		g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 		state.socket.start();
 	}
 

@@ -34,7 +34,7 @@ class PencilTool(Tool) :
 		x0, y0 = self.prev_point.x, self.prev_point.y
 		x1,y1 = locationOnScreen.x, locationOnScreen.y
 		self.prev_point = locationOnScreen
-		return self._getmetadata() + "|" + "(%d, %d);(%d, %d) " % (x0,y0,x1,y1)
+		return self._getmetadata() + "|" + "(%d,%d);(%d,%d) " % (x0,y0,x1,y1)
 	def _getmetadata(self) :
 		return "%s" % self.client_state.selectedColor.getRGB()
 	def mouseReleased(self, locationOnScreen, g) :
@@ -45,7 +45,6 @@ class PencilTool(Tool) :
 		#TODO: need to redo this method to use the new scheme
 		if  s == "":
 			return
-		print "drawing %s" % s
 		try :
 			metadata, points = s.split('|')
 		except ValueError :
@@ -60,7 +59,6 @@ class PencilTool(Tool) :
 		
 		if len(points) > 1 :
 			#this better be true.
-			print "have points"
 			g.setColor(Color(color)) 
 			for point in points :
 				point_match = point_re.match(point)
@@ -72,7 +70,6 @@ class PencilTool(Tool) :
 				x,y = point_match.groups()
 				x,y = int(x), int(y)
 				if prev_point :
-					print "drawing line"
 					g.drawLine(prev_point[0], prev_point[1], x, y)
 				prev_point = (x,y)
 	def getIcon(self) :
@@ -84,14 +81,16 @@ class PencilTool(Tool) :
 	def getToolID(self) :
 		return "pencil"
 	def getAffectedArea(self, phrase) :
-		points = phrase.split(';')
+		points = phrase.split('|')[1].split(';')
 		match = point_re.match(points[0])
 		if match is None:
+			print "match is none. should not happen. ever."
 			return
 		x1, y1 = match.groups()
 		x1, y1 = int(x1), int(y1)
 		match = point_re.match(points[1])
 		if match is None:
+			print "match is none. should not happen. ever."
 			return
 		x2, y2 = match.groups()
 		x2, y2 = int(x2), int(y2)
@@ -145,7 +144,7 @@ class RectangleTool(Tool) :
 		x2, y2 = int(x2), int(y2)
 		g.fillRect(x1, y1, x2, y2)
 	def getAffectedArea(self, phrase) :
-		points = phrase.split(';')
+		points = phrase.split('|')[1].split(';')
 		match = point_re.match(points[0])
 		if match is None:
 			return
@@ -224,7 +223,7 @@ class LineTool(Tool) :
 		g.setColor(Color(color))
 		g.drawLine(x1, y1, x2, y2)
 	def getAffectedArea(self, phrase) :
-		points = phrase.split(';')
+		points = phrase.split('|')[1].split(';')
 		match = point_re.match(points[0])
 		if match is None:
 			return
@@ -293,7 +292,7 @@ class OvalTool(Tool) :
 		x2, y2 = int(x2), int(y2)
 		g.drawOval(x1, y1, x2, y2)
 	def getAffectedArea(self, phrase) :
-		points = phrase.split(';')
+		points = phrase.split('|')[1].split(';')
 		match = point_re.match(points[0])
 		if match is None:
 			return
