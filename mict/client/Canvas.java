@@ -56,7 +56,6 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	}
 
 	public void paint(Graphics g) {
-		System.out.println("painting");
 			g.drawImage(canvas, 0, 0, this);
 		g.drawImage(artifacts, 0, 0, this);
 	}
