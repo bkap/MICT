@@ -372,6 +372,7 @@ class LineTool(Tool) :
 
 	def getToolID(self) :
 		return 'line'	
+
 class FilledOvalTool(Tool) :
 	def __init__(self, clientState = None) :
 		self.client_state = clientState
@@ -543,6 +544,54 @@ class OvalTool(Tool) :
 
 	def getToolID(self) :
 		return 'oval'	
+
+class PanTool(Tool) :
+	def __init__(self, clientState = None) :
+		self.client_state = clientState
+		self.start_point = None
+		self.makeImage()
+
+	def makeImage(self) :
+		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
+		g = self.image.getGraphics()
+		g.setColor(Color(0,0,0))
+		g.drawLine(16,0,16,16)
+
+	def mousePressed(self, locationOnScreen, g) :
+		self.start_point = locationOnScreen
+		return ""
+
+	def mouseHovered(self, locationOnScreen, g) :
+		return ""
+
+	def mouseDragged(self, locationOnScreen, g) :
+		x1 = self.start_point.x
+		y1 = self.start_point.y
+		x2 = locationOnScreen.x
+		y2 = locationOnScreen.y
+		return "(%d,%d)" % (x2-x1, y2-y1)
+
+	def mouseReleased(self, locationOnScreen, g) :
+		x1 = self.start_point.x
+		y1 = self.start_point.y
+		x2 = locationOnScreen.x
+		y2 = locationOnScreen.y
+		return "(%d,%d)" % (x2-x1, y2-y1)
+
+	def draw(self, s, g) :
+		return ""
+
+	def getIcon(self) :
+		return self.image
+
+	def getToolName(self) :
+		return "Pan"
+
+	def getTooltip(self) :
+		return "move to a new section of the canvas defined by the starting point and the point at which the mouse was released"
+
+	def getToolID(self) :
+		return 'pan'	
 
 def _get_tools() :
 	#hacky way to get the list of tools
