@@ -25,7 +25,9 @@ public class CanvasManager implements ImageObserver {
 			// TODO COMPLAIN
 			return null;	
 		}
+		if(data.trim().equals("")) return null;
 		long[] rect = t.getAffectedArea(data);
+		System.out.println("rect=" + rect + " phrase=" + data);
 		int[] area = Chunk.getAffectedChunks(rect);
 		for(int i = area[0]; i < area[2]; i++) {
 			for(int j = area[1]; j < area[3]; j++) {

@@ -1,13 +1,29 @@
 from java.awt import Point, Color, Graphics, Image
 from mict.tools import Tool
 import re
-
+from java.awt.image import BufferedImage
 point_re = re.compile(r"\( *(\d+), *(\d+) *\) *")
 
 class PencilTool(Tool) :
 	def __init__(self, clientState=None) :
 		self.client_state = clientState
 		self.prev_point_draw = None
+		self.makeImage()
+	def makeImage(self) :
+		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
+		g = self.image.getGraphics()
+		g.setColor(Color(209,149,12))
+		g.drawLine(20,0,0,25)
+		g.drawLine(25,0,5,25)
+		g.drawLine(25,0,27,5)
+		g.drawLine(20,0,25,0)
+		g.drawLine(27,5,8,27)
+		g.setColor(Color(0,0,0))
+		g.drawLine(0,25,5,32)
+		g.drawLine(5,25,5,32)
+		g.drawLine(5,25,0,25)
+		g.drawLine(8,27,0,25)
+		g.drawLine(8,27,5,32)
 	def __repr__(self) :
 		return self.getToolName()
 	def mousePressed(self, locationOnScreen, g) :
@@ -18,7 +34,7 @@ class PencilTool(Tool) :
 		x0, y0 = self.prev_point.x, self.prev_point.y
 		x1,y1 = locationOnScreen.x, locationOnScreen.y
 		self.prev_point = locationOnScreen
-		return self._getmetadata() + "|" + "(%d, %d);(%d, %d) " % (x0,y0,x1,y1)
+		return self._getmetadata() + "|" + "(%d,%d);(%d,%d) " % (x0,y0,x1,y1)
 	def _getmetadata(self) :
 		return "%s" % self.client_state.selectedColor.getRGB()
 	def mouseReleased(self, locationOnScreen, g) :
@@ -29,7 +45,6 @@ class PencilTool(Tool) :
 		#TODO: need to redo this method to use the new scheme
 		if  s == "":
 			return
-		print "drawing %s" % s
 		try :
 			metadata, points = s.split('|')
 		except ValueError :
@@ -44,7 +59,6 @@ class PencilTool(Tool) :
 		
 		if len(points) > 1 :
 			#this better be true.
-			print "have points"
 			g.setColor(Color(color)) 
 			for point in points :
 				point_match = point_re.match(point)
@@ -56,11 +70,10 @@ class PencilTool(Tool) :
 				x,y = point_match.groups()
 				x,y = int(x), int(y)
 				if prev_point :
-					print "drawing line"
 					g.drawLine(prev_point[0], prev_point[1], x, y)
 				prev_point = (x,y)
-	def getImage(self) :
-		return None
+	def getIcon(self) :
+		return self.image
 	def getToolName(self) :
 		return "Pencil"
 	def getTooltip(self) :
@@ -68,14 +81,16 @@ class PencilTool(Tool) :
 	def getToolID(self) :
 		return "pencil"
 	def getAffectedArea(self, phrase) :
-		points = phrase.split(';')
+		points = phrase.split('|')[1].split(';')
 		match = point_re.match(points[0])
 		if match is None:
+			print "match is none. should not happen. ever."
 			return
 		x1, y1 = match.groups()
 		x1, y1 = int(x1), int(y1)
 		match = point_re.match(points[1])
 		if match is None:
+			print "match is none. should not happen. ever."
 			return
 		x2, y2 = match.groups()
 		x2, y2 = int(x2), int(y2)
@@ -89,6 +104,12 @@ class RectangleTool(Tool) :
 	def __init__(self, clientState = None) :
 		self.client_state = clientState
 		self.start_point = None
+		self.makeImage()
+	def makeImage(self) :
+		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
+		g = self.image.getGraphics()
+		g.setColor(Color(0,0,0))
+		g.fillRect(0,0,32,32)
 	def mousePressed(self, locationOnScreen, g) :
 		self.start_point = locationOnScreen
 		return ""
@@ -129,7 +150,7 @@ class RectangleTool(Tool) :
 		x2, y2 = int(x2), int(y2)
 		g.fillRect(x1, y1, x2, y2)
 	def getAffectedArea(self, phrase) :
-		points = phrase.split(';')
+		points = phrase.split('|')[1].split(';')
 		match = point_re.match(points[0])
 		if match is None:
 			return
@@ -146,7 +167,7 @@ class RectangleTool(Tool) :
 		ay2 = max(y1, y2)
 		return [ax1, ay1, ax2 - ax1, ay2 - ay1]
 	def getIcon(self) :
-		pass
+		return self.image
 	def getToolName(self) :
 		return "Rectangle"
 	def getTooltip(self) :
@@ -158,6 +179,12 @@ class LineTool(Tool) :
 	def __init__(self, clientState = None) :
 		self.client_state = clientState
 		self.start_point = None
+		self.makeImage()
+	def makeImage(self) :
+		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
+		g = self.image.getGraphics()
+		g.setColor(Color(0,0,0))
+		g.drawLine(0,0,32,32)
 	def mousePressed(self, locationOnScreen, g) :
 		self.start_point = locationOnScreen
 		return ""
@@ -202,7 +229,7 @@ class LineTool(Tool) :
 		g.setColor(Color(color))
 		g.drawLine(x1, y1, x2, y2)
 	def getAffectedArea(self, phrase) :
-		points = phrase.split(';')
+		points = phrase.split('|')[1].split(';')
 		match = point_re.match(points[0])
 		if match is None:
 			return
@@ -219,7 +246,7 @@ class LineTool(Tool) :
 		ay2 = max(y1, y2)
 		return [ax1, ay1, ax2 - ax1, ay2 - ay1]
 	def getIcon(self) :
-		pass
+		return self.image
 	def getToolName(self) :
 		return "Line"
 	def getTooltip(self) :
@@ -231,6 +258,12 @@ class OvalTool(Tool) :
 	def __init__(self, clientState = None) :
 		self.client_state = clientState
 		self.start_point = None
+		self.makeImage()
+	def makeImage(self) :
+		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
+		g = self.image.getGraphics()
+		g.setColor(Color(0,0,0))
+		g.drawOval(0,0,30,30)
 	def mousePressed(self, locationOnScreen, g) :
 		self.start_point = locationOnScreen
 		return ""
@@ -265,7 +298,7 @@ class OvalTool(Tool) :
 		x2, y2 = int(x2), int(y2)
 		g.drawOval(x1, y1, x2, y2)
 	def getAffectedArea(self, phrase) :
-		points = phrase.split(';')
+		points = phrase.split('|')[1].split(';')
 		match = point_re.match(points[0])
 		if match is None:
 			return
@@ -282,7 +315,7 @@ class OvalTool(Tool) :
 		ay2 = max(y1, y2)
 		return [ax1, ay1, ax2 - ax1, ay2 - ay1]
 	def getIcon(self) :
-		pass
+		return self.image
 	def getToolName(self) :
 		return "Oval"
 	def getTooltip(self) :
