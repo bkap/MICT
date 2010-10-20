@@ -104,6 +104,12 @@ class RectangleTool(Tool) :
 	def __init__(self, clientState = None) :
 		self.client_state = clientState
 		self.start_point = None
+		self.makeImage()
+	def makeImage(self) :
+		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
+		g = self.image.getGraphics()
+		g.setColor(Color(0,0,0))
+		g.fillRect(0,0,32,32)
 	def mousePressed(self, locationOnScreen, g) :
 		self.start_point = locationOnScreen
 		return ""
@@ -161,7 +167,7 @@ class RectangleTool(Tool) :
 		ay2 = max(y1, y2)
 		return [ax1, ay1, ax2 - ax1, ay2 - ay1]
 	def getIcon(self) :
-		pass
+		return self.image
 	def getToolName(self) :
 		return "Rectangle"
 	def getTooltip(self) :
