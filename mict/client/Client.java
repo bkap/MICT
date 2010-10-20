@@ -40,6 +40,7 @@ public class Client extends JApplet {
 		canvas.setPreferredSize(canvas.getSize());
 		Box b = javax.swing.Box.createHorizontalBox();
 		ToolManager t = new ToolManager(state);
+		state.tools = t;
 		toolbox = new ToolBox(state, t);
 		//b.add(toolbox);
 		//b.add(canvas);
