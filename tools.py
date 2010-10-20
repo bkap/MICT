@@ -64,21 +64,21 @@ class PencilTool(Tool) :
 
 		prev_point = None
 		
-		if len(points) > 1 :
-			#this better be true.
-			g.setColor(Color(color)) 
-			for point in points :
-				point_match = point_re.match(point)
-				if not point_match :
+		print "have points"
+		g.setColor(Color(color)) 
+		for point in points :
+			point_match = point_re.match(point)
+			if not point_match :
 					#this is an error, shouldn't happen. Figure out what to do
 					#we were sent bad data
-					print "no match"
-					return
-				x,y = point_match.groups()
-				x,y = int(x), int(y)
-				if prev_point :
-					g.drawLine(prev_point[0], prev_point[1], x, y)
-				prev_point = (x,y)
+				print "no match"
+				return
+			x,y = point_match.groups()
+			x,y = int(x), int(y)
+			if prev_point :
+				print "drawing line"
+				g.drawLine(prev_point[0], prev_point[1], x, y)
+			prev_point = (x,y)
 
 	def getIcon(self) :
 		return self.image
