@@ -37,8 +37,8 @@ public class CanvasManager implements ImageObserver {
 		}
 		Waiter[] users = parent.getUsers();
 		for(Waiter u : users) {
+			System.out.println("Sending to user " + u.getUserName() + "? " + (u.intersects(rect) ? "intersects" : "does not intersect"));
 			if(!u.intersects(rect)) continue;
-			if(u == user) continue;
 			u.sendCanvasChange(x, y, tool, data);
 		}
 		return null;
@@ -64,7 +64,7 @@ public class CanvasManager implements ImageObserver {
 		Graphics g = img.getGraphics();
 		for(int i = area[0]; i < area[2]; i++) {
 			for(int j = area[1]; j < area[3]; j++) {
-				Image tile = database.getChunk(i, j).getImage();
+				Image tile = getChunk(i, j).getImage();
 				g.drawImage(
 					tile,
 					(int)(i * Chunk.getWidth() - x),

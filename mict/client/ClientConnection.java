@@ -2,12 +2,14 @@ package mict.client;
 
 import java.io.*;
 import java.net.*;
+import java.awt.*;
 import java.awt.image.*;
 import javax.imageio.*;
 import javax.net.ssl.*;
 
 import mict.networking.*;
 import mict.test.*;
+import mict.tools.*;
 
 public class ClientConnection extends Thread {
 	private static int DEFAULT_PORT = 56324;
@@ -49,7 +51,6 @@ public class ClientConnection extends Thread {
 		Canvas canvas = parent.getCanvas();
 		String buffer = "";
 		String action = "";
-		System.out.println("STARTING CLIENT COMMUNICATIONS");
 		try {
 			while(true) {
 				int read = in.read();
@@ -64,7 +65,6 @@ public class ClientConnection extends Thread {
 					action = "";
 				} else {
 					buffer += (char)read;
-					System.out.print((char)read);
 				}
 			}
 		} catch(IOException e) {
@@ -74,9 +74,19 @@ public class ClientConnection extends Thread {
 	}
 
 	private void dispatch(String action, String phrase) {
-		System.out.println("Dispatching: " + action + ' ' + phrase);
 		if(action.startsWith(".")) { // it's a tool
-			parent.getClientState().tools.getToolByID(action.substring(1)).draw(phrase, parent.getCanvasGraphics()); 
+			System.out.println("Recieving draw from the server: " + action + " " + phrase);
+			ClientState state = parent.getClientState();
+			String t = action.substring(1);
+			int index = t.indexOf('@');
+			Tool tool = state.tools.getToolByID(t.substring(0, index));
+			t = t.substring(index+1);
+			index = t.indexOf(',');
+			int x = Integer.parseInt(t.substring(0,index));
+			int y = Integer.parseInt(t.substring(index+1));
+			Graphics2D g = (Graphics2D)parent.getCanvasGraphics().create();
+			g.translate(x, y);
+			tool.draw(phrase, g); 
 		} else { // it's not a tool
 			if(action.equals("imgrect")) {
 				try {
@@ -91,7 +101,6 @@ public class ClientConnection extends Thread {
 					Socket s = new Socket(server, port);
 					BufferedImage img = ImageIO.read(s.getInputStream());
 					s.close();
-					ImageTest.popup(img);
 					Canvas c = parent.getCanvas();
 					c.getCanvasGraphics().drawImage(img, (int)(x - c.getUserX()), (int)(y - c.getUserY()), c);
 					c.repaint();

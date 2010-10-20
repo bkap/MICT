@@ -168,4 +168,8 @@ public class Waiter extends Thread {
 			parent.getCanvas().saveAll();
 		}
 	}
+
+	public String getUserName() {
+		return username;
+	}
 }
