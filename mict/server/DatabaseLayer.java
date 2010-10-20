@@ -58,6 +58,7 @@ public class DatabaseLayer {
 
 	public void setChunk(Chunk c) {
 		try {
+			System.out.println("Saving chunk " + c + " ...");
 			read.setLong(1, c.getX());
 			read.setLong(2, c.getY());
 			ResultSet results = read.executeQuery();
@@ -68,7 +69,7 @@ public class DatabaseLayer {
 			ps.setLong(2, c.getX());
 			ps.setLong(3, c.getY());
 			ps.executeUpdate();
-			ps.close();
+			//ps.close();
 			out.close();
 		} catch(SQLException e) {
 			System.err.println("SQL is fail. Couldn't save chunk " + c + ':');

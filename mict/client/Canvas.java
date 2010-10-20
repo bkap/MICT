@@ -56,26 +56,9 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	}
 
 	public void paint(Graphics g) {
-			g.drawImage(canvas, 0, 0, this);
+		g.drawImage(canvas, 0, 0, this);
 		g.drawImage(artifacts, 0, 0, this);
 	}
-
-	public void mouseClicked(MouseEvent e) {} // DO NOT USE
-
-	public void mousePressed(MouseEvent e) {
-		ClientState state = parent.getClientState();
-	    String phrase = state.activeTool.mousePressed(e.getPoint(), artifactsGraphics);
-        canvasDraw(phrase); 
-    }
-
-	public void mouseReleased(MouseEvent e) {
-		artifactsGraphics.clearRect(0, 0, getWidth(), getHeight());
-		ClientState state = parent.getClientState();
-	    String phrase = state.activeTool.mouseReleased(e.getPoint(), artifactsGraphics);
-        canvasDraw(phrase);
-        this.paint(this.getGraphics());
-    }
-
 
 	public void mouseEntered(MouseEvent e) {
 		inside = true;
@@ -85,27 +68,29 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		inside = false;
 	}
 
+	public void mouseClicked(MouseEvent e) {} // DO NOT USE
+
+	public void mousePressed(MouseEvent e) {
+		render(e, MOUSE_PRESSED);
+    }
+
+	public void mouseReleased(MouseEvent e) {
+		render(e, MOUSE_RELEASED);
+    }
+
 	public void mouseDragged(MouseEvent e) {
-		artifactsGraphics.clearRect(0, 0, getWidth(), getHeight());
-		ClientState state = parent.getClientState();
-        String phrase = state.activeTool.mouseDragged(e.getPoint(), artifactsGraphics);
-        canvasDraw(phrase);
-        paint(this.getGraphics());
+		render(e, MOUSE_DRAGGED);
     }
 
 	public void mouseMoved(MouseEvent e) {
-	//	render(e, MOUSE_HOVERED);
+		render(e, MOUSE_HOVERED);
 	}
-    private void canvasDraw(String phrase) {
 
-		ClientState state = parent.getClientState();
-        state.socket.sendDraw(state.activeTool.getToolID(), phrase);
-        state.activeTool.draw(phrase, canvasGraphics);
-    }
 	public void render(MouseEvent e, int type) {
 		if(!inside) return;
 		ClientState state = parent.getClientState();
 		String phrase;
+		artifactsGraphics.clearRect(0, 0, getWidth(), getHeight());
 		switch(type) {
 		case MOUSE_PRESSED:
 			phrase = state.activeTool.mousePressed(e.getPoint(), artifactsGraphics);
@@ -122,7 +107,8 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		default:
 			return;
 		}
-		if(phrase.trim().equals("")) return;
+		repaint();
+		if(phrase == null || phrase.trim().equals("")) return;
 		state.socket.sendDraw(state.activeTool.getToolID(), phrase);
 		state.activeTool.draw(phrase, canvasGraphics);
 	}

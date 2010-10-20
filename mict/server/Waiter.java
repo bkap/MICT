@@ -11,14 +11,17 @@ public class Waiter extends Thread {
 	public Waiter(SSLSocket patron, Server parent) throws IOException {
 		this.patron = patron;
 		this.parent = parent;
-		out = new PrintWriter(patron.getOutputStream());
+		ostream = patron.getOutputStream();
+		out = new PrintWriter(ostream);
 		in = new BufferedReader(new InputStreamReader(patron.getInputStream()));
 		setDaemon(true);
 	}
 
+	private String username = null;
 	private SSLSocket patron;
 	private Server parent;
 	private PrintWriter out;
+	private OutputStream ostream;
 	private BufferedReader in;
 	private long x = 0;
 	private long y = 0;
@@ -53,6 +56,7 @@ public class Waiter extends Thread {
 				close();
 				return;
 			}*/
+			this.username = username;
 
 			// send tool set
 			// set prior x,y
@@ -123,7 +127,11 @@ public class Waiter extends Thread {
 			BufferedImage img = parent.getCanvas().getCanvasRect(x, y, width, height);
 			out.print("imgrect" + x + '.' + y + " ");
 			out.flush();
+			//ByteArayOutputStream ostream = new ByteArrayOutputStream();
 			ImageIO.write(img, "png", new EscapingOutputStream(ostream)); // TODO create ostream as a bytearrayoutputstream, send bytes through properly
+			ImageTest.popup(img);
+			//ostream.
+			//out.println("foo");
 			out.println();
 		} catch(IOException e) {
 			System.err.println("Bad operation while quilting a canvas patch:");
@@ -150,17 +158,6 @@ public class Waiter extends Thread {
 		out.println(type + ' ' + data);
 	}
 
-	/*public String escape(String s) {
-		String result = "";
-		for(int i = 0; i < s.length(); i++) {
-			char c = s.charAt(i);
-			if(c == '\\' || c == '[' || c == ']')
-				result += '\\';
-			result += c;
-		}
-		return result;
-	}*/
-
 	protected void close() {
 		System.out.println("Client is leaving!");
 		parent.clients.remove(this);
@@ -171,6 +168,9 @@ public class Waiter extends Thread {
 		} catch(IOException e) {
 			// Nothing to see here, move along.
 			System.out.println("Nothing to see here, move along.");
+		}
+		if(username != null) {
+			parent.getCanvas().saveAll();
 		}
 	}
 }

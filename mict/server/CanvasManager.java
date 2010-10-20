@@ -82,4 +82,12 @@ public class CanvasManager implements ImageObserver {
 		System.out.println("CM: imageupdate: img=" + img + " infoflags=" + infoflags + " @(" + x + ',' + y + ") at " + width + " by " + height);
 		return false;
 	}
+
+	public void saveAll() {
+		System.out.println("SAVING ALL CHUNKS");
+		// todo lock the cache somehow
+		for(Chunk c : cache.values()) {
+			database.setChunk(c);
+		}
+	}
 }
