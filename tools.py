@@ -1,13 +1,29 @@
 from java.awt import Point, Color, Graphics, Image
 from mict.tools import Tool
 import re
-
+from java.awt.image import BufferedImage
 point_re = re.compile(r"\( *(\d+), *(\d+) *\) *")
 
 class PencilTool(Tool) :
 	def __init__(self, clientState=None) :
 		self.client_state = clientState
 		self.prev_point_draw = None
+		self.makeImage()
+	def makeImage(self) :
+		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
+		g = self.image.getGraphics()
+		g.setColor(Color(209,149,12))
+		g.drawLine(20,0,0,25)
+		g.drawLine(25,0,5,25)
+		g.drawLine(25,0,27,5)
+		g.drawLine(20,0,25,0)
+		g.drawLine(27,5,8,27)
+		g.setColor(Color(0,0,0))
+		g.drawLine(0,25,5,32)
+		g.drawLine(5,25,5,32)
+		g.drawLine(5,25,0,25)
+		g.drawLine(8,27,0,25)
+		g.drawLine(8,27,5,32)
 	def __repr__(self) :
 		return self.getToolName()
 	def mousePressed(self, locationOnScreen, g) :
@@ -59,8 +75,8 @@ class PencilTool(Tool) :
 					print "drawing line"
 					g.drawLine(prev_point[0], prev_point[1], x, y)
 				prev_point = (x,y)
-	def getImage(self) :
-		return None
+	def getIcon(self) :
+		return self.image
 	def getToolName(self) :
 		return "Pencil"
 	def getTooltip(self) :
@@ -158,6 +174,12 @@ class LineTool(Tool) :
 	def __init__(self, clientState = None) :
 		self.client_state = clientState
 		self.start_point = None
+		self.makeImage()
+	def makeImage(self) :
+		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
+		g = self.image.getGraphics()
+		g.setColor(Color(0,0,0))
+		g.drawLine(0,0,32,32)
 	def mousePressed(self, locationOnScreen, g) :
 		self.start_point = locationOnScreen
 		return ""
@@ -219,7 +241,7 @@ class LineTool(Tool) :
 		ay2 = max(y1, y2)
 		return [ax1, ay1, ax2 - ax1, ay2 - ay1]
 	def getIcon(self) :
-		pass
+		return self.image
 	def getToolName(self) :
 		return "Line"
 	def getTooltip(self) :
@@ -231,6 +253,12 @@ class OvalTool(Tool) :
 	def __init__(self, clientState = None) :
 		self.client_state = clientState
 		self.start_point = None
+		self.makeImage()
+	def makeImage(self) :
+		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
+		g = self.image.getGraphics()
+		g.setColor(Color(0,0,0))
+		g.drawOval(0,0,30,30)
 	def mousePressed(self, locationOnScreen, g) :
 		self.start_point = locationOnScreen
 		return ""
@@ -282,7 +310,7 @@ class OvalTool(Tool) :
 		ay2 = max(y1, y2)
 		return [ax1, ay1, ax2 - ax1, ay2 - ay1]
 	def getIcon(self) :
-		pass
+		return self.image
 	def getToolName(self) :
 		return "Oval"
 	def getTooltip(self) :
