@@ -36,13 +36,17 @@ public class Client extends JApplet {
 		//JythonBridge.initialize();
 		state.canvas = canvas;
 		canvas.setSize(300, 300);
+		this.getContentPane().setLayout(new java.awt.BorderLayout());
 		canvas.setPreferredSize(canvas.getSize());
 		Box b = javax.swing.Box.createHorizontalBox();
 		ToolManager t = new ToolManager(state);
 		toolbox = new ToolBox(state, t);
-		b.add(toolbox);
-		b.add(canvas);
-		this.getContentPane().add(b);
+		//b.add(toolbox);
+		//b.add(canvas);
+		this.getContentPane().add(toolbox, java.awt.BorderLayout.WEST);
+		this.getContentPane().add(canvas, java.awt.BorderLayout.CENTER);
+		//this.getContentPane().add(b);
+		
 	}
 
 	private ClientState state = new ClientState();

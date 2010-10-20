@@ -22,7 +22,8 @@ public class ToolBox extends JPanel {
 
 	public ToolBox(ClientState state, ToolManager tools) {
 		this.state = state;
-		Box box = Box.createVerticalBox();
+		this.setPreferredSize(new java.awt.Dimension(100,300));
+		this.setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
 		ButtonGroup bg = new ButtonGroup();
 		for(Tool t : tools.getAllTools()) {
 			ToolButton b = new ToolButton(t, state);
@@ -36,12 +37,16 @@ public class ToolBox extends JPanel {
 		while(allButtons.hasMoreElements()) {
 			toolPanel.add(allButtons.nextElement());
 		}
-		box.add(toolPanel);
-		box.add(Box.createVerticalGlue());
+		this.add(toolPanel);
+		this.add(Box.createVerticalGlue());
 		colorButton = new JButton(new ColorIcon());
-		box.add(colorButton);
+		Box b = Box.createHorizontalBox();
+		b.add(Box.createHorizontalGlue());
+		b.add(colorButton);
+		b.add(Box.createHorizontalGlue());
+		this.add(b);
+		this.add(Box.createVerticalGlue());
 		colorButton.addActionListener(new ColorChooserListener());
-		add(box);
 	}
 
 	private Color activeColor = Color.BLACK;
