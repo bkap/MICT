@@ -87,6 +87,7 @@ public class ClientConnection extends Thread {
 			Graphics2D g = (Graphics2D)parent.getCanvasGraphics().create();
 			g.translate(x, y);
 			tool.draw(phrase, g); 
+			parent.getCanvas().repaint();
 		} else { // it's not a tool
 			if(action.equals("imgrect")) {
 				try {
