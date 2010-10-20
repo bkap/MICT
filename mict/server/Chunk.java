@@ -20,7 +20,8 @@ public class Chunk implements ImageObserver {
 		int top = (int)(y - getHeight() + 1) / getHeight();
 		int right = left + (int)(w + getWidth() - 1) / getWidth();
 		int bottom = top + (int)(h + getHeight() - 1) / getHeight();
-		return new int[] {left, top, right, bottom};
+		int[] result = new int[] {left, top, right, bottom};
+		return result;
 	}
 
 	public static int[] getAffectedChunks(long[] rect) {

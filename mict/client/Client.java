@@ -61,9 +61,7 @@ public class Client extends JApplet {
 		state.socket.requestCanvasRect(canvas.getUserX(), canvas.getUserY(), canvas.getWidth(), canvas.getHeight());
 		canvas.setCanvas(new BufferedImage(canvas.getWidth(), canvas.getHeight(),BufferedImage.TYPE_INT_ARGB));
 		canvas.setArtifactCanvas(new BufferedImage(canvas.getWidth(), canvas.getHeight(),BufferedImage.TYPE_INT_ARGB));
-		Color c;
-		if(servername == "" ) c = new Color(255, 255, 255, 255);
-		else c = new Color(0, 0, 0, 0);
+		Color c = Color.WHITE;
 		Graphics g = canvas.getCanvasGraphics();
 		g.setColor(c);
 		g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());

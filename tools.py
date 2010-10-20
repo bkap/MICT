@@ -18,7 +18,7 @@ class PencilTool(Tool) :
 		x0, y0 = self.prev_point.x, self.prev_point.y
 		x1,y1 = locationOnScreen.x, locationOnScreen.y
 		self.prev_point = locationOnScreen
-		return self._getmetadata() + "|" + "(%d, %d);(%d, %d) " % (x0,y0,x1,y1)
+		return self._getmetadata() + "|" + "(%d,%d);(%d,%d) " % (x0,y0,x1,y1)
 	def _getmetadata(self) :
 		return "%s" % self.client_state.selectedColor.getRGB()
 	def mouseReleased(self, locationOnScreen, g) :
@@ -68,9 +68,10 @@ class PencilTool(Tool) :
 	def getToolID(self) :
 		return "pencil"
 	def getAffectedArea(self, phrase) :
-		points = phrase.split(';')
+		points = phrase.split('|')[1].split(';')
 		match = point_re.match(points[0])
 		if match is None:
+			print "match is none. should not happen."
 			return
 		x1, y1 = match.groups()
 		x1, y1 = int(x1), int(y1)
