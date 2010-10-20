@@ -35,7 +35,7 @@ class PencilTool(Tool) :
 		return ""
 
 	def mouseDragged(self, locationOnScreen, g) :
-		x0, y0 = self.prev_point.x, self.prev_point.y
+		x0,y0 = self.prev_point.x, self.prev_point.y
 		x1,y1 = locationOnScreen.x, locationOnScreen.y
 		self.prev_point = locationOnScreen
 		return self._getmetadata() + "|" + "(%d,%d);(%d,%d) " % (x0,y0,x1,y1)

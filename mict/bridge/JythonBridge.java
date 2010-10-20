@@ -1,7 +1,7 @@
 package mict.bridge;
 
 import java.awt.Graphics;
-import java.util.List;
+import java.util.*;
 import javax.swing.*;
 import javax.script.*;
 
@@ -39,7 +39,12 @@ public abstract class JythonBridge {
 			jython.eval("from " + SCRIPT_NAME + " import get_tools");
 			System.out.println("imported tools");
 			jython.put("state", s);
-			return (List<Tool>)jython.eval("get_tools(state)");
+			List list = (List)jython.eval("get_tools(state)");
+			Vector<Tool> result = new Vector<Tool>();
+			for(Object o : list) {
+				result.add((Tool)o);
+			}
+			return result;
 		} catch(ScriptException e) {
 			System.err.println("Script fails ate getting tool list:");
 			e.printStackTrace(System.err);
@@ -51,7 +56,12 @@ public abstract class JythonBridge {
 		try {
 			jython.eval("import " + SCRIPT_NAME);
 			jython.eval(SCRIPT_NAME + ".reload_tools()");
-			return (List<Tool>)jython.get(SCRIPT_NAME + ".tools_list");
+			List list = (List)jython.get(SCRIPT_NAME + ".tools_list");
+			Vector<Tool> result = new Vector<Tool>();
+			for(Object o : list) {
+				result.add((Tool)o);
+			}
+			return result;
 		} catch(ScriptException e) {
 			return new java.util.ArrayList<Tool>();
 		}

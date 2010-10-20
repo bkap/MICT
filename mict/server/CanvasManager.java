@@ -90,4 +90,22 @@ public class CanvasManager implements ImageObserver {
 			database.setChunk(c);
 		}
 	}
+
+	class Autosaver extends Thread {
+		public Autosaver() {
+			setDaemon(true);
+		}
+
+		private int timeout = 5*60000;
+
+		public void run() {
+			while(true) {
+				while(parent.getUserCount() > 0) {
+					try { Thread.sleep(timeout); } catch(InterruptedException e) {}
+					saveAll();
+				}
+				try { Thread.sleep(60000); } catch(InterruptedException e) {}
+			}
+		}
+	}
 }

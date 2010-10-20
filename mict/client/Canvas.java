@@ -57,6 +57,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 
 	public void paint(Graphics g) {
 		g.drawImage(canvas, 0, 0, this);
+		if(!inside) return;
 		g.drawImage(artifacts, 0, 0, this);
 	}
 
@@ -111,5 +112,8 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		if(phrase == null || phrase.trim().equals("")) return;
 		state.socket.sendDraw(state.activeTool.getToolID(), phrase);
 		state.activeTool.draw(phrase, canvasGraphics);
+		if(state.activeTool.getToolID().equals("pan")) {
+			System.out.println("PANNING! DO SPECIAL STUFF!");
+		}
 	}
 }
