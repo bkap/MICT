@@ -11,16 +11,18 @@ public class Waiter extends Thread {
 	public Waiter(SSLSocket patron, Server parent) throws IOException {
 		this.patron = patron;
 		this.parent = parent;
-		ostream = patron.getOutputStream();
-		out = new PrintWriter(new OutputStreamWriter(ostream), true);
+		//ostream = patron.getOutputStream();
+		//out = new PrintWriter(ostream);
+		out = new PrintWriter(patron.getOutputStream(), true);
 		in = new BufferedReader(new InputStreamReader(patron.getInputStream()));
 		setDaemon(true);
 	}
 
+	private String username = null;
 	private SSLSocket patron;
 	private Server parent;
 	private PrintWriter out;
-	private OutputStream ostream; // this only exists for the sake of EscapingOutputStream, plz do not abuse
+	//private OutputStream ostream;
 	private BufferedReader in;
 	private long x = 0;
 	private long y = 0;
@@ -55,6 +57,7 @@ public class Waiter extends Thread {
 				close();
 				return;
 			}*/
+			this.username = username;
 
 			// send tool set
 			// set prior x,y
@@ -98,7 +101,7 @@ public class Waiter extends Thread {
 				index = phrase.indexOf('.');
 				long w = Long.parseLong(phrase.substring(0,index));
 				long h = Long.parseLong(phrase.substring(index+1));
-				System.out.println("Stitching and sharing a rectangualr portion of the canvas @(" + x + ',' + y + ") at " + w + " by " + h);
+				System.out.println("Stitching and sharing a rectangular portion of the canvas @(" + x + ',' + y + ") at " + w + " by " + h);
 				sendCanvasRectangle(x, y, w, h);
 			} else {
 				System.out.println("Oops, that action doesn't exist.");
@@ -123,10 +126,9 @@ public class Waiter extends Thread {
 	public void sendCanvasRectangle(long x, long y, long width, long height) {
 		try {
 			BufferedImage img = parent.getCanvas().getCanvasRect(x, y, width, height);
-			out.print("imgrect" + x + '.' + y + " ");
-			out.flush();
-			ImageIO.write(img, "png", new EscapingOutputStream(ostream));
-			out.println();
+			OneTimeServer ostream = parent.reservePort();
+			ImageIO.write(img, "png", ostream.getOutputStream()); // TODO create ostream as a bytearrayoutputstream, send bytes through properly
+			send("imgrect", "" + x + '.' + y + '@' + ostream.getPort());
 		} catch(IOException e) {
 			System.err.println("Bad operation while quilting a canvas patch:");
 			e.printStackTrace(System.err);
@@ -147,21 +149,9 @@ public class Waiter extends Thread {
 	}
 
 	protected void send(String type, String data) {
-		//out.println('[' + type + " " + escape(data) + ']');
-		//out.flush();
+		System.out.println('[' + type + " " + data + ']');
 		out.println(type + ' ' + data);
 	}
-
-	/*public String escape(String s) {
-		String result = "";
-		for(int i = 0; i < s.length(); i++) {
-			char c = s.charAt(i);
-			if(c == '\\' || c == '[' || c == ']')
-				result += '\\';
-			result += c;
-		}
-		return result;
-	}*/
 
 	protected void close() {
 		System.out.println("Client is leaving!");
@@ -173,6 +163,9 @@ public class Waiter extends Thread {
 		} catch(IOException e) {
 			// Nothing to see here, move along.
 			System.out.println("Nothing to see here, move along.");
+		}
+		if(username != null) {
+			parent.getCanvas().saveAll();
 		}
 	}
 }

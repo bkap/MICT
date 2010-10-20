@@ -1,16 +1,19 @@
 package mict.client;
 
 import java.io.*;
+import java.net.*;
 import java.awt.image.*;
 import javax.imageio.*;
 import javax.net.ssl.*;
 
 import mict.networking.*;
+import mict.test.*;
 
 public class ClientConnection extends Thread {
 	private static int DEFAULT_PORT = 56324;
 
 	public ClientConnection(String server, int port, String username, String passwd, Client parent) {
+		this.server = server;
 		this.controller = controller;
 		this.serverport = port;
 		this.parent = parent;
@@ -33,6 +36,7 @@ public class ClientConnection extends Thread {
 		this(server, DEFAULT_PORT, username, passwd, parent);
 	}
 
+	private String server;
 	private Object controller;
 	private SSLSocket waiter;
 	private PrintWriter out;
@@ -45,53 +49,59 @@ public class ClientConnection extends Thread {
 		Canvas canvas = parent.getCanvas();
 		String buffer = "";
 		String action = "";
-		if(in == null) { return; }
-		while(true) {
-			int read = -1;
-			try {
-				read = in.read();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		System.out.println("STARTING CLIENT COMMUNICATIONS");
+		try {
+			while(true) {
+				int read = in.read();
+				if(read == -1) break;
+				if(read == ' ') {
+					if(action == "") action = buffer;
+					else dispatch(action, buffer);
+					buffer = "";
+				} else if(read == '\n') {
+					dispatch(action, buffer);
+					buffer = "";
+					action = "";
+				} else {
+					buffer += (char)read;
+					System.out.print((char)read);
+				}
 			}
-			if(read == -1) break;
-			if(read == ' ') {
-				if(action == "") action = buffer;
-				else dispatch(action, buffer);
-				buffer = "";
-			} else if(read == '\n') {
-				dispatch(action, buffer);
-				buffer = "";
-				action = "";
-			} else {
-				buffer += (char)read;
-			}
+		} catch(IOException e) {
+			e.printStackTrace(System.err);
 		}
 		close();
 	}
 
 	private void dispatch(String action, String phrase) {
-		if(out == null) { return; }
 		System.out.println("Dispatching: " + action + ' ' + phrase);
 		if(action.startsWith(".")) { // it's a tool
 			parent.getClientState().tools.getToolByID(action.substring(1)).draw(phrase, parent.getCanvasGraphics()); 
 		} else { // it's not a tool
-			if(action.startsWith("imgrect")) {
+			if(action.equals("imgrect")) {
 				try {
-					String coords = action.substring("imgrect".length());
-					int index = coords.indexOf('.');
-					long x = Long.parseLong(coords.substring(0,index));
-					long y = Long.parseLong(coords.substring(index+1));
-					ByteArrayInputStream in = new ByteArrayInputStream(phrase.getBytes());
-					BufferedImage img = ImageIO.read(new EscapingInputStream(in));
+					int index = phrase.indexOf('.');
+					long x = Long.parseLong(phrase.substring(0,index));
+					String rest = phrase.substring(index+1);
+					index = rest.indexOf('@');
+					long y = Long.parseLong(rest.substring(0,index));
+					int port = Integer.parseInt(rest.substring(index+1));
+					System.out.println("Attempting to draw server-provided rectangle at @(" + x + ',' + y + ").");
+					// get image from single-use server
+					Socket s = new Socket(server, port);
+					BufferedImage img = ImageIO.read(s.getInputStream());
+					s.close();
+					ImageTest.popup(img);
 					Canvas c = parent.getCanvas();
 					c.getCanvasGraphics().drawImage(img, (int)(x - c.getUserX()), (int)(y - c.getUserY()), c);
+					c.repaint();
 				} catch(IOException e) {
 					System.err.println("Wow, that really should never have happened:");
 					e.printStackTrace(System.err);
 				}
 			}
 			// TODO fill this out later
+			else System.out.println("nothing happened. Improper action string, could not be handled.");
 		}
 	}
 
