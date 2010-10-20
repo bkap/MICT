@@ -21,8 +21,9 @@ buildcommon:
 	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/networking/*.java
 	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/tools/*.java
 	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/bridge/*.java
+	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/test/*.java
 
-runserver:		build
+runserver:		buildserver
 	java $(CLASSPATH) $(KEY_STORE) $(KEY_PASSWD) $(DEBUG) mict.server.Server
 
 runclient:		buildclient

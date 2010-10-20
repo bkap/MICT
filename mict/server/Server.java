@@ -4,6 +4,8 @@ import javax.net.ssl.*;
 import java.io.*;
 import java.util.*;
 
+import mict.networking.*;
+
 public class Server extends Thread {
 	public static void main(String[] args) {
 		new Server(args).start();
@@ -23,6 +25,7 @@ public class Server extends Thread {
 
 		// Basically, do the crap that needs to be done before beginning to accept users.
 		int serverport = 56324;
+		startport = serverport + 1;
 		try {
 			SSLServerSocketFactory servsockfactory = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
 			servsock = (SSLServerSocket)servsockfactory.createServerSocket(serverport);
@@ -35,6 +38,8 @@ public class Server extends Thread {
 	protected Vector<Waiter> clients = new Vector<Waiter>();
 	private SSLServerSocket servsock;
 	private CanvasManager canvas;
+	private int startport;
+	private Vector<Integer> portsopen = new Vector<Integer>();
 
 	public void run() {
 		// start serving the canvas!
@@ -83,5 +88,24 @@ public class Server extends Thread {
 		// save canvas
 
 		System.out.println(" Done. Good-bye.");
+	}
+
+	public OneTimeServer reservePort() {
+		int p = startport;
+		for(; portsopen.contains(new Integer(p)) && p < startport + 100; p++) {}
+		if(p >= startport + 100) {
+			System.out.println("SERVER OVERLOAD: TOO MANY PORTS OPEN TO CREATE A SINGLE-USE SERVER");
+			System.exit(5);
+		}
+		try {
+			OneTimeServer s = OneTimeServer.serve(p, portsopen);
+			portsopen.add(new Integer(p));
+			return s;
+		} catch(IOException e) {
+			System.err.println("Could not reserve a single-use server:");
+			e.printStackTrace(System.err);
+			System.exit(6);
+		}
+		return null;
 	}
 }

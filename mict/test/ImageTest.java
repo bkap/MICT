@@ -1,4 +1,4 @@
-package mict.server;
+package mict.test;
 
 import java.awt.*;
 import javax.swing.*;
