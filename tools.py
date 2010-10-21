@@ -24,24 +24,22 @@ class PanTool(Tool) :
 		g.drawLine(32,16,26,10)
 		g.drawLine(32,16,26,22)
 	def mousePressed(self, locationOnScreen, g) :
-		self.start_point = locationOnScreen
+		self.last_point = locationOnScreen
 		return ""
 	def mouseHovered(self, locationOnScreen, g) :
 		return ""
 	def mouseDragged(self, locationOnScreen, g) :
-		x1 = self.start_point.x
-		y1 = self.start_point.y
-		x2 = locationOnScreen.x
-		y2 = locationOnScreen.y
-		return "(%d,%d)" % (x2-x1, y2-y1)
+		dx = locationOnScreen.x - self.last_point.x
+		dy = locationOnScreen.y - self.last_point.y
+		self.last_point = locationOnScreen
+		return "%d,%d" % (dx, dy)
 	def mouseReleased(self, locationOnScreen, g) :
-		x1 = self.start_point.x
-		y1 = self.start_point.y
-		x2 = locationOnScreen.x
-		y2 = locationOnScreen.y
-		return "(%d,%d)" % (x2-x1, y2-y1)
+		dx = locationOnScreen.x - self.last_point.x
+		dy = locationOnScreen.y - self.last_point.y
+		self.last_point = None
+		return "%d,%d" % (dx, dy)
 	def draw(self, s, g) :
-		return ""
+		return None
 	def getIcon(self) :
 		return self.image
 	def getToolName(self) :

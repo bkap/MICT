@@ -108,12 +108,20 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		default:
 			return;
 		}
-		repaint();
 		if(phrase == null || phrase.trim().equals("")) return;
 		state.socket.sendDraw(state.activeTool.getToolID(), phrase);
 		state.activeTool.draw(phrase, canvasGraphics);
 		if(state.activeTool.getToolID().equals("pan")) {
 			System.out.println("PANNING! DO SPECIAL STUFF!");
+			int index = phrase.indexOf(',');
+			int dx = Integer.parseInt(phrase.substring(0,index));
+			int dy = Integer.parseInt(phrase.substring(index+1));
+			x += dx;
+			y += dy;
+			BufferedImage nc = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+			nc.getGraphics().drawImage(canvas, dx, dy, this);
+			setCanvas(nc);
 		}
+		repaint();
 	}
 }
