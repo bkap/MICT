@@ -108,7 +108,10 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		default:
 			return;
 		}
-		if(phrase == null || phrase.trim().equals("")) return;
+		if(phrase == null || phrase.trim().equals("")) {
+			repaint();
+			return;
+		}
 		state.socket.sendDraw(state.activeTool.getToolID(), phrase);
 		state.activeTool.draw(phrase, canvasGraphics);
 		if(state.activeTool.getToolID().equals("pan")) {
