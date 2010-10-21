@@ -69,6 +69,10 @@ public class Server extends Thread {
 		return users;
 	}
 
+	public int getUserCount() {
+		return clients.size();
+	}
+
 	public CanvasManager getCanvas() {
 		return canvas;
 	}

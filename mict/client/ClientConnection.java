@@ -85,9 +85,10 @@ public class ClientConnection extends Thread {
 			int x = Integer.parseInt(t.substring(0,index));
 			int y = Integer.parseInt(t.substring(index+1));
 			Graphics2D g = (Graphics2D)parent.getCanvasGraphics().create();
-			g.translate(x, y);
+			Canvas c = parent.getCanvas();
+			g.translate(x - c.getUserX(), y - c.getUserY());
 			tool.draw(phrase, g); 
-			parent.getCanvas().repaint();
+			c.repaint();
 		} else { // it's not a tool
 			if(action.equals("imgrect")) {
 				try {
@@ -97,8 +98,6 @@ public class ClientConnection extends Thread {
 					index = rest.indexOf('@');
 					long y = Long.parseLong(rest.substring(0,index));
 					int port = Integer.parseInt(rest.substring(index+1));
-					System.out.println("Attempting to draw server-provided rectangle at @(" + x + ',' + y + ").");
-					// get image from single-use server
 					Socket s = new Socket(server, port);
 					BufferedImage img = ImageIO.read(s.getInputStream());
 					s.close();
@@ -117,8 +116,9 @@ public class ClientConnection extends Thread {
 
 	public void requestCanvasRect(long x, long y, long width, long height) {
 		if(out != null) {
-			System.out.println("asking for rectangle @(" + x + ',' + y + ") at " + width + " by " + height);
 			out.println("imgrect " + x + '.' + y + '.' + width + '.' + height);
+		} else {
+			System.err.println("Tried to request a rectangle before establishing a connection. Oops.");
 		}
 	}
 
@@ -134,7 +134,10 @@ public class ClientConnection extends Thread {
 	}
 
 	public void sendDraw(String tool, String data) {
-		if(out == null) { return; }
+		if(out == null) {
+			System.err.println("Tried to send an action before establishing a connection. Oops.");
+			return;
+		}
 		System.out.println("Drawing! ." + tool + ' ' + data);
 		out.println('.' + tool + ' ' + data);
 	}
