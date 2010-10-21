@@ -77,6 +77,8 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	public void componentMoved(ComponentEvent e) {}
 
 	public void componentResized(ComponentEvent e) {
+		ClientConnection conn = parent.getClientState().socket;
+		if(conn == null) return;
 		BufferedImage nc = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics g = nc.getGraphics();
 		g.setColor(Color.GRAY);
@@ -85,7 +87,6 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		setCanvas(nc);
 		BufferedImage na = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
 		setArtifactCanvas(na);
-		ClientConnection conn = parent.getClientState().socket;
 		if(getWidth() > prevwidth) {
 			conn.requestCanvasRect(x + getWidth(), y, getWidth() - prevwidth, getHeight());
 			if(getHeight() > prevheight) {
