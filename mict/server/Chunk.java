@@ -62,8 +62,8 @@ public class Chunk implements ImageObserver {
 	/** returns the graphics context for the internal image representation, translated for tiling correction
 	 */
 	public Graphics2D getGraphics(long userx, long usery) {
-		Graphics2D c =  (Graphics2D)img.getGraphics();
-		c.translate((int)(userx + x * getWidth()), (int)(usery + y * getHeight())); // TODO PERMUTE
+		Graphics2D c = (Graphics2D)img.getGraphics();
+		c.translate((int)(x * getWidth() - userx), (int)(y * getHeight() - usery)); // TODO PERMUTE
 		return c;
 	}
 
