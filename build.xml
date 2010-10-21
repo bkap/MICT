@@ -7,13 +7,9 @@
 	
 	<property name="STORE" value="rdebasekeystore" />
 	
-	<exec executable="cat" outputproperty="PASSWD" osfamily="Unix">
-		<arg value=".passwd.rdebasekeystore"/>
-	</exec>
-	<exec executable="TYPE" outputproperty="PASSWD" osfamily="Windows">
-		<arg value=".passwd.rdebasekeystore" />
-	</exec>
-
+	<java fork="true" jar="jython.jar" outputproperty="PASSWD" >
+		<arg value="readpassword.py" />
+	</java>
 	<target name="buildclient">
 		<javac srcdir="mict/client/:mict/bridge/:mict/networking/:mict/tools/" classpath="${clientclasspath}" />
 	</target>
