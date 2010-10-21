@@ -5,7 +5,7 @@ import java.awt.event.*;
 import java.awt.image.*;
 import javax.swing.*;
 
-public class Canvas extends JPanel implements MouseListener, MouseMotionListener {
+public class Canvas extends JPanel implements MouseListener, MouseMotionListener, ComponentListener {
 	private static final long serialVersionUID = 1L; // @Ben: do we really need this? I mean, Canvas isn't even Serializable.
 	private static final int MOUSE_HOVERED = 1;
 	private static final int MOUSE_DRAGGED = 2;
@@ -16,12 +16,14 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		this.parent = parent;
 		addMouseListener(this);
 		addMouseMotionListener(this);
-
+		addComponentListener(this);
 	}
 	
 	private Client parent;
 	private long x = 0L;
 	private long y = 0L;
+	private int prevwidth = 0;
+	private int prevheight = 0;
 	private BufferedImage canvas;
 	private BufferedImage artifacts;
 	private Graphics2D canvasGraphics;
@@ -70,6 +72,31 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	}
 
 	public void mouseClicked(MouseEvent e) {} // DO NOT USE
+	public void componentHidden(ComponentEvent e) {}
+	public void componentShown(ComponentEvent e) {}
+	public void componentMoved(ComponentEvent e) {}
+
+	public void componentResized(ComponentEvent e) {
+		BufferedImage nc = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+		Graphics g = nc.getGraphics();
+		g.setColor(Color.GRAY);
+		g.fillRect(0, 0, getWidth(), getHeight());
+		g.drawImage(canvas, 0, 0, this);
+		setCanvas(nc);
+		BufferedImage na = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+		setArtifactCanvas(na);
+		ClientConnection conn = parent.getClientState().socket;
+		if(getWidth() > prevwidth) {
+			conn.requestCanvasRect(x + getWidth(), y, getWidth() - prevwidth, getHeight());
+			if(getHeight() > prevheight) {
+				conn.requestCanvasRect(x, y + getHeight(), prevwidth, getHeight() - prevheight);
+			}
+		} else if(getHeight() > prevheight) {
+			conn.requestCanvasRect(x, y + getHeight(), getWidth(), getHeight() - prevheight);
+		}
+		prevwidth = getWidth();
+		prevheight = getHeight();
+	}
 
 	public void mousePressed(MouseEvent e) {
 		render(e, MOUSE_PRESSED);
@@ -121,12 +148,34 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 			int dy = Integer.parseInt(phrase.substring(index+1));
 			x += dx;
 			y += dy;
+			if(dx > 0) { //moved the image on the canvas to the right, need left side
+				state.socket.requestCanvasRect(x, y, dx, getHeight());
+				if(dy > 0) {
+					state.socket.requestCanvasRect(x + dx, y, getWidth() - dx, dy);
+				} else if(dy < 0) {
+					state.socket.requestCanvasRect(x + dx, y + getHeight() + dy, getWidth() - dx, -dy);
+				}
+			} else if(dx < 0) {
+				state.socket.requestCanvasRect(x + getWidth() + dx, y, -dx, getHeight());
+				if(dy > 0) {
+					state.socket.requestCanvasRect(x, y, getWidth() + dx, dy);
+				} else if(dy < 0) {
+					state.socket.requestCanvasRect(x, y + getHeight() + dy, getHeight() + dx, -dy);
+				}
+			} else {
+				if(dy > 0) {
+					state.socket.requestCanvasRect(x, y, getWidth(), dy);
+				} else if(dy < 0) {
+					state.socket.requestCanvasRect(x, y + getHeight() + dy, getWidth(), -dy);
+				}
+			}
 			BufferedImage nc = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-			nc.getGraphics().drawImage(canvas, dx, dy, this);
+			Graphics g = nc.getGraphics();
+			g.setColor(Color.GRAY);
+			g.fillRect(0, 0, getWidth(), getHeight());
+			g.drawImage(canvas, dx, dy, this);
 			setCanvas(nc);
 		}
 		repaint();
 	}
-
-	//public void requestScreenRemainder()
 }
