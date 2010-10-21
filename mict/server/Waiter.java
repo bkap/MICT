@@ -91,8 +91,8 @@ public class Waiter extends Thread {
 			String tool = action.substring(1);
 			if(tool.equals("pan")) {
 				int index = phrase.indexOf(',');
-				int dx = phrase.substring(0,index);
-				int dy = phrase.substring(index+1);
+				int dx = Integer.parseInt(phrase.substring(0,index));
+				int dy = Integer.parseInt(phrase.substring(index+1));
 				move(x + dx, y + dy);
 			} else {
 				/*history.add(*/parent.getCanvas().draw(x, y, tool, phrase, this); //);

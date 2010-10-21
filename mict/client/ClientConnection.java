@@ -86,8 +86,7 @@ public class ClientConnection extends Thread {
 			int y = Integer.parseInt(t.substring(index+1));
 			Graphics2D g = (Graphics2D)parent.getCanvasGraphics().create();
 			Canvas c = parent.getCanvas();
-			//g.translate((x - c.getUserX()), (y - c.getUserY()));
-			g.translate(x, y);
+			g.translate(c.getUserX() - x, c.getUserY() - y);
 			tool.draw(phrase, g); 
 			c.repaint();
 		} else { // it's not a tool
