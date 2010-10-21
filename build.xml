@@ -1,0 +1,36 @@
+<project name="MICT" default="build" basedir=".">
+	<description> 
+		This is the Multi-User Infinite Canvas Thingy
+	</description>
+	<property name="clientclasspath" value=".:jython.jar" />
+	<property name="serverclasspath" value= "${clientclasspath}:postgresql.jar" />
+	
+	<property name="STORE" value="rdebasekeystore" />
+	
+	<exec executable="cat" outputproperty="PASSWD">
+		<arg value=".passwd.rdebasekeystore"/>
+	</exec>
+	<echo message = "${PASSWD}" />	
+
+
+	<target name="buildclient">
+		<javac srcdir="mict/client/:mict/bridge/:mict/networking/:mict/tools/" classpath="${clientclasspath}" />
+	</target>
+	<target name="runclient" depends="buildclient">
+		<java fork="true" classpath="${clientclasspath}" classname="mict.client.Client">
+			<sysproperty key="javax.net.ssl.trustStore" value="${STORE}" />
+			<sysproperty key="javax.net.ssl.keyStorePassword" value="${PASSWD}" />
+		</java>
+	</target>
+	<target name="buildserver">
+		<javac srcdir="mict/server/*.java:mict/bridge/*.java:mict/networking/*.java:mict/tools/*.java" classpath="${serverclasspath}" />
+	</target>
+	<target name="runserver" depends="buildserver">
+		<java fork="true" classpath="${serverclasspath}"
+		classname="mict.server.Server" >
+			<sysproperty key="javax.net.ssl.keyStore" value="${STORE}" />
+			<sysproperty key="javax.net.ssl.keyStorePassword" value="${PASSWD}" />
+		</java>
+	</target>
+
+</project>
