@@ -7,11 +7,12 @@
 	
 	<property name="STORE" value="rdebasekeystore" />
 	
-	<exec executable="cat" outputproperty="PASSWD">
+	<exec executable="cat" outputproperty="PASSWD" osfamily="Unix">
 		<arg value=".passwd.rdebasekeystore"/>
 	</exec>
-	<echo message = "${PASSWD}" />	
-
+	<exec executable="TYPE" outputproperty="PASSWD" osfamily="Windows">
+		<arg value=".passwd.rdebasekeystore" />
+	</exec>
 
 	<target name="buildclient">
 		<javac srcdir="mict/client/:mict/bridge/:mict/networking/:mict/tools/" classpath="${clientclasspath}" />
