@@ -6,6 +6,9 @@ import java.util.*;
 
 import mict.networking.*;
 
+/**
+ * @author  bkaplan
+ */
 public class Server extends Thread {
 	public static void main(String[] args) {
 		new Server(args).start();
@@ -37,6 +40,10 @@ public class Server extends Thread {
 
 	protected Vector<Waiter> clients = new Vector<Waiter>();
 	private SSLServerSocket servsock;
+	/**
+	 * @uml.property  name="canvas"
+	 * @uml.associationEnd  
+	 */
 	private CanvasManager canvas;
 	private int startport;
 	private Vector<Integer> portsopen = new Vector<Integer>();
@@ -73,6 +80,10 @@ public class Server extends Thread {
 		return clients.size();
 	}
 
+	/**
+	 * @return
+	 * @uml.property  name="canvas"
+	 */
 	public CanvasManager getCanvas() {
 		return canvas;
 	}

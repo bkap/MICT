@@ -7,18 +7,19 @@ import java.awt.image.*;
 import javax.imageio.*;
 import javax.net.ssl.*;
 
-import mict.networking.*;
-import mict.test.*;
-import mict.tools.*;
 
+
+/**
+ * @author  bkaplan
+ */
 public class ClientConnection extends Thread {
 	private static int DEFAULT_PORT = 56324;
 
-	public ClientConnection(String server, int port, String username, String passwd, Client parent) {
+	public ClientConnection(String server, int port, String username, String passwd, ClientState state) {
 		this.server = server;
-		this.controller = controller;
-		this.serverport = port;
-		this.parent = parent;
+		//this.controller = controller;
+		//this.serverport = port;
+		this.state = state;
 		if(server != "") {
 			try {
 				SSLSocketFactory sockfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
@@ -34,21 +35,25 @@ public class ClientConnection extends Thread {
 		setDaemon(true);
 	}
 
-	public ClientConnection(String server, String username, String passwd, Client parent) {
-		this(server, DEFAULT_PORT, username, passwd, parent);
+	public ClientConnection(String server, String username, String passwd, ClientState state) {
+		this(server, DEFAULT_PORT, username, passwd, state);
 	}
 
 	private String server;
-	private Object controller;
+	//private Object controller;
 	private SSLSocket waiter;
 	private PrintWriter out;
 	private BufferedReader in;
-	private Client parent;
-	private int serverport;
+	/**
+	 * @uml.property  name="parent"
+	 * @uml.associationEnd  
+	 */
+	private ClientState state;
+	//private int serverport;
 	
 	public void run() {
 		// DO WORK SON
-		Canvas canvas = parent.getCanvas();
+		Canvas canvas = state.canvas;
 		String buffer = "";
 		String action = "";
 		try {
@@ -76,18 +81,19 @@ public class ClientConnection extends Thread {
 	private void dispatch(String action, String phrase) {
 		if(action.startsWith(".")) { // it's a tool
 			System.out.println("Recieving draw from the server: " + action + " " + phrase);
-			ClientState state = parent.getClientState();
 			String t = action.substring(1);
 			int index = t.indexOf('@');
-			Tool tool = state.tools.getToolByID(t.substring(0, index));
+			//Tool tool = state.tools.getToolByID(t.substring(0, index));
+			String toolid = t.substring(0,index);
 			t = t.substring(index+1);
 			index = t.indexOf(',');
 			int x = Integer.parseInt(t.substring(0,index));
 			int y = Integer.parseInt(t.substring(index+1));
-			Graphics2D g = (Graphics2D)parent.getCanvasGraphics().create();
-			Canvas c = parent.getCanvas();
+			Graphics2D g = (Graphics2D)state.getCanvasGraphics().create();
+			Canvas c = state.canvas;
 			g.translate(c.getUserX() - x, c.getUserY() - y);
-			tool.draw(phrase, g); 
+			state.tools.draw(toolid, phrase,g);
+			//tool.draw(phrase, g); 
 			c.repaint();
 		} else { // it's not a tool
 			if(action.equals("imgrect")) {
@@ -101,7 +107,7 @@ public class ClientConnection extends Thread {
 					Socket s = new Socket(server, port);
 					BufferedImage img = ImageIO.read(s.getInputStream());
 					s.close();
-					Canvas c = parent.getCanvas();
+					Canvas c = state.canvas;
 					c.getCanvasGraphics().drawImage(img, (int)(x - c.getUserX()), (int)(y - c.getUserY()), c);
 					c.repaint();
 				} catch(IOException e) {

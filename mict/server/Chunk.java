@@ -3,14 +3,31 @@ package mict.server;
 import java.awt.*;
 import java.awt.image.*;
 
+/**
+ * @author  bkaplan
+ */
 public class Chunk implements ImageObserver {
+	/**
+	 * @uml.property  name="wIDTH"
+	 */
 	public static final int WIDTH = 1024;
+	/**
+	 * @uml.property  name="hEIGHT"
+	 */
 	public static final int HEIGHT = 1024;
 
+	/**
+	 * @return
+	 * @uml.property  name="wIDTH"
+	 */
 	public static int getWidth() {
 		return WIDTH;
 	}
 
+	/**
+	 * @return
+	 * @uml.property  name="hEIGHT"
+	 */
 	public static int getHeight() {
 		return HEIGHT;
 	}
@@ -49,7 +66,13 @@ public class Chunk implements ImageObserver {
 	}
 
 	private boolean loading;
+	/**
+	 * @uml.property  name="x"
+	 */
 	private int x;
+	/**
+	 * @uml.property  name="y"
+	 */
 	private int y;
 	private BufferedImage img;
 
@@ -75,10 +98,18 @@ public class Chunk implements ImageObserver {
 		return "[mict.server.Chunk: x=" + x + ", y=" + y + ", img=" + img + ']';
 	}
 
+	/**
+	 * @return
+	 * @uml.property  name="x"
+	 */
 	public int getX() {
 		return x;
 	}
 
+	/**
+	 * @return
+	 * @uml.property  name="y"
+	 */
 	public int getY() {
 		return y;
 	}

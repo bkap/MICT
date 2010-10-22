@@ -5,17 +5,14 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
+
 import java.awt.image.BufferedImage;
 
 import mict.tools.ToolManager;
 
 /**
- * The Client is the main class for the client side. It consists of a Canvas and a Toolbox. It also does the work to bridge those.
- * All initialization should happen here.
- * It is an Applet, but can be run as an application by sticking its contentPane in a JFrame.
- * @author bkaplan
- *
+ * The Client is the main class for the client side. It consists of a Canvas and a Toolbox. It also does the work to bridge those. All initialization should happen here. It is an Applet, but can be run as an application by sticking its contentPane in a JFrame.
+ * @author  bkaplan
  */
 public class Client extends JApplet {
 	public static void main(String[] args) {
@@ -34,24 +31,33 @@ public class Client extends JApplet {
 
 	public Client() { 
 		//JythonBridge.initialize();
+		canvas = new Canvas(state);
 		state.canvas = canvas;
 		canvas.setSize(300, 300);
 		this.getContentPane().setLayout(new java.awt.BorderLayout());
 		canvas.setPreferredSize(canvas.getSize());
-		Box b = javax.swing.Box.createHorizontalBox();
 		ToolManager t = new ToolManager(state);
 		state.tools = t;
 		toolbox = new ToolBox(state, t);
-		//b.add(toolbox);
-		//b.add(canvas);
 		this.getContentPane().add(toolbox, java.awt.BorderLayout.WEST);
 		this.getContentPane().add(canvas, java.awt.BorderLayout.CENTER);
-		//this.getContentPane().add(b);
 		
 	}
 
+	/**
+	 * @uml.property  name="state"
+	 * @uml.associationEnd  
+	 */
 	private ClientState state = new ClientState();
-	private Canvas canvas = new Canvas(this);
+	/**
+	 * @uml.property  name="canvas"
+	 * @uml.associationEnd  
+	 */
+	private Canvas canvas;
+	/**
+	 * @uml.property  name="toolbox"
+	 * @uml.associationEnd  
+	 */
 	private ToolBox toolbox;
 
 	@Override
@@ -62,7 +68,7 @@ public class Client extends JApplet {
 	public void start() {
 		String servername = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
 		if(servername == null) servername = "";
-		state.socket = new ClientConnection(servername, "username", "password", this);
+		state.socket = new ClientConnection(servername, "username", "password", this.state);
 		state.socket.requestCanvasRect(canvas.getUserX(), canvas.getUserY(), canvas.getWidth(), canvas.getHeight());
 		canvas.setCanvas(new BufferedImage(canvas.getWidth(), canvas.getHeight(),BufferedImage.TYPE_INT_ARGB));
 		canvas.setArtifactCanvas(new BufferedImage(canvas.getWidth(), canvas.getHeight(),BufferedImage.TYPE_INT_ARGB));
@@ -87,6 +93,10 @@ public class Client extends JApplet {
 		});
 	}*/
 
+	/**
+	 * @return
+	 * @uml.property  name="canvas"
+	 */
 	public Canvas getCanvas() {
 		return canvas;
 	}

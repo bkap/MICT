@@ -2,6 +2,7 @@ package mict.tools;
 
 import java.util.HashMap;
 import java.util.List;
+import java.awt.Graphics2D;
 import mict.bridge.JythonBridge;
 import mict.client.ClientState;
 
@@ -34,7 +35,9 @@ public class ToolManager {
 	public List<Tool> getAllTools() {
 		return toolList;
 	}
-
+	public void draw(String toolid, String phrase, Graphics2D g) {
+		getToolByID(toolid).draw(phrase,g);
+	}
 	/** get a tool based on its toolid
 	*
 	*

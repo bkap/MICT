@@ -7,6 +7,9 @@ import javax.imageio.*;
 
 import mict.networking.*;
 
+/**
+ * @author  bkaplan
+ */
 public class Waiter extends Thread {
 	public Waiter(SSLSocket patron, Server parent) throws IOException {
 		this.patron = patron;
@@ -20,6 +23,10 @@ public class Waiter extends Thread {
 
 	private String username = null;
 	private SSLSocket patron;
+	/**
+	 * @uml.property  name="parent"
+	 * @uml.associationEnd  
+	 */
 	private Server parent;
 	private PrintWriter out;
 	//private OutputStream ostream;

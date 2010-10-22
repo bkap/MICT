@@ -7,14 +7,29 @@ import java.util.List;
 
 import mict.tools.*;
 
+/**
+ * @author  bkaplan
+ */
 public class CanvasManager implements ImageObserver {
 	public CanvasManager(DatabaseLayer database, Server parent) {
 		this.database = database;
 		this.parent = parent;
 	}
 
+	/**
+	 * @uml.property  name="parent"
+	 * @uml.associationEnd  
+	 */
 	private Server parent;
+	/**
+	 * @uml.property  name="database"
+	 * @uml.associationEnd  
+	 */
 	private DatabaseLayer database;
+	/**
+	 * @uml.property  name="tools"
+	 * @uml.associationEnd  
+	 */
 	private ToolManager tools = new ToolManager();
 	private HashMap<Point, Chunk> cache = new HashMap<Point, Chunk>();
 

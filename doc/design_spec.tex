@@ -14,6 +14,7 @@
 \begin{tabular}{| l | c | r |}  \hline
 \textbf{Version} & \textbf{Info} & \textbf{Date} \\ \hline
 v0.1 & Initial Draft & 10/4/2010 \\ \hline
+v0.2 & Added more info on client/server interaction & 10/20/10 \\ \hline
 \end{tabular}
 
 \section{Tools}
@@ -96,7 +97,16 @@ v0.1 & Initial Draft & 10/4/2010 \\ \hline
  The Client is a subclass of JApplet but shall contain a main method that
  generates a JFrame and sets the contentPane of the JFrame to be the
  contentPane of an instance of Client. In this way, the program can be run as
- both an Applet and an application. 
+ both an Applet and an application.
+ 
+ \subsubsection{Responsibilities of the Client Object}
+The primary purpose of the Client is to initialize the other components. Most
+of that work is done in the start() method, which overrides start from
+javax.swing.JApplet. The Client should create it's various components, request
+the user's log-in credentials to initialize the socket, using the
+ClientConnection object. If no server is given or if the connection cannot be
+established, the Client should present the user with an appropriate message and
+request the credentials again.
  \subsection{ClientState}
   A single ClientState object will be initialized for each instance of the
   program. The ClientState object will be used to store the shared state. Any
@@ -107,21 +117,46 @@ v0.1 & Initial Draft & 10/4/2010 \\ \hline
   coupling between all the components, slightly increasing complexity, but
   opening up the client-side architecture for potential future improvements, such
   as multiple viewports and simultaneous connections to multiple servers.
+  \subsubsection{Objects Stored in the ClientState}
+  \begin{itemize}
+  \item
+  The currently selected Tool
+  \item 
+  The ToolManager that contains the list of all the tools
+  \item 
+  The currently selected Color
+  \item
+  The Canvas that the user is drawing on
+  \item
+  The Clipboard image, used for copy and paste
+  \item
+  The ClientConnection that communicates with the server
+  \end{itemize}
 
  \subsection{Toolbox}
-  The Toolbox will contain a series of Tools. Each Tool (which extends the
-  abstract class mict.tools.Tool) shall be defined in Jython so that we can
-  serialize the class and transmit it from the server to the client. This way,
-  every client will support every tool the server has without any prior
-  configuration on the part of the user. Additionally, this provides us with an
-  opportunity to leverage a more consistent Tool architecture than might exist
-  should both a client- and server-side implementation exist for each Tool.
+  The Toolbox will contain a series of ToolButtons as well as the color
+  selection button. The Toolbox will be a subclass of JPanel. It will use a
+  GridLayout to store the ToolButtons so that each button is equal size. The
+  Tools will be placed at the top of the panel and the color selector will be
+  placed in the center horizontally and towards the bottom vertically. This
+  way, the color selection button will be easily distinguishable from the
+  tools. 
+  
+  The ToolButtons shall be in a ButtonGroup so that only one Tool can be
+  selected at any time 
+
   \subsubsection{ToolButtons}
    For each Tool, the Client will make a ToolButton. ToolButton is a subclass
    of JButton.  It has an ActionListener that sets the associated tool as the
    active tool within ClientState when the button is pressed. Each ToolButton will
    set its icon and tooltip as directed with the underlying Tool class.
-
+ \subsubsection{Color Selector}
+ The Color Selector is a single JButton in the Toolbox. It shall have a filled
+ square as it's icon, where the color of the square is equal to the selected
+ color. Pressing the button will cause a JColorChooser to appear. Selecting a
+ color in the JColorChooser will modify the ClientState's selectedColor to the
+ choosen color and change the color of the icon on this JButton to match that
+ color. If the user preses cancel in the JColorChooser, nothing should change.
  \subsection{Canvas Viewport}
   The Canvas Viewport is a JPanel embedded in the Client UI that will display a
   section of the overall canvas. The user will draw on the Viewport with a Tool
@@ -256,7 +291,7 @@ v0.1 & Initial Draft & 10/4/2010 \\ \hline
     validity for only a single server.
    \item
     The Internet-facing hostname of the server\footnote{As in
-    \texttt{rdebase.case.edu} as opposed to \texttt{rdebase}} is ideally suited for
+    \texttt{rdebase.com} as opposed to \texttt{rdebase}} is ideally suited for
     this task. For one, if a server-wide arbitrary string were given to the user as
     the server-specific string, it would be simple to momentarily change the
     server-specific string on a malicious server to match the one used on another

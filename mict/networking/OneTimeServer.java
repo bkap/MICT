@@ -4,6 +4,9 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+/**
+ * @author  bkaplan
+ */
 public class OneTimeServer extends Thread {
 	public static OneTimeServer serve(int port, Vector<Integer> openports) throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -20,6 +23,9 @@ public class OneTimeServer extends Thread {
 		this.openports = openports;
 	}
 
+	/**
+	 * @uml.property  name="port"
+	 */
 	private int port;
 	private ServerSocket servsocket;
 	private ByteArrayOutputStream out;
@@ -43,6 +49,10 @@ public class OneTimeServer extends Thread {
 		return out;
 	}
 
+	/**
+	 * @return
+	 * @uml.property  name="port"
+	 */
 	public int getPort() {
 		return port;
 	}

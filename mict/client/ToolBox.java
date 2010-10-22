@@ -9,13 +9,8 @@ import mict.tools.Tool;
 import mict.tools.ToolManager;
 
 /**
- *
- *  This is the ToolBox component of the Client. It contains 2 panels: the tool panel and the color chooser.
- *  The Tool Panel is filled with {mict.client.ToolButton Tool buttons} that allow you to trigger the active tool.
- *  The color choosing panel allows the user to select the active color for new shapes.
- * 
- * @author bkaplan
- *
+ * This is the ToolBox component of the Client. It contains 2 panels: the tool panel and the color chooser. The Tool Panel is filled with {mict.client.ToolButton Tool buttons} that allow you to trigger the active tool. The color choosing panel allows the user to select the active color for new shapes.
+ * @author  bkaplan
  */
 public class ToolBox extends JPanel {
 	private static final long serialVersionUID = 1L; // @Ben this is incorrect. pick something that's even remotely entropic, please.
@@ -25,6 +20,7 @@ public class ToolBox extends JPanel {
 		this.setPreferredSize(new java.awt.Dimension(100,300));
 		this.setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
 		ButtonGroup bg = new ButtonGroup();
+		 
 		for(Tool t : tools.getAllTools()) {
 			ToolButton b = new ToolButton(t, state);
 			bg.add(b);
@@ -51,7 +47,15 @@ public class ToolBox extends JPanel {
 
 	private Color activeColor = Color.BLACK;
 	private JButton colorButton;
+	/**
+	 * @uml.property  name="state"
+	 * @uml.associationEnd  
+	 */
 	private ClientState state;
+	/**
+	 * @uml.property  name="tools"
+	 * @uml.associationEnd  
+	 */
 	private ToolManager tools;
 
 	private class ColorIcon implements Icon {

@@ -7,11 +7,9 @@ import mict.tools.Tool;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-/** These are the buttons we will use to make the tool panel. When pressed, these button will automatically set their
- * tool as the active tool
- * 
- * @author Ben Kaplan
- *
+/**
+ * These are the buttons we will use to make the tool panel. When pressed, these button will automatically set their tool as the active tool
+ * @author  Ben Kaplan
  */
 public class ToolButton extends JToggleButton {
 	private static final long serialVersionUID = -5088345052860020236L;
@@ -28,7 +26,15 @@ public class ToolButton extends JToggleButton {
 		this.addActionListener(new ToolListener());
 	}
 
+	/**
+	 * @uml.property  name="t"
+	 * @uml.associationEnd  
+	 */
 	private Tool t;
+	/**
+	 * @uml.property  name="state"
+	 * @uml.associationEnd  
+	 */
 	private ClientState state;
 
 	public Tool getTool() {

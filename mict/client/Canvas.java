@@ -5,6 +5,9 @@ import java.awt.event.*;
 import java.awt.image.*;
 import javax.swing.*;
 
+/**
+ * @author  bkaplan
+ */
 public class Canvas extends JPanel implements MouseListener, MouseMotionListener, ComponentListener {
 	private static final long serialVersionUID = 1L; // @Ben: do we really need this? I mean, Canvas isn't even Serializable.
 	private static final int MOUSE_HOVERED = 1;
@@ -12,20 +15,27 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	private static final int MOUSE_PRESSED = 3;
 	private static final int MOUSE_RELEASED = 4;
 
-	public Canvas(Client parent) {
-		this.parent = parent;
+	public Canvas(ClientState state) {
+		this.state = state;
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addComponentListener(this);
 	}
 	
-	private Client parent;
+	/**
+	 * @uml.property  name="parent"
+	 * @uml.associationEnd  
+	 */
+	private ClientState state;
 	private long x = 0L;
 	private long y = 0L;
 	private int prevwidth = 0;
 	private int prevheight = 0;
 	private BufferedImage canvas;
 	private BufferedImage artifacts;
+	/**
+	 * @uml.property  name="canvasGraphics"
+	 */
 	private Graphics2D canvasGraphics;
 	private Graphics2D artifactsGraphics;
 	private boolean inside = false;
@@ -38,6 +48,10 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		return y;
 	}
 
+	/**
+	 * @param canvas
+	 * @uml.property  name="canvas"
+	 */
 	public void setCanvas(BufferedImage canvas) {
 		this.canvas = canvas;
 		canvasGraphics = (Graphics2D)canvas.getGraphics();
@@ -49,6 +63,10 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		artifactsGraphics.setBackground(new Color(0,0,0,0));
 	}
 
+	/**
+	 * @return
+	 * @uml.property  name="canvasGraphics"
+	 */
 	public Graphics2D getCanvasGraphics() {
 		return canvasGraphics;
 	}
@@ -77,7 +95,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	public void componentMoved(ComponentEvent e) {}
 
 	public void componentResized(ComponentEvent e) {
-		ClientConnection conn = parent.getClientState().socket;
+		ClientConnection conn = state.socket;
 		if(conn == null) return;
 		BufferedImage nc = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics g = nc.getGraphics();
@@ -117,7 +135,6 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 
 	public void render(MouseEvent e, int type) {
 		if(!inside) return;
-		ClientState state = parent.getClientState();
 		String phrase;
 		artifactsGraphics.clearRect(0, 0, getWidth(), getHeight());
 		switch(type) {
