@@ -32,7 +32,6 @@ public class Client extends JApplet {
 	public Client() { 
 		//JythonBridge.initialize();
 		canvas = new Canvas(state);
-		state.canvas = canvas;
 		canvas.setSize(300, 300);
 		this.getContentPane().setLayout(new java.awt.BorderLayout());
 		canvas.setPreferredSize(canvas.getSize());
@@ -66,17 +65,7 @@ public class Client extends JApplet {
 	 * Swing event thread isn't created when the  constructor is called 
 	 */
 	public void start() {
-		String servername = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
-		if(servername == null) servername = "";
-		state.socket = new ClientConnection(servername, "username", "password", this.state);
-		state.socket.requestCanvasRect(canvas.getUserX(), canvas.getUserY(), canvas.getWidth(), canvas.getHeight());
-		canvas.setCanvas(new BufferedImage(canvas.getWidth(), canvas.getHeight(),BufferedImage.TYPE_INT_ARGB));
-		canvas.setArtifactCanvas(new BufferedImage(canvas.getWidth(), canvas.getHeight(),BufferedImage.TYPE_INT_ARGB));
-		Color c = Color.WHITE;
-		Graphics g = canvas.getCanvasGraphics();
-		g.setColor(c);
-		g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-		state.socket.start();
+		canvas.start();
 	}
 
 	public ClientState getClientState() {
