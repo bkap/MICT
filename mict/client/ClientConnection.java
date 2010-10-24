@@ -15,11 +15,11 @@ import javax.net.ssl.*;
 public class ClientConnection extends Thread {
 	private static int DEFAULT_PORT = 56324;
 
-	public ClientConnection(String server, int port, String username, String passwd, ClientState state) {
+	public ClientConnection(String server, int port, String username, String passwd, Canvas canvas) {
 		this.server = server;
 		//this.controller = controller;
 		//this.serverport = port;
-		this.state = state;
+		this.canvas = canvas;
 		if(server != "") {
 			try {
 				SSLSocketFactory sockfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
@@ -35,8 +35,8 @@ public class ClientConnection extends Thread {
 		setDaemon(true);
 	}
 
-	public ClientConnection(String server, String username, String passwd, ClientState state) {
-		this(server, DEFAULT_PORT, username, passwd, state);
+	public ClientConnection(String server, String username, String passwd, Canvas canvas) {
+		this(server, DEFAULT_PORT, username, passwd, canvas);
 	}
 
 	private String server;
@@ -48,12 +48,11 @@ public class ClientConnection extends Thread {
 	 * @uml.property  name="parent"
 	 * @uml.associationEnd  
 	 */
-	private ClientState state;
+	private Canvas canvas;
 	//private int serverport;
 	
 	public void run() {
 		// DO WORK SON
-		Canvas canvas = state.canvas;
 		String buffer = "";
 		String action = "";
 		try {
@@ -83,18 +82,15 @@ public class ClientConnection extends Thread {
 			System.out.println("Recieving draw from the server: " + action + " " + phrase);
 			String t = action.substring(1);
 			int index = t.indexOf('@');
-			//Tool tool = state.tools.getToolByID(t.substring(0, index));
 			String toolid = t.substring(0,index);
 			t = t.substring(index+1);
 			index = t.indexOf(',');
 			int x = Integer.parseInt(t.substring(0,index));
 			int y = Integer.parseInt(t.substring(index+1));
-			Graphics2D g = (Graphics2D)state.getCanvasGraphics().create();
-			Canvas c = state.canvas;
-			g.translate(c.getUserX() - x, c.getUserY() - y);
-			state.tools.draw(toolid, phrase,g);
-			//tool.draw(phrase, g); 
-			c.repaint();
+			Graphics2D g = (Graphics2D)canvas.getCanvasGraphics().create();
+			g.translate(canvas.getUserX() - x, canvas.getUserY() - y);
+			canvas.draw(toolid, phrase);
+			canvas.repaint();
 		} else { // it's not a tool
 			if(action.equals("imgrect")) {
 				try {
@@ -107,9 +103,9 @@ public class ClientConnection extends Thread {
 					Socket s = new Socket(server, port);
 					BufferedImage img = ImageIO.read(s.getInputStream());
 					s.close();
-					Canvas c = state.canvas;
-					c.getCanvasGraphics().drawImage(img, (int)(x - c.getUserX()), (int)(y - c.getUserY()), c);
-					c.repaint();
+		
+					canvas.getCanvasGraphics().drawImage(img, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()), canvas);
+					canvas.repaint();
 				} catch(IOException e) {
 					System.err.println("Wow, that really should never have happened:");
 					e.printStackTrace(System.err);

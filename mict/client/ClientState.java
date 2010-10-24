@@ -20,23 +20,12 @@ public class ClientState {
 	public Tool activeTool;
 	public BufferedImage clipboard;
 	public Graphics clipboard_graphics;
-	/**
-	 * @uml.property  name="canvas"
-	 * @uml.associationEnd  
-	 */
-	public Canvas canvas;
+
 	public Color selectedColor = Color.BLACK;
-	/**
-	 * @uml.property  name="socket"
-	 * @uml.associationEnd  
-	 */
-	public ClientConnection socket;
+
 	/**
 	 * @uml.property  name="tools"
 	 * @uml.associationEnd  
 	 */
 	public ToolManager tools;
-	public Graphics2D getCanvasGraphics() {
-		return this.canvas.getCanvasGraphics();
-	}
 }
