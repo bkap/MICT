@@ -27,6 +27,7 @@ public class ToolBox extends JPanel {
 		}
 		bg.setSelected(bg.getElements().nextElement().getModel(), true);
 		state.activeTool = ((ToolButton)bg.getElements().nextElement()).getTool();
+	
 		JPanel toolPanel = new JPanel();
 		toolPanel.setLayout(new GridLayout((bg.getButtonCount() + 1) / 2,2));
 		Enumeration<AbstractButton> allButtons = bg.getElements();

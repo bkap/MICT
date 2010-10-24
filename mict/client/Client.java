@@ -2,17 +2,14 @@ package mict.client;
 
 import javax.swing.*;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 
-import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
 
 import mict.tools.ToolManager;
 
 /**
  * The Client is the main class for the client side. It consists of a Canvas and a Toolbox. It also does the work to bridge those. All initialization should happen here. It is an Applet, but can be run as an application by sticking its contentPane in a JFrame.
- * @author  bkaplan
+ * @author  Ben Kaplan
  */
 public class Client extends JApplet {
 	public static void main(String[] args) {

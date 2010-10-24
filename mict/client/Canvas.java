@@ -6,7 +6,8 @@ import java.awt.image.*;
 
 import javax.swing.*;
 
-/**
+/** This is the Canvas viewport. It contains the drawn image as well as maintaining the connection to the server. All drawing operations
+ * should go through here
  * @author  bkaplan
  */
 public class Canvas extends JPanel implements MouseListener, MouseMotionListener, ComponentListener {
