@@ -112,8 +112,7 @@ request the credentials again.
   program. The ClientState object will be used to store the shared state. Any
   field that needs to be accessed and modifed by multiple classes should be
   placed in here, including but not limited to the currently selected tool and
-  color, the current location of the canvas, and the persistent connection to the
-  server. The use of a singleton structure for shared state will reduce the
+  color. The use of a singleton structure for shared state will reduce the
   coupling between all the components, slightly increasing complexity, but
   opening up the client-side architecture for potential future improvements, such
   as multiple viewports and simultaneous connections to multiple servers.
@@ -126,11 +125,7 @@ request the credentials again.
   \item 
   The currently selected Color
   \item
-  The Canvas that the user is drawing on
-  \item
   The Clipboard image, used for copy and paste
-  \item
-  The ClientConnection that communicates with the server
   \end{itemize}
 
  \subsection{Toolbox}
@@ -150,6 +145,7 @@ request the credentials again.
    of JButton.  It has an ActionListener that sets the associated tool as the
    active tool within ClientState when the button is pressed. Each ToolButton will
    set its icon and tooltip as directed with the underlying Tool class.
+
  \subsubsection{Color Selector}
  The Color Selector is a single JButton in the Toolbox. It shall have a filled
  square as it's icon, where the color of the square is equal to the selected
@@ -166,7 +162,10 @@ request the credentials again.
   MousePressed, MouseDragged, and MouseReleased events and dispatch those events
   to the currently selected tool. As these methods are called, the Canvas shall
   transmit the serialized commands to the server via the Client Connection, which
-  will be discussed later in this document.
+  will be discussed later in this document. \\\\
+  The Canvas object is responsible for mantaining the connection to the server
+  as well as drawing all tools. In the future release, we may add a mode where the user
+  can open up multiple Canvases. 
   \subsubsection{Painting the Canvas}
   	No object shall draw on the canvas directly, instead, we will have 2
 	buffers, represented as BufferedImages. The first BufferedImage to be
