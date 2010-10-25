@@ -35,6 +35,7 @@ public class ToolManager {
 	public List<Tool> getAllTools() {
 		return toolList;
 	}
+
 	public void draw(String toolid, String phrase, Graphics2D g) {
 		getToolByID(toolid).draw(phrase,g);
 	}
