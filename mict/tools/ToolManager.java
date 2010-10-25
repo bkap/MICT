@@ -4,29 +4,40 @@ import java.util.HashMap;
 import java.util.List;
 import java.awt.Graphics2D;
 import mict.bridge.JythonBridge;
+import mict.client.ClientConnection;
 import mict.client.ClientState;
+import mict.client.ToolBox;
 
 /** the ToolManager is used to create the list of tools. It then will also
  * select the appropriate tool based on the tool name. It is primarily used on
  * the server
+ * 
  */
 public class ToolManager {
+	
 	/** Creates a new ToolManager, which will query Jython for the list of tools
+	 * @param s : The ClientState object that the tools will use to get properties such as the currently selected color
 	*/
-	public ToolManager(ClientState s) {
-		toolList = JythonBridge.getToolList(s);
+	private ToolManager(List<Tool> toolList) {
+		this.toolList = toolList; 
 		tools = new HashMap<String, Tool>();
 		for(Tool t : toolList) {
 			tools.put(t.getToolID(), t);
 		}
 	}
 
-	public ToolManager() {
+	private ToolManager(List<Tool> toolList, ToolBox b) {
+		this(toolList);
+		this.b = b;
+	}
+
+	private ToolManager() {
 		this(null);
 	}
 
 	private HashMap<String, Tool> tools;
 	private List<Tool> toolList;
+	private ToolBox b;
 
 	/** Get all of the Tools tracked by this ToolManager
 	*
@@ -36,16 +47,46 @@ public class ToolManager {
 		return toolList;
 	}
 
+	public void addTool(String serial_form, ClientState state) {
+		Tool t = JythonBridge.addClientTool(serial_form, state);
+		toolList.add(t);
+		tools.put(t.getToolID(), t);
+	}
+
+	/**This method passses the given phrase and graphics to the Tool with the given ID.
+	 * 
+	 * @param toolid the toolID of the tool to use for parsing the draw command
+	 * @param phrase the phrase that describes the form to draw
+	 * @param g the graphics to draw on
+	 * @see mict.tools.Tool#draw(String, Graphics2D)
+	 */
 	public void draw(String toolid, String phrase, Graphics2D g) {
 		getToolByID(toolid).draw(phrase,g);
 	}
-	/** get a tool based on its toolid
+
+	/** get a tool based on its toolID
 	*
 	*
 	* @param id the unique identifier of the tool, as returned by {mict.tools.Tool#getToolID Tool.getToolID()}
-	* @see Tool.getToolID()
+	* @see mict.tools.Tool#getToolID()
 	*/
 	public Tool getToolByID(String id) {
 		return tools.get(id);
+	}
+
+	public static ToolManager getServerToolManager() {
+		return new ToolManager(JythonBridge.getToolList(null));
+	}
+
+	public static ToolManager getServerToolManager(ClientState s) {
+		return new ToolManager(JythonBridge.getToolList(s));
+	}
+
+	public static List<String> getNeededClientTools(String tools) {
+		return JythonBridge.getNeededClientTools(tools);
+	}
+
+	public static ToolManager getClientToolManager(ClientState s, ToolBox b) {
+		return new ToolManager(JythonBridge.getClientTools(s), b);
 	}
 }

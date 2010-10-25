@@ -7,6 +7,8 @@ import java.awt.image.*;
 import javax.imageio.*;
 import javax.net.ssl.*;
 
+import mict.tools.ToolManager;
+
 
 
 /**
@@ -15,13 +17,14 @@ import javax.net.ssl.*;
 public class ClientConnection extends Thread {
 	private static int DEFAULT_PORT = 56324;
 
-	public ClientConnection(String server, int port, String username, String passwd, Canvas canvas) {
+	public ClientConnection(String server, int port, String username, String passwd, Canvas canvas, ToolManager t) {
 		this.server = server;
 		//this.controller = controller;
 		//this.serverport = port;
 		this.canvas = canvas;
 		if(server != "") {
 			try {
+				this.t = t;
 				SSLSocketFactory sockfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
 				waiter = (SSLSocket)sockfactory.createSocket(server, port);
 				out = new PrintWriter(new OutputStreamWriter(waiter.getOutputStream()), true);
@@ -35,8 +38,8 @@ public class ClientConnection extends Thread {
 		setDaemon(true);
 	}
 
-	public ClientConnection(String server, String username, String passwd, Canvas canvas) {
-		this(server, DEFAULT_PORT, username, passwd, canvas);
+	public ClientConnection(String server, String username, String passwd, Canvas canvas, ToolManager t) {
+		this(server, DEFAULT_PORT, username, passwd, canvas, t);
 	}
 
 	private String server;
@@ -44,6 +47,7 @@ public class ClientConnection extends Thread {
 	private SSLSocket waiter;
 	private PrintWriter out;
 	private BufferedReader in;
+	private ToolManager t;
 	/**
 	 * @uml.property  name="parent"
 	 * @uml.associationEnd  
