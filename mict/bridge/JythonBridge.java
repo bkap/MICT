@@ -106,4 +106,16 @@ public abstract class JythonBridge {
 			return new Vector<Tool>();
 		}
 	}
+	public static String serializeTool(String toolID) {
+		
+		try {
+			jython.eval("import " + SCRIPT_NAME);
+			String pickledTool = (String)jython.eval(SCRIPT_NAME + ".serialize_tool(\"" + toolID + "\")");
+			return pickledTool;
+		} catch (ScriptException e) {
+			
+			return "";
+		}
+		
+	}
 }

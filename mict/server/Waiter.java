@@ -5,6 +5,7 @@ import java.io.*;
 import javax.net.ssl.*;
 import javax.imageio.*;
 
+import mict.bridge.JythonBridge;
 import mict.networking.*;
 
 /**
@@ -117,6 +118,9 @@ public class Waiter extends Thread {
 				long h = Long.parseLong(phrase.substring(index+1));
 				System.out.println("Stitching and sharing a rectangular portion of the canvas @(" + x + ',' + y + ") at " + w + " by " + h);
 				sendCanvasRectangle(x, y, w, h);
+			} else if(action.startsWith("requesttool")) {
+				String pickled = JythonBridge.serializeTool(phrase);
+				out.write("tool " + pickled + "\n");
 			} else {
 				System.out.println("Oops, that action doesn't exist.");
 			}

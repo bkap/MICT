@@ -30,7 +30,7 @@ public class CanvasManager implements ImageObserver {
 	 * @uml.property  name="tools"
 	 * @uml.associationEnd  
 	 */
-	private ToolManager tools = new ToolManager();
+	private ToolManager tools = ToolManager.getServerToolManager();
 	private HashMap<Point, Chunk> cache = new HashMap<Point, Chunk>();
 
 	public Object /*HistoryLayer*/ draw(long x, long y, String tool, String data, Waiter user) {

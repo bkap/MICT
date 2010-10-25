@@ -61,7 +61,6 @@ public class ToolBox extends JPanel {
 	 * @uml.property  name="tools"
 	 * @uml.associationEnd  
 	 */
-	private ToolManager tools;
 	public void addTools(List<Tool> tools) {
 		for(Tool t: tools) {
 			addTool(t);

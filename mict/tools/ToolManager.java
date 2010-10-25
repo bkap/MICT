@@ -25,10 +25,12 @@ public class ToolManager {
 			tools.put(t.getToolID(), t);
 		}
 	}
-	private ToolManager(List<Tool> toolList, ToolBox b) {
+	private ToolManager(List<Tool> toolList, ToolBox b, ClientState s) {
 		this(toolList);
 		this.b = b;
+		this.state = s;
 	}
+	private ClientState state;
 	private ToolManager() {
 		this(null);
 	}
@@ -43,7 +45,7 @@ public class ToolManager {
 	public List<Tool> getAllTools() {
 		return toolList;
 	}
-	public void addTool(String serial_form, ClientState state) {
+	public void addTool(String serial_form) {
 		Tool t = JythonBridge.addClientTool(serial_form, state);
 		toolList.add(t);
 		tools.put(t.getToolID(), t);
@@ -57,6 +59,26 @@ public class ToolManager {
 	 */
 	public void draw(String toolid, String phrase, Graphics2D g) {
 		getToolByID(toolid).draw(phrase,g);
+	}
+	
+	/**same as {@link mict.tools.ToolManager#getNeededClientTools(String)} except that it simultaneously updates this ToolManager
+	 * 
+	 * @param tools
+	 * @return
+	 */
+	public List<String> updateClientTools(String toolstr) {
+		List<String> neededTools = ToolManager.getNeededClientTools(toolstr);
+		List<Tool> newTools = JythonBridge.getClientTools(state);
+		for(Tool t : newTools) {
+			if(!tools.containsKey(t.getToolID())) {
+				this.b.addTool(t);
+				this.toolList.add(t);
+				this.tools.put(t.getToolID(), t);
+			}
+			
+		}
+		
+		return neededTools;
 	}
 	/** get a tool based on its toolID
 	*
@@ -78,7 +100,7 @@ public class ToolManager {
 		return JythonBridge.getNeededClientTools(tools);
 	}
 	public static ToolManager getClientToolManager(ClientState s, ToolBox b) {
-		return new ToolManager(JythonBridge.getClientTools(s), b);
+		return new ToolManager(JythonBridge.getClientTools(s), b,s);
 	}
 
 }

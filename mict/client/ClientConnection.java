@@ -2,7 +2,8 @@ package mict.client;
 
 import java.io.*;
 import java.net.*;
-import java.awt.*;
+import java.util.List;
+import java.awt.Graphics2D;
 import java.awt.image.*;
 import javax.imageio.*;
 import javax.net.ssl.*;
@@ -24,7 +25,7 @@ public class ClientConnection extends Thread {
 		this.canvas = canvas;
 		if(server != "") {
 			try {
-				this.t = t;
+				this.toolManager = t;
 				SSLSocketFactory sockfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
 				waiter = (SSLSocket)sockfactory.createSocket(server, port);
 				out = new PrintWriter(new OutputStreamWriter(waiter.getOutputStream()), true);
@@ -47,7 +48,7 @@ public class ClientConnection extends Thread {
 	private SSLSocket waiter;
 	private PrintWriter out;
 	private BufferedReader in;
-	private ToolManager t;
+	private ToolManager toolManager;
 	/**
 	 * @uml.property  name="parent"
 	 * @uml.associationEnd  
@@ -114,6 +115,15 @@ public class ClientConnection extends Thread {
 					System.err.println("Wow, that really should never have happened:");
 					e.printStackTrace(System.err);
 				}
+			} else if(action.equals("querytools")) {
+				List<String> needed = toolManager.updateClientTools(phrase);
+				String tools = " ";
+				for(String toolID: needed) {
+					tools = tools.concat(toolID + " ");
+				}
+				out.println("requesttool" + tools);
+			} else if(action.equals("tool")) {
+				toolManager.addTool(phrase);
 			}
 			// TODO fill this out later
 			else System.out.println("nothing happened. Improper action string, could not be handled.");

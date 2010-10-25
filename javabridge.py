@@ -49,5 +49,14 @@ def get_needed_tools(serverTools):
 def add_tool(pickleStream, clientState=None):
     global active_tools
     tool = pickle.loads(pickleStream)
+    pickle.dump(tool, open(PICKLE_FILE,'a'))
     active_tools.append(tool)
     return tool(clientState)
+
+
+def serialize_tool(toolID):
+    '''return a pickled form of the tool with the given toolID. This should be used on the server side'''
+    for tool in tools.tools :
+        if tool.getToolID() == toolID :
+            return pickle.dumps(tool)
+    return ''
