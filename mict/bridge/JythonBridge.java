@@ -118,4 +118,7 @@ public abstract class JythonBridge {
 		}
 		
 	}
+	public static void main(String[] args) {
+		
+	}
 }

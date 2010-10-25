@@ -1,10 +1,17 @@
 #do some path manipulation for the stdlib
 import sys
-sys.path.append(__file__[:__file__.rindex('/')] + "/pylib")
+if '/' in __file__ :
+    sys.path.append(__file__[:__file__.rindex('/')] + "/pylib")
+else :
+    sys.path.append('pylib')
 from javax.swing import JLabel, JPanel, JButton
 import tools
+from java.io import ObjectInputStream, ObjectOutputStream
+import cStringIO
 import cPickle as pickle
 import mict.client.ClientState
+import types
+import mict.tools
 def get_tools(clientstate= None) :
     tools_instances = []
     for tool in tools.tools :
@@ -53,10 +60,48 @@ def add_tool(pickleStream, clientState=None):
     active_tools.append(tool)
     return tool(clientState)
 
-
+_excluded_methods = 'class','classDictInit', 'equals', 'finalize', 'getClass', 'hashCode', 'notify', 'notifyAll', 'wait', 'toString', 'clone'
 def serialize_tool(toolID):
-    '''return a pickled form of the tool with the given toolID. This should be used on the server side'''
+    s_tool = None
     for tool in tools.tools :
-        if tool.getToolID() == toolID :
-            return pickle.dumps(tool)
-    return ''
+        if tool().getToolID() == toolID :
+            s_tool = tool
+            break
+    if s_tool == None :
+        return ""
+    class_dict = {}
+    sio = cStringIO.StringIO()
+    oout= ObjectOutputStream(sio)
+    for iname in dir(tool) :
+        if not (iname.startswith('_') and iname != '__init__') and iname not in _excluded_methods :
+            try :
+                item = getattr(tool,iname)
+                if isinstance(item, types.MethodType) :
+                    oout.writeObject(item.im_func.func_code)
+                    class_dict[iname + '.f'] = sio.read()
+                else :
+                    class_dict[iname] = item
+            except AttributeError :
+                pass
+                #this gets triggered for properties
+    return pickle.dumps(class_dict)
+def unserialize_tool(tool_string): 
+    name, pickled = tool_string.split(';',1)
+    marshal_dict = pickle.loads(pickled)
+    print marshal_dict
+    class_dict = {}
+    sio = cStringIO.StringIO()
+    oin= ObjectInputStream(sio)
+    for iname in marshal_dict :
+        if not iname.endswith('.f') :
+            class_dict[iname] = marshal_dict[iname]
+        else :
+            sio.write(marshal_dict[iname])
+            func = types.FunctionType(oin.readObject(),globals(), iname[:-2])
+            class_dict[iname[:-2]] = func
+    new_tool = type(name,(mict.tools.Tool,),class_dict)
+
+if __name__ == "__main__" :
+    x = serialize_tool('rect')
+    y = unserialize_tool('rectangle;' + x)
+    print dir(y)
