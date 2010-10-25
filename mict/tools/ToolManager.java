@@ -31,6 +31,7 @@ public class ToolManager {
 		this.state = s;
 	}
 	private ClientState state;
+
 	private ToolManager() {
 		this(null);
 	}
@@ -38,6 +39,7 @@ public class ToolManager {
 	private HashMap<String, Tool> tools;
 	private List<Tool> toolList;
 	private ToolBox b;
+
 	/** Get all of the Tools tracked by this ToolManager
 	*
 	*@return the list of tools
@@ -50,6 +52,7 @@ public class ToolManager {
 		toolList.add(t);
 		tools.put(t.getToolID(), t);
 	}
+
 	/**This method passses the given phrase and graphics to the Tool with the given ID.
 	 * 
 	 * @param toolid the toolID of the tool to use for parsing the draw command
@@ -89,18 +92,20 @@ public class ToolManager {
 	public Tool getToolByID(String id) {
 		return tools.get(id);
 	}
+
 	public static ToolManager getServerToolManager() {
-		
 		return new ToolManager(JythonBridge.getToolList(null));
 	}
+
 	public static ToolManager getServerToolManager(ClientState s) {
 		return new ToolManager(JythonBridge.getToolList(s));
 	}
+
 	public static List<String> getNeededClientTools(String tools) {
 		return JythonBridge.getNeededClientTools(tools);
 	}
+
 	public static ToolManager getClientToolManager(ClientState s, ToolBox b) {
 		return new ToolManager(JythonBridge.getClientTools(s), b,s);
 	}
-
 }
