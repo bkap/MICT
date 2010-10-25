@@ -6,7 +6,8 @@ else :
     sys.path.append('pylib')
 from javax.swing import JLabel, JPanel, JButton
 import tools
-from java.io import ObjectInputStream, ObjectOutputStream
+from java.io import ObjectOutputStream, BufferedReader, InputStreamReader, PrintWriter, PipedInputStream, PipedOutputStream, BufferedOutputStream, BufferedInputStream, FileOutputStream
+from org.python.util import PythonObjectInputStream as ObjectInputStream
 import cStringIO
 import cPickle as pickle
 import mict.client.ClientState
@@ -70,15 +71,32 @@ def serialize_tool(toolID):
     if s_tool == None :
         return ""
     class_dict = {}
-    sio = cStringIO.StringIO()
-    oout= ObjectOutputStream(sio)
+    outStream = PipedOutputStream()
+    inputStream = PipedInputStream(outStream)
+    foutStream = FileOutputStream('test.oos')
+    istream = BufferedReader(InputStreamReader(inputStream),10240)
+    ostream = BufferedOutputStream(outStream)
+    oout= ObjectOutputStream(ostream)
     for iname in dir(tool) :
+    
         if not (iname.startswith('_') and iname != '__init__') and iname not in _excluded_methods :
             try :
                 item = getattr(tool,iname)
                 if isinstance(item, types.MethodType) :
+
                     oout.writeObject(item.im_func.func_code)
-                    class_dict[iname + '.f'] = sio.read()
+                    print "wrote object"
+                    
+                    ostream.flush()
+                    print "flushed"
+                    #now build the string
+                    chrs = []
+                    
+                    while istream.ready() :
+                        print "reading"
+                        chrs.append(char(istream.read()))
+                    print chrs
+                    class_dict[iname + '.f'] = ''.join(chrs)
                 else :
                     class_dict[iname] = item
             except AttributeError :
@@ -86,22 +104,37 @@ def serialize_tool(toolID):
                 #this gets triggered for properties
     return pickle.dumps(class_dict)
 def unserialize_tool(tool_string): 
+    print "deserializing"
     name, pickled = tool_string.split(';',1)
     marshal_dict = pickle.loads(pickled)
     print marshal_dict
     class_dict = {}
-    sio = cStringIO.StringIO()
-    oin= ObjectInputStream(sio)
+    inputStream = PipedInputStream()
+    
+   
+    outStream = PipedOutputStream(inputStream)
+    ostream = PrintWriter(outStream)
+    inStream = BufferedInputStream(inputStream)
+    inRead = BufferedReader(InputStreamReader(inputStream))
+   #oin = ObjectInputStream(inputStream)
+    print "streams written"
+    oin= None
+    print "preparing to extract"
     for iname in marshal_dict :
+        print iname
         if not iname.endswith('.f') :
             class_dict[iname] = marshal_dict[iname]
         else :
-            sio.write(marshal_dict[iname])
-            func = types.FunctionType(oin.readObject(),globals(), iname[:-2])
-            class_dict[iname[:-2]] = func
+            ostream.print(marshal_dict[iname])
+            while inRead.ready() :
+                print unichr(inRead.read()),
+            print ''
+                
+         #   func = types.FunctionType(oin.readObject(),globals(), iname[:-2])
+         #   class_dict[iname[:-2]] = func
     new_tool = type(name,(mict.tools.Tool,),class_dict)
-
 if __name__ == "__main__" :
     x = serialize_tool('rect')
     y = unserialize_tool('rectangle;' + x)
     print dir(y)
+    
