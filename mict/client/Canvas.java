@@ -6,6 +6,8 @@ import java.awt.image.*;
 
 import javax.swing.*;
 
+import mict.tools.ToolManager;
+
 /** This is the Canvas viewport. It contains the drawn image as well as maintaining the connection to the server. All drawing operations
  * should go through here
  * @author  bkaplan
@@ -23,10 +25,10 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		addMouseMotionListener(this);
 		addComponentListener(this);
 	}
-	public void start() {
+	public void start(ToolManager t) {
 		String servername = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
 		if(servername == null) servername = "";
-		socket = new ClientConnection(servername, "username", "password", this);
+		socket = new ClientConnection(servername, "username", "password", this,t);
 		socket.requestCanvasRect(this.getUserX(), this.getUserY(), this.getWidth(), this.getHeight());
 		this.setCanvas(new BufferedImage(this.getWidth(), this.getHeight(),BufferedImage.TYPE_INT_ARGB));
 		this.setArtifactCanvas(new BufferedImage(this.getWidth(), this.getHeight(),BufferedImage.TYPE_INT_ARGB));

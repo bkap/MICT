@@ -1,6 +1,9 @@
 package mict.client;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
@@ -16,24 +19,22 @@ public class ToolBox extends JPanel {
 	private static final long serialVersionUID = 1L; // @Ben this is incorrect. pick something that's even remotely entropic, please.
 
 	public ToolBox(ClientState state, ToolManager tools) {
-		this.state = state;
-		this.setPreferredSize(new java.awt.Dimension(100,300));
-		this.setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
-		ButtonGroup bg = new ButtonGroup();
-		 
+		this(state);
 		for(Tool t : tools.getAllTools()) {
-			ToolButton b = new ToolButton(t, state);
-			bg.add(b);
+			this.addTool(t);
 		}
 		bg.setSelected(bg.getElements().nextElement().getModel(), true);
 		state.activeTool = ((ToolButton)bg.getElements().nextElement()).getTool();
 	
-		JPanel toolPanel = new JPanel();
-		toolPanel.setLayout(new GridLayout((bg.getButtonCount() + 1) / 2,2));
-		Enumeration<AbstractButton> allButtons = bg.getElements();
-		while(allButtons.hasMoreElements()) {
-			toolPanel.add(allButtons.nextElement());
-		}
+		
+	}
+	public ToolBox(ClientState state) {
+		this.state = state;
+		this.setPreferredSize(new java.awt.Dimension(100,300));
+		this.setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
+		bg = new ButtonGroup();
+		toolButtons = new Vector<ToolButton>();
+		toolPanel = new JPanel();
 		this.add(toolPanel);
 		this.add(Box.createVerticalGlue());
 		colorButton = new JButton(new ColorIcon());
@@ -44,10 +45,13 @@ public class ToolBox extends JPanel {
 		this.add(b);
 		this.add(Box.createVerticalGlue());
 		colorButton.addActionListener(new ColorChooserListener());
+		state.selectedColor = activeColor;
 	}
-
 	private Color activeColor = Color.BLACK;
 	private JButton colorButton;
+	private Vector<ToolButton> toolButtons;
+	private ButtonGroup bg;
+	private JPanel toolPanel;
 	/**
 	 * @uml.property  name="state"
 	 * @uml.associationEnd  
@@ -58,7 +62,21 @@ public class ToolBox extends JPanel {
 	 * @uml.associationEnd  
 	 */
 	private ToolManager tools;
-
+	public void addTools(List<Tool> tools) {
+		for(Tool t: tools) {
+			addTool(t);
+		}
+		bg.setSelected(bg.getElements().nextElement().getModel(), true);
+		state.activeTool = ((ToolButton)bg.getElements().nextElement()).getTool();
+	}
+	public void addTool(Tool t) {
+		ToolButton newButton = new ToolButton(t, state);
+		bg.add(newButton);
+		toolButtons.add(newButton);
+		toolPanel.setLayout(new GridLayout((bg.getButtonCount() + 1) / 2,2));
+		toolPanel.add(newButton);
+		
+	}
 	private class ColorIcon implements Icon {
 		@Override
 		public void paintIcon(Component c, Graphics g, int x, int y) {

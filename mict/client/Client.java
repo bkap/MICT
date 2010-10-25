@@ -27,14 +27,19 @@ public class Client extends JApplet {
 	private static final long serialVersionUID = -6467296753041382320L;
 
 	public Client() { 
-		//JythonBridge.initialize();
 		canvas = new Canvas(state);
 		canvas.setSize(300, 300);
 		this.getContentPane().setLayout(new java.awt.BorderLayout());
 		canvas.setPreferredSize(canvas.getSize());
-		ToolManager t = new ToolManager(state);
-		state.tools = t;
-		toolbox = new ToolBox(state, t);
+		tools = ToolManager.getServerToolManager(state);
+		
+		state.tools = tools;
+		toolbox = new ToolBox(state,tools);
+		/* toolbox = new ToolBox(state);
+		 * tools= ToolManager.getClientToolManager(state,toolbox);
+		 * state.tools = tools;
+			
+		*/
 		this.getContentPane().add(toolbox, java.awt.BorderLayout.WEST);
 		this.getContentPane().add(canvas, java.awt.BorderLayout.CENTER);
 		
@@ -55,14 +60,14 @@ public class Client extends JApplet {
 	 * @uml.associationEnd  
 	 */
 	private ToolBox toolbox;
-
+	private ToolManager tools;
 	@Override
 	/**
 	 * any initialization on graphical stuff should go here because the
 	 * Swing event thread isn't created when the  constructor is called 
 	 */
 	public void start() {
-		canvas.start();
+		canvas.start(tools);
 	}
 
 	public ClientState getClientState() {

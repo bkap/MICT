@@ -30,9 +30,15 @@ v0.2 & Added more info on client/server interaction & 10/20/10 \\ \hline
  \subsection{Serializing the Tools}
   Each of the Tools will be stored on the server and transmitted to the Client
   upon log-in. To facilitate this, each of the Tools should be implemented in
-  Jython. Preliminary research shows that the Jython classes can be serialized
-  using Java's ObjectOutputStream, but this has not yet confirmed satisfactorily.
-
+  Jython. The Jython class objects will be serialized using the built-in
+  cPickle module and sent across the network. This will ensure that every
+  client is using the same version of the tools. Each client will store and
+  the pickled form of the tools locally. Upon connection, the server will send a list of
+  toolIDs along with the hash of the pickled String. The client will examine
+  the list. If the Client posses a tool with a matching ID and hash, it will
+  load the tool. If the Client does not have a tool with a matching ID or it
+  has a tool with a matching ID but the wrong hash, it will send a request to
+  the server for the tool.
  \subsection{Mouse Events}
   The Tool is expected to implement MousePressed, MouseDragged, and
   MouseReleased methods that are called when the mouse is pressed, moved (while

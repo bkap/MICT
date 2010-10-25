@@ -1,13 +1,13 @@
 package mict.bridge;
 
-import java.awt.Graphics;
+
 import java.util.*;
-import javax.swing.*;
 import javax.script.*;
 
 import org.python.core.Py;
 import org.python.core.PySystemState;
 
+import mict.client.ClientConnection;
 import mict.client.ClientState;
 import mict.tools.Tool;
 
@@ -64,6 +64,46 @@ public abstract class JythonBridge {
 			return result;
 		} catch(ScriptException e) {
 			return new java.util.ArrayList<Tool>();
+		}
+	}
+	public static List<String> getNeededClientTools(String required_tools) {
+		try {
+			jython.eval("import " + SCRIPT_NAME);
+			List needed_tools = (List)jython.eval(SCRIPT_NAME + ".get_needed_tools(\"" + required_tools + "\")");
+			List<String> tools = new ArrayList<String>();
+			for(Object tool_o: needed_tools) {
+				tools.add((String)tool_o);
+				//need to request tools
+			}
+			return tools;
+		} catch(ScriptException e) {
+			return new Vector<String>();
+		}
+		
+	}
+	public static Tool addClientTool(String form, ClientState s) {
+		try {
+			//this should not be called unless the script has already been imported
+			jython.put("state", s);
+			jython.put("serialized_tool", form);
+			Tool t = (Tool)jython.eval(SCRIPT_NAME + ".add_tool(serialized_tool,state)");
+			return t;
+		} catch(ScriptException e) {
+			return null;
+		}
+	}
+	public static List<Tool> getClientTools(ClientState s) {
+		try {
+			jython.eval("import " + SCRIPT_NAME);
+			jython.put("state", s);
+			List tools = (List)jython.eval(SCRIPT_NAME + ".get_client_tools(state)");
+			List<Tool> result_list = new Vector<Tool>();
+			for(Object tool_o : tools) {
+				result_list.add((Tool)tool_o);
+			}
+			return result_list;
+		} catch(ScriptException e) {
+			return new Vector<Tool>();
 		}
 	}
 }
