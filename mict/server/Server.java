@@ -19,8 +19,8 @@ public class Server extends Thread {
 		// load tool files
 		// set config options from parameters
 		boolean database_enabled = true;
-		for(int i = 0; i < args.length; i++) {
-			if(arg.equals("--disable-database")) database_enabled = false;
+		for(int i = 0; i < options.length; i++) {
+			if(options[i].equals("--disable-database")) database_enabled = false;
 		}
 		// read user information
 		// load whatever parts of canvas need to be loaded
@@ -39,6 +39,7 @@ public class Server extends Thread {
 		} catch(IOException e) {
 			System.out.println("Error starting server:");
 			e.printStackTrace(System.err);
+			System.exit(1);
 		}
 	}
 
@@ -98,7 +99,7 @@ public class Server extends Thread {
 		return null;
 	}
 
-	public static void stopServer() {
+	public void stopServer() {
 		for(Waiter w : clients) {
 			w.sendClose("_Server is shutting down.");
 		}

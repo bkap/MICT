@@ -8,7 +8,7 @@ import javax.swing.*;
 
 import mict.tools.ToolManager;
 
-/** This is the Canvas viewport. It contains the drawn image as well as maintaining the connection to the server. All drawing operations
+/** This is the Canvas viewport. It contains the drawn image as well as maintaining the socketection to the server. All drawing operations
  * should go through here
  * @author  bkaplan
  */
@@ -25,8 +25,9 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		addMouseMotionListener(this);
 		addComponentListener(this);
 	}
+
 	public void start(ToolManager t) {
-		String servername = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
+		String servername = JOptionPane.showInputDialog(this, "Please enter the URL of the server to socketect to","MICT",JOptionPane.PLAIN_MESSAGE);
 		if(servername == null) servername = "";
 		socket = new ClientConnection(servername, "username", "password", this,t);
 		socket.requestCanvasRect(this.getUserX(), this.getUserY(), this.getWidth(), this.getHeight());
@@ -38,8 +39,9 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		g.fillRect(0, 0,this.getWidth(), this.getHeight());
 		socket.start();
 	}
+
 	/**
-	 * @uml.property  name="parent"
+	 * @uml.property name="parent"
 	 * @uml.associationEnd  
 	 */
 	private ClientState state;
@@ -50,18 +52,17 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	private BufferedImage canvas;
 	private BufferedImage artifacts;
 	/**
-	 * @uml.property  name="canvasGraphics"
+	 * @uml.property name="canvasGraphics"
 	 */
 	private Graphics2D canvasGraphics;
 	private Graphics2D artifactsGraphics;
 	private boolean inside = false;
 	
 	/**
-	 * @uml.property  name="socket"
+	 * @uml.property name="socket"
 	 * @uml.associationEnd  
 	 */
 	public ClientConnection socket;
-	
 	
 	public long getUserX() {
 		return x;
@@ -73,7 +74,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 
 	/**
 	 * @param canvas
-	 * @uml.property  name="canvas"
+	 * @uml.property name="canvas"
 	 */
 	public void setCanvas(BufferedImage canvas) {
 		this.canvas = canvas;
@@ -88,7 +89,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 
 	/**
 	 * @return
-	 * @uml.property  name="canvasGraphics"
+	 * @uml.property name="canvasGraphics"
 	 */
 	public Graphics2D getCanvasGraphics() {
 		return canvasGraphics;
@@ -97,14 +98,15 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	public Graphics2D getArtifactCanvasGraphics() {
 		return artifactsGraphics;
 	}
-
 	
 	public Graphics getClipboardGraphics() {
 		return state.clipboard_graphics;
 	}
+
 	public Color getSelectedColor() {
 		return state.selectedColor;
 	}
+
 	public void paint(Graphics g) {
 		g.drawImage(canvas, 0, 0, this);
 		if(!inside) return;
@@ -125,8 +127,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	public void componentMoved(ComponentEvent e) {}
 
 	public void componentResized(ComponentEvent e) {
-		ClientConnection conn = socket;
-		if(conn == null) return;
+		if(socket == null) return;
 		BufferedImage nc = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics g = nc.getGraphics();
 		g.setColor(Color.GRAY);
@@ -135,16 +136,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		setCanvas(nc);
 		BufferedImage na = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
 		setArtifactCanvas(na);
-		if(getWidth() > prevwidth) {
-			conn.requestCanvasRect(x + getWidth(), y, getWidth() - prevwidth, getHeight());
-			if(getHeight() > prevheight) {
-				conn.requestCanvasRect(x, y + getHeight(), prevwidth, getHeight() - prevheight);
-			}
-		} else if(getHeight() > prevheight) {
-			conn.requestCanvasRect(x, y + getHeight(), getWidth(), getHeight() - prevheight);
-		}
-		prevwidth = getWidth();
-		prevheight = getHeight();
+		socket.requestCanvasRect(x, y, getWidth(), getHeight());
 	}
 
 	public void mousePressed(MouseEvent e) {
@@ -190,33 +182,13 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		socket.sendDraw(state.activeTool.getToolID(), phrase);
 		state.activeTool.draw(phrase, canvasGraphics);
 		if(state.activeTool.getToolID().equals("pan")) {
-			System.out.println("PANNING! DO SPECIAL STUFF!");
 			int index = phrase.indexOf(',');
 			int dx = Integer.parseInt(phrase.substring(0,index));
 			int dy = Integer.parseInt(phrase.substring(index+1));
 			x += dx;
 			y += dy;
-			if(dx > 0) { //moved the image on the canvas to the right, need left side
-				socket.requestCanvasRect(x, y, dx, getHeight());
-				if(dy > 0) {
-					socket.requestCanvasRect(x + dx, y, getWidth() - dx, dy);
-				} else if(dy < 0) {
-					socket.requestCanvasRect(x + dx, y + getHeight() + dy, getWidth() - dx, -dy);
-				}
-			} else if(dx < 0) {
-				socket.requestCanvasRect(x + getWidth() + dx, y, -dx, getHeight());
-				if(dy > 0) {
-					socket.requestCanvasRect(x, y, getWidth() + dx, dy);
-				} else if(dy < 0) {
-					socket.requestCanvasRect(x, y + getHeight() + dy, getHeight() + dx, -dy);
-				}
-			} else {
-				if(dy > 0) {
-					socket.requestCanvasRect(x, y, getWidth(), dy);
-				} else if(dy < 0) {
-					socket.requestCanvasRect(x, y + getHeight() + dy, getWidth(), -dy);
-				}
-			}
+			if(dx != 0 && dy != 0)
+				socket.requestCanvasRect(x, y, getWidth(), getHeight());
 			BufferedImage nc = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
 			Graphics g = nc.getGraphics();
 			g.setColor(Color.GRAY);
@@ -230,5 +202,4 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	public void draw(String toolid, String phrase) {
 		this.state.tools.draw(toolid, phrase, this.getCanvasGraphics());
 	}
-	
 }

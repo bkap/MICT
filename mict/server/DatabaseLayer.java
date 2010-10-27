@@ -34,6 +34,7 @@ public class DatabaseLayer {
 	private PreparedStatement create;
 	private PreparedStatement write;
 	private PreparedStatement read;
+	private boolean enabled;
 
 	public Chunk getChunk(int x, int y) {
 		Image result = null;

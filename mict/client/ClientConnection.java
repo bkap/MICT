@@ -102,7 +102,8 @@ public class ClientConnection extends Thread {
 					BufferedImage img = ImageIO.read(s.getInputStream());
 					s.close();
 		
-					canvas.getCanvasGraphics().drawImage(img, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()), canvas);
+					canvas.getCanvasGraphics().drawImage(img, (int)(canvas.getUserX() + x), (int)(canvas.getUserY() + y), canvas);
+					mict.test.ImageTest.popup(img);
 					canvas.repaint();
 				} catch(IOException e) {
 					System.err.println("Wow, that really should never have happened:");
