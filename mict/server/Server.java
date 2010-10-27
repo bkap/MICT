@@ -18,12 +18,16 @@ public class Server extends Thread {
 		// read config files first, if applicable. Probably not.
 		// load tool files
 		// set config options from parameters
+		boolean database_enabled = true;
+		for(int i = 0; i < args.length; i++) {
+			if(arg.equals("--disable-database")) database_enabled = false;
+		}
 		// read user information
 		// load whatever parts of canvas need to be loaded
 		String connstring = "jdbc:postgresql://rdebase.com/mict?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory";
 		String dbusername = "mict";
 		String dbpasswd = PrivateTemporaryConfigurationClass.dbpasswd; // Sorry, github.
-		DatabaseLayer database = new DatabaseLayer(connstring, dbusername, dbpasswd);
+		DatabaseLayer database = new DatabaseLayer(connstring, dbusername, dbpasswd, database_enabled);
 		canvas = new CanvasManager(database, this);
 
 		// Basically, do the crap that needs to be done before beginning to accept users.
@@ -41,7 +45,7 @@ public class Server extends Thread {
 	protected Vector<Waiter> clients = new Vector<Waiter>();
 	private SSLServerSocket servsock;
 	/**
-	 * @uml.property  name="canvas"
+	 * @uml.property name="canvas"
 	 * @uml.associationEnd  
 	 */
 	private CanvasManager canvas;
@@ -82,7 +86,7 @@ public class Server extends Thread {
 
 	/**
 	 * @return
-	 * @uml.property  name="canvas"
+	 * @uml.property name="canvas"
 	 */
 	public CanvasManager getCanvas() {
 		return canvas;
@@ -95,12 +99,14 @@ public class Server extends Thread {
 	}
 
 	public static void stopServer() {
-		// disconnect all users
+		for(Waiter w : clients) {
+			w.sendClose("_Server is shutting down.");
+		}
 
 		System.out.print("Saving canvas and stopping server ...");
 		System.out.flush();
 
-		// save canvas
+		canvas.saveAll();
 
 		System.out.println(" Done. Good-bye.");
 	}

@@ -8,7 +8,7 @@ import java.util.List;
 import mict.tools.*;
 
 /**
- * @author  bkaplan
+ * @author rwiesler
  */
 public class CanvasManager implements ImageObserver {
 	public CanvasManager(DatabaseLayer database, Server parent) {
@@ -17,17 +17,17 @@ public class CanvasManager implements ImageObserver {
 	}
 
 	/**
-	 * @uml.property  name="parent"
+	 * @uml.property name="parent"
 	 * @uml.associationEnd  
 	 */
 	private Server parent;
 	/**
-	 * @uml.property  name="database"
+	 * @uml.property name="database"
 	 * @uml.associationEnd  
 	 */
 	private DatabaseLayer database;
 	/**
-	 * @uml.property  name="tools"
+	 * @uml.property name="tools"
 	 * @uml.associationEnd  
 	 */
 	private ToolManager tools = ToolManager.getServerToolManager();

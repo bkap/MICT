@@ -10,10 +10,8 @@ import javax.net.ssl.*;
 
 import mict.tools.ToolManager;
 
-
-
 /**
- * @author  bkaplan
+ * @author rde
  */
 public class ClientConnection extends Thread {
 	private static int DEFAULT_PORT = 56324;
@@ -49,12 +47,7 @@ public class ClientConnection extends Thread {
 	private PrintWriter out;
 	private BufferedReader in;
 	private ToolManager toolManager;
-	/**
-	 * @uml.property  name="parent"
-	 * @uml.associationEnd  
-	 */
 	private Canvas canvas;
-	//private int serverport;
 	
 	public void run() {
 		// DO WORK SON

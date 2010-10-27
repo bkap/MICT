@@ -171,6 +171,12 @@ public class Waiter extends Thread {
 		out.println(type + ' ' + data);
 	}
 
+	protected void sendClose(String reason) {
+		String sep = reason.substring(0,1);
+		send("close", reason.substring(1).replace(" ", sep));
+		close();
+	}
+
 	protected void close() {
 		System.out.println("Client is leaving!");
 		parent.clients.remove(this);
