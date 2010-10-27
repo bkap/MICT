@@ -1,17 +1,18 @@
 import org.junit.*;
 import mict.tools.*;
+import mict.client.*;
+import mict.server.*;
+import mict.bridge.JythonBridge;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import javax.swing.DebugGraphics;
 public class ToolTest {
     private Point[] locations;
-    private ToolManager manager;
-    private ToolManager manager2;
-    private Graphics testGraphics;
-    private BufferedImage clientImage;
-    private BufferedImage resultImage;
-    public ToolTest() {
+    private Client testClient;
+	private Server testServer;
+	public ToolTest() {
 
      locations = new Point[7];
      locations[0] = new Point(5,5);
@@ -24,11 +25,8 @@ public class ToolTest {
      }
     @Before
     public void setup() {
-        manager = new ToolManager();
-        manager2 = new ToolManager();
-        testGraphics = new
-        BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB).getGraphics();
-        clientImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-        resultImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-    }
-
+	}
+	@After
+	public void tearDown() {
+		
+	}

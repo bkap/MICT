@@ -22,7 +22,6 @@ def getDualStreams() :
 					char = sio.read(1)
 					if char:
 						x = ord(char) if ord(char) < 128 else  ord(char) - 256
-						print x
 						b[i+off] = x
 					else :
 						self.pos = sio.tell()
@@ -52,7 +51,6 @@ def getDualStreams() :
 				for i in range(len_) :
 					if off+i>= len(b) :
 						break
-					print b[off+i]
 					sio.write(chr(b[off+i] if b[off+i] >= 0 else 256 + b[off+i]))
 			else :
 				sio.write(b)

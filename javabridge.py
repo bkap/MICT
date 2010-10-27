@@ -15,6 +15,9 @@ import types
 import mict.tools
 import misc
 
+from java.awt import Point, Color, Graphics, Image
+from mict.tools import Tool
+
 def get_tools(clientstate= None) :
 	tools_instances = []
 	for tool in tools.tools :
@@ -99,7 +102,7 @@ def serialize_tool(toolID):
 				#this gets triggered for properties
 	print class_dict
 	return pickle.dumps(class_dict)
-def unserialize_tool(tool_string): 
+def unserialize_tool(tool_string, client_state = None): 
 	print "deserializing"
 	name, pickled = tool_string.split(';',1)
 	marshal_dict = pickle.loads(pickled)
@@ -123,7 +126,7 @@ def unserialize_tool(tool_string):
 			class_dict[iname[:-2]] = func
 	new_tool = type(name,(mict.tools.Tool,),class_dict)
 	tools.append(new_tool)
-	return new_tool
+	return new_tool()
 if __name__ == "__main__" :
 	x = serialize_tool('rect')
 	y = unserialize_tool('rectangle;' + x)
