@@ -9,7 +9,9 @@ import java.sql.*;
 import javax.imageio.ImageIO;
 
 public class DatabaseLayer {
-	public DatabaseLayer(String connection, String username, String password) {
+	public DatabaseLayer(String connection, String username, String password, boolean enabled) {
+		this.enabled = enabled;
+		if(!enabled) return;
 		try {
 			Class.forName(driver);
 			con = DriverManager.getConnection(connection, username, password);
@@ -32,23 +34,26 @@ public class DatabaseLayer {
 	private PreparedStatement create;
 	private PreparedStatement write;
 	private PreparedStatement read;
+	private boolean enabled;
 
 	public Chunk getChunk(int x, int y) {
 		Image result = null;
-		try {
-			read.setLong(1, x);
-			read.setLong(2, y);
-			ResultSet results = read.executeQuery();
-			if(results.next()) {
-				InputStream in = results.getBinaryStream("img");
-				result = ImageIO.read(in);
+		if(enabled) {
+			try {
+				read.setLong(1, x);
+				read.setLong(2, y);
+				ResultSet results = read.executeQuery();
+				if(results.next()) {
+					InputStream in = results.getBinaryStream("img");
+					result = ImageIO.read(in);
+				}
+			} catch(SQLException e) {
+				System.err.println("SQL is fail:");
+				e.printStackTrace(System.err);
+			} catch(IOException e) {
+				System.err.println("IO porblems. Go die in a fire, Java:");
+				e.printStackTrace(System.err);
 			}
-		} catch(SQLException e) {
-			System.err.println("SQL is fail:");
-			e.printStackTrace(System.err);
-		} catch(IOException e) {
-			System.err.println("IO porblems. Go die in a fire, Java:");
-			e.printStackTrace(System.err);
 		}
 		if(result == null) {
 			result = new BufferedImage(Chunk.getWidth(), Chunk.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -57,6 +62,7 @@ public class DatabaseLayer {
 	}
 
 	public void setChunk(Chunk c) {
+		if(!enabled) return;
 		try {
 			System.out.println("Saving chunk " + c + " ...");
 			read.setLong(1, c.getX());

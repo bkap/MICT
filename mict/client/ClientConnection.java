@@ -10,10 +10,8 @@ import javax.net.ssl.*;
 
 import mict.tools.ToolManager;
 
-
-
 /**
- * @author  bkaplan
+ * @author rde
  */
 public class ClientConnection extends Thread {
 	private static int DEFAULT_PORT = 56324;
@@ -49,12 +47,7 @@ public class ClientConnection extends Thread {
 	private PrintWriter out;
 	private BufferedReader in;
 	private ToolManager toolManager;
-	/**
-	 * @uml.property  name="parent"
-	 * @uml.associationEnd  
-	 */
 	private Canvas canvas;
-	//private int serverport;
 	
 	public void run() {
 		// DO WORK SON
@@ -119,7 +112,8 @@ public class ClientConnection extends Thread {
 					BufferedImage img = ImageIO.read(s.getInputStream());
 					s.close();
 		
-					canvas.getCanvasGraphics().drawImage(img, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()), canvas);
+					canvas.getCanvasGraphics().drawImage(img, (int)(canvas.getUserX() + x), (int)(canvas.getUserY() + y), canvas);
+					mict.test.ImageTest.popup(img);
 					canvas.repaint();
 				} catch(IOException e) {
 					System.err.println("Wow, that really should never have happened:");
