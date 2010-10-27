@@ -19,14 +19,19 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	private static final int MOUSE_PRESSED = 3;
 	private static final int MOUSE_RELEASED = 4;
 
-	public Canvas(ClientState state) {
+	public Canvas(ClientState state, String servername) {
 		this.state = state;
+		this.servername = servername;
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addComponentListener(this);
 	}
 	public void start(ToolManager t) {
-		String servername = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
+		//if we haven't already specified a server, ask for it
+		if(servername == null) {
+			servername = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
+		}
+		//if we still haven't specified a server, don't connect to a server
 		if(servername == null) servername = "";
 		socket = new ClientConnection(servername, "username", "password", this,t);
 		socket.requestCanvasRect(this.getUserX(), this.getUserY(), this.getWidth(), this.getHeight());
@@ -49,6 +54,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	private int prevheight = 0;
 	private BufferedImage canvas;
 	private BufferedImage artifacts;
+	private String servername;
 	/**
 	 * @uml.property  name="canvasGraphics"
 	 */
@@ -61,7 +67,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	 * @uml.associationEnd  
 	 */
 	public ClientConnection socket;
-	
+
 	
 	public long getUserX() {
 		return x;

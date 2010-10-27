@@ -26,8 +26,8 @@ public class Client extends JApplet {
 
 	private static final long serialVersionUID = -6467296753041382320L;
 
-	public Client() { 
-		canvas = new Canvas(state);
+	public Client(String server) { 
+		canvas = new Canvas(state, server);
 		canvas.setSize(300, 300);
 		this.getContentPane().setLayout(new java.awt.BorderLayout());
 		canvas.setPreferredSize(canvas.getSize());
@@ -44,7 +44,9 @@ public class Client extends JApplet {
 		this.getContentPane().add(canvas, java.awt.BorderLayout.CENTER);
 		
 	}
-
+	public Client() {
+		this(null);
+	}
 	/**
 	 * @uml.property  name="state"
 	 * @uml.associationEnd  

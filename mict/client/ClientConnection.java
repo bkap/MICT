@@ -61,7 +61,7 @@ public class ClientConnection extends Thread {
 		String buffer = "";
 		String action = "";
 		try {
-			while(true) {
+			while(!waiter.isClosed()) {
 				int read = in.read();
 				if(read == -1) break;
 				if(read == ' ') {
@@ -81,7 +81,17 @@ public class ClientConnection extends Thread {
 		}
 		close();
 	}
-
+	
+	public void terminateConnection() {
+		try {
+			waiter.close();
+		} catch (IOException e) {
+			// oh boo hoo. If the connection fails to terminate, it's no  good anyway
+		}
+	}
+	public void finalize() {
+		terminateConnection();
+	}
 	private void dispatch(String action, String phrase) {
 		if(action.startsWith(".")) { // it's a tool
 			System.out.println("Recieving draw from the server: " + action + " " + phrase);
