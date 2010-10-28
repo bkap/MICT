@@ -1,8 +1,17 @@
 #this is for random stuff that I need. Like my StringIO wrapper
 
-from java.io import InputStream, OutputStream
+from java.io import InputStream, OutputStream, ObjectInputStream, ObjectOutputStream
+from org.python.util import PythonObjectInputStream
 from cStringIO import StringIO
 from array import array
+class MyObjectInputStream(PythonObjectInputStream) :
+	def __init__(self, istr) :
+		super(MyObjectInputStream,self).__init__(istr)
+	def resolveClass(self, v) :
+		clsName = v.getName();
+		print "Class: " + clsName
+		print "serialVersionUID %d" % v.getSerialVersionUID()
+		return self.super__resolveClass(v) 
 def getDualStreams() :
 	sio = StringIO()
 	class ReadStream(InputStream) :
@@ -14,11 +23,13 @@ def getDualStreams() :
 			if b :
 				if len_ == -1 :
 					len_ = len(b)
-				x = 0
+				if len_ == 0 :
+					return 0
+				i = 0
 				for i in range(len_) :
-					x = 1
 					if i+off >= len(b) :
-						break
+						self.pos = sio.tell()
+						return i
 					char = sio.read(1)
 					if char:
 						x = ord(char) if ord(char) < 128 else  ord(char) - 256
@@ -26,12 +37,13 @@ def getDualStreams() :
 					else :
 						self.pos = sio.tell()
 						return -1
-				if x:
-					self.pos = sio.tell()
-					return i + 1
-				return 0
+				
+				self.pos = sio.tell()
+				return i + 1
 			x = sio.read(1)
 			self.pos = sio.tell()
+			if not x :
+				return -1
 			return ord(x) if ord(x) < 128 else ord(x) - 256
 		def readAll(self) :
 			sio.seek(self.pos)

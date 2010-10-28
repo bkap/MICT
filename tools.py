@@ -3,7 +3,7 @@ from mict.tools import Tool
 import re
 from java.awt.image import BufferedImage
 point_re = re.compile(r"\( *(\d+), *(\d+) *\) *")
-
+serialVersionUID=987654321
 class PanTool(Tool) :
 	def __init__(self, clientState = None) :
 		self.client_state = clientState
@@ -223,15 +223,20 @@ class LineTool(Tool) :
 		return 'line'	
 
 class RectangleTool(Tool) :
+	ICON_SIZE = 3
+	ZERO = 0
+	THIRTY_ONE = 31
+	serialVersionUID = 123456789
 	def __init__(self, clientState = None) :
+		print type(clientState)
 		self.client_state = clientState
 		self.start_point = None
 		self.makeImage()
 	def makeImage(self) :
-		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
+		self.image = BufferedImage(self.ICON_SIZE,self.ICON_SIZE,BufferedImage.TYPE_INT_ARGB)
 		g = self.image.getGraphics()
-		g.setColor(Color(0,0,0))
-		g.drawRect(0,0,31,31)
+		g.setColor(Color(self.ZERO,self.ZERO,self.ZERO))
+		g.drawRect(self.ZERO,self.ZERO,self.THIRTY_ONE,self.THIRTY_ONE)
 	def mousePressed(self, locationOnScreen, g) :
 		self.start_point = locationOnScreen
 		return ""

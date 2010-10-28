@@ -6,8 +6,10 @@ else :
 	sys.path.append('pylib')
 from javax.swing import JLabel, JPanel, JButton
 import tools
-from java.io import ObjectOutputStream, BufferedReader, InputStreamReader, PrintWriter, PipedInputStream, PipedOutputStream, BufferedOutputStream, BufferedInputStream, FileOutputStream
-from org.python.util import PythonObjectInputStream as ObjectInputStream
+from java.awt.image import BufferedImage
+from java.io import ObjectOutputStream, BufferedReader, InputStreamReader,\
+PrintWriter, PipedInputStream, PipedOutputStream, BufferedOutputStream,\
+BufferedInputStream, FileOutputStream, ObjectInputStream
 import cStringIO
 import cPickle as pickle
 import mict.client.ClientState
@@ -76,39 +78,34 @@ def serialize_tool(toolID):
 	if s_tool == None :
 		return ""
 	class_dict = []
-	instream, outstream = misc.getDualStreams()
-	oout= ObjectOutputStream(outstream)
 	for iname in dir(tool) :
 	
 		if not (iname.startswith('_') and iname != '__init__') and iname not in _excluded_methods :
 			try :
 				item = getattr(tool,iname)
 				if isinstance(item, types.MethodType) :
-
+					instream, outstream = misc.getDualStreams()
+					oout= ObjectOutputStream(outstream)
 					oout.writeObject(item.im_func.func_code)
 					print "wrote object"
 					
 					print "flushed"
 					#now build the string
-					chrs = []
-					
-					class_dict.append((iname + '.f', instream.readAll()))
-					if iname == "__init__" :
-						print class_dict[-1]
+					x = instream.readAll()
+					print x
+					class_dict.append((iname + '.f', x))
 				else :
 					class_dict.append((iname, item))
 			except AttributeError :
 				pass
 				#this gets triggered for properties
-	print class_dict
 	return pickle.dumps(class_dict)
 def unserialize_tool(tool_string, client_state = None): 
 	print "deserializing"
 	name, pickled = tool_string.split(';',1)
+	print "unpickling"
 	marshal_dict = pickle.loads(pickled)
-	print marshal_dict
 	class_dict = {}
-	tools = []
 	instream, outstream = misc.getDualStreams()
 	print "streams written"
 	print "preparing to extract"
@@ -116,17 +113,24 @@ def unserialize_tool(tool_string, client_state = None):
 		if not iname.endswith('.f') :
 			class_dict[iname] = obj
 		else :
-		   outstream.writestr(obj)
-	print repr(outstream.sio.getvalue())
-	print "got value"
-	oin = ObjectInputStream(instream)	 
-	for iname, obj in marshal_dict :
-		if iname[:-2] == '.f':
-			func = types.FunctionType(oin.readObject(),globals(), iname[:-2])
+			print iname
+			instream, outstream = misc.getDualStreams()
+			outstream.writestr(obj)
+			oin = misc.MyObjectInputStream(instream)
+			x = oin.readObject()
+			func = types.FunctionType(x, globals(), iname[:-2])
 			class_dict[iname[:-2]] = func
+	print "got value"
+	#oin = ObjectInputStream(instream)	 
+	#for iname, obj in marshal_dict :
+	#	if iname[-2:] == '.f':
+	#		x = oin.readObject()
+			#print "type: " + type(x)
+	#		func = types.FunctionType(x,globals(), iname[:-2])
+	#		class_dict[iname[:-2]] = func
 	new_tool = type(name,(mict.tools.Tool,),class_dict)
-	tools.append(new_tool)
-	return new_tool()
+	print new_tool.__init__.im_func.func_globals
+	return new_tool(client_state)
 if __name__ == "__main__" :
 	x = serialize_tool('rect')
 	y = unserialize_tool('rectangle;' + x)

@@ -1,6 +1,7 @@
     @org.junit.Test
     public void test%(tool)sSerialization() {
-		ToolManager t = ToolManager.getServerToolManager();
+		ClientState s = new ClientState();
+		ToolManager t = ToolManager.getServerToolManager(s);
 		String serializedTool = JythonBridge.serializeTool("%(tool)s");
 		Tool newTool = JythonBridge.deserializeTool("%(tool)s;" + serializedTool);
 		BufferedImage testGraphics = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
@@ -16,12 +17,12 @@
 		System.out.println(newTool);
 		String builder = newTool.mousePressed(locations[0],tg);
 		String builder2 = oldTool.mousePressed(locations[1],tg2);
-		//newTool.draw(builder,cig);
+		newTool.draw(builder,cig);
 		oldTool.draw(builder2,rig);
 		for(int i = 1; i < locations.length - 1; i++) {
 			builder = newTool.mouseDragged(locations[i],tg);
 			builder2 = newTool.mouseDragged(locations[i],tg2);
-		//	newTool.draw(builder,cig);
+			newTool.draw(builder,cig);
 			oldTool.draw(builder2,rig);
 		}
 		for(int x = 0; x < clientImage.getWidth(); x++) {
