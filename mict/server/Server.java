@@ -113,6 +113,7 @@ public class Server extends Thread {
 	}
 
 	public OneTimeServer reservePort() {
+		System.out.println("One-time servers active at start of new server: " + portsopen.size());
 		int p = startport;
 		for(; portsopen.contains(new Integer(p)) && p < startport + 100; p++) {}
 		if(p >= startport + 100) {

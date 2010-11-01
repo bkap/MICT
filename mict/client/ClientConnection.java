@@ -100,10 +100,11 @@ public class ClientConnection extends Thread {
 					int port = Integer.parseInt(rest.substring(index+1));
 					Socket s = new Socket(server, port);
 					BufferedImage img = ImageIO.read(s.getInputStream());
+					s.getInputStream().close();
 					s.close();
 		
 					canvas.getCanvasGraphics().drawImage(img, (int)(canvas.getUserX() + x), (int)(canvas.getUserY() + y), canvas);
-					mict.test.ImageTest.popup(img);
+					//mict.test.ImageTest.popup(img);
 					canvas.repaint();
 				} catch(IOException e) {
 					System.err.println("Wow, that really should never have happened:");

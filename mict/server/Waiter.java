@@ -15,9 +15,7 @@ public class Waiter extends Thread {
 	public Waiter(SSLSocket patron, Server parent) throws IOException {
 		this.patron = patron;
 		this.parent = parent;
-		//ostream = patron.getOutputStream();
-		//out = new PrintWriter(ostream);
-		out = new PrintWriter(patron.getOutputStream(), true);
+		out = new patron.getOutputStream();
 		in = new BufferedReader(new InputStreamReader(patron.getInputStream()));
 		setDaemon(true);
 	}
@@ -29,8 +27,7 @@ public class Waiter extends Thread {
 	 * @uml.associationEnd  
 	 */
 	private Server parent;
-	private PrintWriter out;
-	//private OutputStream ostream;
+	private OutputStream out;
 	private BufferedReader in;
 	private long x = 0;
 	private long y = 0;
@@ -120,7 +117,8 @@ public class Waiter extends Thread {
 				sendCanvasRectangle(x, y, w, h);
 			} else if(action.startsWith("requesttool")) {
 				String pickled = JythonBridge.serializeTool(phrase);
-				out.write("tool " + pickled + "\n");
+				out.write(("tool " + pickled + "\n").toBytes());
+				out.flush();
 			} else {
 				System.out.println("Oops, that action doesn't exist.");
 			}
@@ -144,9 +142,9 @@ public class Waiter extends Thread {
 	public void sendCanvasRectangle(long x, long y, long width, long height) {
 		try {
 			BufferedImage img = parent.getCanvas().getCanvasRect(x, y, width, height);
-			OneTimeServer ostream = parent.reservePort();
-			ImageIO.write(img, "png", ostream.getOutputStream()); // TODO create ostream as a bytearrayoutputstream, send bytes through properly
-			send("imgrect", "" + x + '.' + y + '@' + ostream.getPort());
+			out.write(("imgrect" + x + '.' + y + ' ').toBytes());
+			ImageIO.write(img, "png", out); // TODO create ostream as a bytearrayoutputstream, send bytes through properly
+			out.flush();
 		} catch(IOException e) {
 			System.err.println("Bad operation while quilting a canvas patch:");
 			e.printStackTrace(System.err);
@@ -168,7 +166,8 @@ public class Waiter extends Thread {
 
 	protected void send(String type, String data) {
 		System.out.println('[' + type + " " + data + ']');
-		out.println(type + ' ' + data);
+		out.write((type.toBytes() + ' ' + data.toBytes()).toBytes());
+		out.flush();
 	}
 
 	protected void sendClose(String reason) {

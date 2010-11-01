@@ -5,7 +5,7 @@ import java.net.*;
 import java.util.*;
 
 /**
- * @author  bkaplan
+ * @author rde
  */
 public class OneTimeServer extends Thread {
 	public static OneTimeServer serve(int port, Vector<Integer> openports) throws IOException {
@@ -24,7 +24,7 @@ public class OneTimeServer extends Thread {
 	}
 
 	/**
-	 * @uml.property  name="port"
+	 * @uml.property name="port"
 	 */
 	private int port;
 	private ServerSocket servsocket;
@@ -34,8 +34,12 @@ public class OneTimeServer extends Thread {
 	public void run() {
 		try {
 			Socket client = servsocket.accept();
+			System.out.println("SYN");
 			out.writeTo(client.getOutputStream());
+			System.out.println("ACK");
 			out.close();
+			client.getOutputStream().flush();
+			client.getOutputStream().close();
 			client.close();
 			servsocket.close();
 		} catch(IOException e) {
@@ -43,6 +47,7 @@ public class OneTimeServer extends Thread {
 			e.printStackTrace(System.err);
 		}
 		openports.remove(new Integer(port));
+		System.out.println("Killing OTS, down to " + openports.size());
 	}
 
 	public OutputStream getOutputStream() {
@@ -51,7 +56,7 @@ public class OneTimeServer extends Thread {
 
 	/**
 	 * @return
-	 * @uml.property  name="port"
+	 * @uml.property name="port"
 	 */
 	public int getPort() {
 		return port;
