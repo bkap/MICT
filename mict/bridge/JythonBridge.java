@@ -113,12 +113,23 @@ public abstract class JythonBridge {
 			String pickledTool = (String)jython.eval(SCRIPT_NAME + ".serialize_tool(\"" + toolID + "\")");
 			return pickledTool;
 		} catch (ScriptException e) {
-			
+			e.printStackTrace();	
 			return "";
 		}
 		
 	}
+	public static Tool deserializeTool(String phrase) {
+		try {
+			jython.eval("import " + SCRIPT_NAME);
+			jython.put("phrase",phrase);
+			return (Tool)jython.eval(SCRIPT_NAME + ".unserialize_tool(phrase)");
+		} catch(ScriptException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
 	public static void main(String[] args) {
-		
+
 	}
 }
