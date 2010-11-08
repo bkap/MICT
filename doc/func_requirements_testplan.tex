@@ -37,5 +37,52 @@ canvas}	& \tiny{User selects another user and clicks "jump to user"}	&
 user. Clicking the "jump to mark" button will take them back to that position}
 \\
 \hline
+\tiny{Canvas.Select}	& \tine{The Selection tool is the active tool}	&
+\tiny{MouseClicked, MouseDragged, and MouseReleased Events caused my using the mouse}	&
+\tiny{The section of the canvas within rectangle with a corner at position the mouse was clicked and anther at the position the mouse was released is saved in the clientState.}
+\\
+\hline
+\tiny{Canvas.Copy}	& \tiny{A section of the canvas has been selected}	& \tiny{The Copy Icon is pressed}	
+& \tiny{The section of the canvas selected will be stored in memory. If no section is select no action is taken.} 
+\\
+\hline
+\tiny{Canvas.Select.Paste} & \tiny{A section of the canvas has been stored in memory using copy} & \tiny{The Paste Icon is pressed}
+& \tiny{The section of canvas stored in memory using the copy function is drawn on the canvas. If no section is stored in memory no action is taken.}
+\\
+\hline
+\tiny{Canvas.Select.Rotate} & \tiny{A section of the canvas has been selected} & \tiny{The Rotate Icon is pressed}
+& \tiny{The section of the canvas selected is rotated 90 degrees clockwise.}
+\\
+
+\hline
+\tiny{Canvas.Select.Scale} & \tiny{A section of the canvas has been selected}
+ & \tiny{The Sale Icon is pressed. Then the user clicks, drags and releases the mouse on the canvas} 
+& \tiny{The Image is scaled in accordance with the direction which the mouse was dragged.  }
+\\
+
+\hline
+\tiny{Canvas.Select.Shear} & \tiny{A section of the canvas has been selected} 
+& \tiny{The Shear Icon is pressed. Then the user clicks, drags and releases the mouse on the canvas} 
+& \tiny{The section of the canvas selected is sheared in the direction the mouse is dragged.}
+\\
+
+\hline
+\tiny{Canvas.Tool.Draw} & \tiny{The client is running.} & \tiny{The user clicks the mouse on the tool icon.} 
+& \tiny{The tool icon the mouse clicked on is made the active tool.  The client state stores the active tool.}
+\\
+
+\hline
+\tiny{Canvas.Tool.Select} & \tiny{There is an active tool} & \tiny{Mouse is clicked Dragged and Released} & \tiny{The tool draws on the canvas within the rectangles with corners at the positions where the mouse is clicked or dragged and there where the mouse is dragged or released.  }
+\\
+
+\hline
+\tiny{Canvas.Undo} & \tiny{The client is running} & \tiny{The Undo icon is clicked } & \tiny{The previous action taken by the client is reverted. If no actions have been taken no action is taken. }
+\\
+
+\hline
+\tiny{Canvas.Redo} & \tiny{The Client is running} & \tiny{The Redo Icon is clicked} & \tiny{The most recent undone operation is redone.  If no operation has been undone no action is taken.}
+\\
+
+
 \end{tabular}
 \end{document}
