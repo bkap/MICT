@@ -1,0 +1,51 @@
+\documentclass[11pt,oneside,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\usepackage{setspace}
+\usepackage{graphicx}
+\title{Functional Test Design \\ for \\ Multi-user Infinite Canvas Thingy (MICT)}
+\author{Don Huckle, Ben Kaplan, Mark Wyrzykowski, Rob Wiesler}
+\begin{document}
+\maketitle
+\tableofcontents
+\pagebreak
+
+\section{Client}
+\begin{center}
+\begin{tabular}{ | p{3cm} | p{3cm} | p{3cm} | p{3cm} | }
+\hline
+\textbf{Use Case} 				& \textbf{Initial System State}																						& \textbf{Input}																					& \tiny{Expected Output} \\\hline
+\tiny{Canvas.Connect}			& \tiny{User starts off not connected to a server}																	& \tiny{User enters a server and login credentials, then clicks connect}							& \tiny{User is connected to a server}	\\\hline
+\tiny{Canvas.View}				& \tiny{User does not see the canvas}																				& \tiny{User requests a section of the canvas to view}												& \tiny{The user sees that section of the canvas} \\\hline
+\tiny{Canvas.Pan}				& \tiny{User sees one section of the canvas}																		& \tiny{User selects the Pan tool, clicks in the canvas, and moves the mouse}						& \tiny{The canvs moves so that the section of the canvas under the mouse remains the same point} \\\hline
+\tiny{Canvas.Jump}				& \tiny{User is at one location on the canvas}																		& \tiny{User enters a new location and clicks the ``jump'' button}									& \tiny{User is moved to the new location} \\\hline
+\tiny{Canvas.ListUsers}			& \tiny{Initial State doesn't matter}																				& \tiny{User requests a list of users logged into the server}										& \tiny{User is presented with a list of users on the server} \\\hline
+\tiny{Canvas.JumpToUser}		& \tiny{User is at a certain location in the canvas}																& \tiny{User selects another user and clicks ``jump to user''}										& \tiny{User's location is set to the same location as the other user's location} \\\hline
+\tiny{Canvas.Mark}				& \tiny{User is at a position in the canvas}																		& \tiny{User clicks the ``Mark'' button}															& \tiny{The position is saved for the user. Clicking the ``jump to mark'' button will take them back to that position} \\\hline
+\tiny{Canvas.Select}			& \tiny{Client is connected to a server}																			& \tiny{User clicks the ``Select'' button}															& \tiny{The coordinates of the selected area of canvas is saved to memory} \\\hline
+\tiny{Canvas.Copy}				& \tiny{Client is connected to a server and has selected an area of canvas}											& \tiny{User clicks the ``Copy'' button}															& \tiny{The selected area of canvas is saved to the clipboard} \\\hline
+\tiny{Canvas.Paste}				& \tiny{Client is connected to a server and has selected an area of canvas and has an image saved to the clipboard}	& \tiny{User clicks the ``Paste'' button}															& \tiny{The selected area of canvas is filled with the image in the clipboard} \\\hline
+\tiny{Canvas.Rotate}			& \tiny{Client is connected to a server and has selected an area of canvas}											& \tiny{User clicks the ``Rotate'' button}															& \tiny{The selected area of canvas is rotated 90 degrees on the canvas} \\\hline
+\tiny{Canvas.Scale}				& \tiny{Client is connected to a server and has selected an area of canvas}											& \tiny{User clicks the ``Scale'' button, and fills in a field specifiying how much to scale by}	& \tiny{The selected area of canvas is scaled by the specified amount} \\\hline
+\tiny{User.Permissions.Check}	& \tiny{Client is running}																							& \tiny{User checks his or her current or last known permission set on a server}					& \tiny{The user's current permission set, with group mask permissions included (but not marked as such)} \\\hline
+\end{tabular}
+\end{center}
+\pagebreak
+
+\section{Server}
+\begin{center}
+\begin{tabular}{ | p{3cm} | p{3cm} | p{3cm} | p{3cm} | }
+\hline
+\textbf{Use Case}	 			& \textbf{Initial System State}					& \textbf{Input}																												& \tiny{Expected Output} \\\hline
+\tiny{Server.Start}				& \tiny{Server is not running}					& \tiny{Admin starts the server with a configuration file as an optional parameter}												& \tiny{Server starts with parameters identical to those in the configuration file} \\\hline
+\tiny{Server.Stop}				& \tiny{Server is running}						& \tiny{Admin stops the server, either from a superuser client or from the system console}										& \tiny{The server stops} \\\hline
+\tiny{Server.MaxUsers.Set}		& \tiny{(no initial conditions)}				& \tiny{Admin either edits a configuration file or runs a command from a superuser client or the system console}				& \tiny{The maximum number of users changes, and excess users are kicked from the server} \\\hline
+\tiny{Server.MaxUsers.Check}	& \tiny{Server is running}						& \tiny{Admin checks the current maximum nubmer of users by running a command from a superuser client or the system console}	& \tiny{The maximum number of users} \\\hline
+\tiny{User.Permissions.Set}		& \tiny{(no initial conditions)}				& \tiny{Admin either edits a configuration file or runs a command from a superuser client or the system console}				& \tiny{The user's permissions change, old restrictions are lifted, and new restrictions are effected} \\\hline
+\tiny{User.Permissions.Check}	& \tiny{Server is running or client is running}	& \tiny{Admin checks the current permission set for a user by running a command from a superuser client or the system console}	& \tiny{The user's current permission set, with group mask permissions included and marked as such} \\\hline
+\tiny{Group.Permissions.Set}	& \tiny{(no initial conditions)}				& \tiny{Admin either edits a configuration file or runs a command from a superuser client or the system console}				& \tiny{The user's permissions change, old restrictions are lifted, and new restrictions are effected} \\\hline
+\tiny{Group.Permissions.Check}	& \tiny{Server is running}						& \tiny{Admin checks the current permission set for a group by running a command from a superuser client or the system console}	& \tiny{The groups's current permission set mask} \\\hline
+\end{tabular}
+\end{center}
+
+\end{document}
