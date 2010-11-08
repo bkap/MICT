@@ -8,11 +8,10 @@
 \begin{document}
 \maketitle
 \tableofcontents
-\pagebreak
 
 \section{Client}
 \begin{center}
-\begin{tabular}{ | p{3cm} | p{3cm} | p{3cm} | p{3cm} | }
+\begin{tabular}{ | l | p{3cm} | p{3cm} | p{3cm} | }
 \hline
 \textbf{Use Case} 				& \textbf{Initial System State}																							& \textbf{Input}																					& \tiny{Expected Output} \\\hline
 \tiny{Canvas.Connect}			& \tiny{User starts off not connected to a server}																		& \tiny{User enters a server and login credentials, then clicks connect}							& \tiny{User is connected to a server}	\\\hline
@@ -24,10 +23,18 @@
 \tiny{Canvas.Mark}				& \tiny{User is at a position in the canvas}																			& \tiny{User clicks the ``Mark'' button}															& \tiny{The position is saved for the user. Clicking the ``jump to mark'' button will take them back to that position} \\\hline
 \tiny{Canvas.Select}			& \tiny{Client is connected to a server}																				& \tiny{User clicks the ``Select'' button}															& \tiny{The coordinates of the selected area of canvas is saved to memory} \\\hline
 \tiny{Canvas.Select.Copy}		& \tiny{Client is connected to a server and has selected an area of canvas}												& \tiny{User clicks the ``Copy'' button}															& \tiny{The selected area of canvas is saved to the clipboard} \\\hline
+\end{tabular}
+
+\begin{tabular}{ | l | p{3cm} | p{3cm} | p{3cm} | }
+\hline
 \tiny{Canvas.Select.Paste}		& \tiny{Client is connected to a server and has selected an area of canvas and has an image saved to the clipboard}		& \tiny{User clicks the ``Paste'' button}															& \tiny{The selected area of canvas is filled with the image in the clipboard} \\\hline
 \tiny{Canvas.Select.Rotate}		& \tiny{Client is connected to a server and has selected an area of canvas}												& \tiny{User clicks the ``Rotate'' button}															& \tiny{The selected area of canvas is rotated 90 degrees on the canvas} \\\hline
 \tiny{Canvas.Select.Scale}		& \tiny{Client is connected to a server and has selected an area of canvas}												& \tiny{User clicks the ``Scale'' button, and fills in a field specifiying how much to scale by}	& \tiny{The selected area of canvas is scaled by the specified amount} \\\hline
 \tiny{Canvas.Select.Shear}		& \tiny{Client is connected to a server and has selected an area of canvas}												& \tiny{User clicks the ``Shear'' button, and fills in a field specifiying how much to shear by}	& \tiny{The selected area of canvas is scaled by the specified amount} \\\hline
+\tiny{Canvas.Region.Lock}		& \tiny{Client is connected to a server and has selected an area of canvas}												& \tiny{User clicks the ``Lock'' button}															& \tiny{If the user has the proper permissions to lock the area, the area is locked such that only that user may edit it} \\\hline
+\tiny{Canvas.Region.Unlock}		& \tiny{Client is connected to a server and is in a region that he or she has previously locked}						& \tiny{User clicks the ``Unlock'' button}															& \tiny{The locked section of canvas becomes publically available for editing} \\\hline
+\tiny{Canvas.Region.Share}		& \tiny{Client is connected to a server and is in a region that he or she has previously locked}						& \tiny{User clicks the ``Share'' button and selects the name of a user to grant access to}			& \tiny{The locked section of canvas becomes editable byt the specified user} \\\hline
+\tiny{Canvas.Region.Unshare}	& \tiny{Client is connected to a server and is in a region that he or she has previously locked}						& \tiny{User clicks the ``Unshare'' button and selects the name of a user to revoke the access of}	& \tiny{The locked section of canvas becomes once again uneditable by the specified user} \\\hline
 \tiny{Canvas.Tool.Select}		& \tiny{Client is connected to a server}																				& \tiny{User clicks a tool icon}																	& \tiny{The tool icon the mouse clicked on is made the active tool. The client state stores the active tool} \\\hline
 \tiny{Canvas.Tool.Draw}			& \tiny{Client is connected to a server and a tool is designated as the active tool}									& \tiny{User interacts with the canvas using the mouse in some way}									& \tiny{The tool draws on the canvas, and the changes are propagated to the server and to the clients of all users viewing the affected area} \\\hline
 \tiny{Canvas.Undo}				& \tiny{Client is connected to a server, and has changed the canvas in some way since connecting}						& \tiny{User clicks the ``Undo'' button}															& \tiny{the last action performed is undone, and the changes are propagated to the server and to the clients of all users viewing the affected area} \\\hline
@@ -35,21 +42,41 @@
 \tiny{User.Permissions.Check}	& \tiny{Client is running}																								& \tiny{User checks his or her current or last known permission set on a server}					& \tiny{The user's current permission set, with group mask permissions included (but not marked as such)} \\\hline
 \end{tabular}
 \end{center}
-\pagebreak
 
+\pagebreak
 \section{Server}
 \begin{center}
-\begin{tabular}{ | p{3cm} | p{3cm} | p{3cm} | p{3cm} | }
+\begin{tabular}{ | l | p{3cm} | p{3cm} | p{3cm} | }
 \hline
-\textbf{Use Case}	 			& \textbf{Initial System State}					& \textbf{Input}																												& \tiny{Expected Output} \\\hline
-\tiny{Server.Start}				& \tiny{Server is not running}					& \tiny{Admin starts the server with a configuration file as an optional parameter}												& \tiny{Server starts with parameters identical to those in the configuration file} \\\hline
-\tiny{Server.Stop}				& \tiny{Server is running}						& \tiny{Admin stops the server, either from a superuser client or from the system console}										& \tiny{The server stops} \\\hline
-\tiny{Server.MaxUsers.Set}		& \tiny{(no initial conditions)}				& \tiny{Admin either edits a configuration file or runs a command from a superuser client or the system console}				& \tiny{The maximum number of users changes, and excess users are kicked from the server} \\\hline
-\tiny{Server.MaxUsers.Check}	& \tiny{Server is running}						& \tiny{Admin checks the current maximum nubmer of users by running a command from a superuser client or the system console}	& \tiny{The maximum number of users} \\\hline
-\tiny{User.Permissions.Set}		& \tiny{(no initial conditions)}				& \tiny{Admin either edits a configuration file or runs a command from a superuser client or the system console}				& \tiny{The user's permissions change, old restrictions are lifted, and new restrictions are effected} \\\hline
-\tiny{User.Permissions.Check}	& \tiny{Server is running or client is running}	& \tiny{Admin checks the current permission set for a user by running a command from a superuser client or the system console}	& \tiny{The user's current permission set, with group mask permissions included and marked as such} \\\hline
-\tiny{Group.Permissions.Set}	& \tiny{(no initial conditions)}				& \tiny{Admin either edits a configuration file or runs a command from a superuser client or the system console}				& \tiny{The user's permissions change, old restrictions are lifted, and new restrictions are effected} \\\hline
-\tiny{Group.Permissions.Check}	& \tiny{Server is running}						& \tiny{Admin checks the current permission set for a group by running a command from a superuser client or the system console}	& \tiny{The groups's current permission set mask} \\\hline
+\textbf{Use Case}	 					& \textbf{Initial System State}						& \textbf{Input}																																			& \tiny{Expected Output} \\\hline
+\tiny{Server.Start}						& \tiny{Server is not running}						& \tiny{Admin starts the server with a configuration file as an optional parameter}																			& \tiny{Server starts with parameters identical to those in the configuration file} \\\hline
+\tiny{Server.Stop}						& \tiny{Server is running}							& \tiny{Admin stops the server, either from a superuser client or from the system console}																	& \tiny{The server stops} \\\hline
+\tiny{Server.MaxUsers.Set}				& \tiny{(no initial conditions)}					& \tiny{Admin either edits a configuration file or runs a command from a superuser client or the system console}											& \tiny{The maximum number of users changes, and excess users are kicked from the server} \\\hline
+\tiny{Server.MaxUsers.Check}			& \tiny{Server is running}							& \tiny{Admin checks the current maximum number of users on a canvas by running a command from a superuser client or the system console}					& \tiny{The maximum number of users on the canvas} \\\hline
+\tiny{Canvas.Create}					& \tiny{(no initial conditions)}					& \tiny{Admin runs the command \verb|mkcanvas <canvas>|, where \verb|<canvas>| is the name of a new canvas}													& \tiny{A new canvas called \verb|<canvas>| is created on the database} \\\hline
+\tiny{Canvas.Delete}					& \tiny{(no initial conditions)}					& \tiny{Admin runs the command \verb|rmcanvas <canvas>|, where \verb|<canvas>| is the name of a canvas}														& \tiny{The canvas called \verb|<canvas>| is deleted from the database} \\\hline
+\tiny{Canvas.Rename}					& \tiny{(no initial conditions)}					& \tiny{Admin runs the command \verb|mvcanvas <old> <new>|, where \verb|<old>| and \verb|<new>| are names}													& \tiny{The canvas with the name \verb|<old>| is deleted, and the canvas with the name \verb|<new>| is renamed as \verb|<new>|} \\\hline
+\tiny{Canvas.MaxUsers.Set}				& \tiny{(no initial conditions)}					& \tiny{Admin either edits a configuration file or runs a command from a superuser client or the system console}											& \tiny{The maximum number of users changes, and excess users are kicked from the server} \\\hline
+\tiny{Canvas.MaxUsers.Check}			& \tiny{Server is running, canvas is running}		& \tiny{Admin checks the current maximum number of users on a canvas by running a command from a superuser client or the system console}					& \tiny{The maximum number of users on the canvas} \\\hline
+\tiny{Canvas.Start}						& \tiny{Server is running, canvas is not running}	& \tiny{Admin starts the canvas with a configuration file as an optional parameter}																			& \tiny{Server starts serving the canvas with parameters identical to those in the configuration file} \\\hline
+\tiny{Canvas.Stop}						& \tiny{Server is running, canvas is running}		& \tiny{Admin stops the canvas, either from a superuser client or from the system console}																	& \tiny{Server stops serving the canvas} \\\hline
+\tiny{Canvas.Autostart}					& \tiny{(no initial conditions)}					& \tiny{Admin either edits a configuration file or runs a command from a superuser client of the system console}											& \tiny{The canvas's autostart property changes} \\\hline
+\tiny{Canvas.User.Permissions.Set}		& \tiny{(no initial conditions)}					& \tiny{Admin either edits a configuration file or runs a command from a superuser client or the system console}											& \tiny{The user's permissions change, old restrictions are lifted, and new restrictions are effected} \\\hline
+\end{tabular}
+
+\begin{tabular}{ | l | p{3cm} | p{3cm} | p{3cm} | }
+\hline
+\tiny{Canvas.User.Permissions.Check}	& \tiny{Server is running or client is running}		& \tiny{Admin checks the current permission set for a user by running a command from a superuser client or the system console}								& \tiny{The user's current permission set, with group mask permissions included and marked as such} \\\hline
+\tiny{Canvas.User.Kick}					& \tiny{Server is running}							& \tiny{Admin runs the command \verb|kick <user> [<time>]|, where \verb|<user>| is the name of a user, and \verb|[<time>]| is an optional amount of time}	& \tiny{The specified user is disconnected from the canvas, and is prevented from reconnecting for the specified (or, if left unspecified, the default) amount of seconds} \\\hline
+\tiny{Canvas.User.Ban}					& \tiny{(no initial conditions)}					& \tiny{Admin runs the command \verb|ban <user>|, where \verb|<user>| is the name of a user}																& \tiny{The specified user is disconnected from the canvas, and is prevented from reconnecting ever again} \\\hline
+\tiny{Canvas.User.Pardon}				& \tiny{(no initial conditions)}					& \tiny{Admin runs the command \verb|pardon <user>|, where \verb|<user>| is the name of a user}																& \tiny{The specified user is no longer banned from connecting to the server} \\\hline
+\tiny{Canvas.Group.Permissions.Set}		& \tiny{(no initial conditions)}					& \tiny{Admin either edits a configuration file or runs a command from a superuser client or the system console}											& \tiny{The user's permissions change, old restrictions are lifted, and new restrictions are effected} \\\hline
+\tiny{Canvas.Group.Permissions.Check}	& \tiny{Server is running}							& \tiny{Admin checks the current permission set for a group by running a command from a superuser client or the system console}								& \tiny{The groups's current permission set mask} \\\hline
+\tiny{Canvas.Group.Create}				& \tiny{(no initial conditions)}					& \tiny{Admin runs the command \verb|mkgrp <group>|, where \verb|<group>| is chosen by the admin to be the new name of a group}								& \tiny{The group is created} \\\hline
+\tiny{Canvas.Group.Delete}				& \tiny{(no initial conditions)}					& \tiny{Admin runs the command \verb|rmgrp <group>|, where \verb|<group>| is the name of a group}															& \tiny{The group is deleted, and all users formerly in the group have their permission sets updated accordingly} \\\hline
+\tiny{Canvas.Group.Rename}				& \tiny{(no initial conditions)}					& \tiny{Admin runs the command \verb|mvgrp <old> <new>|, where \verb|<old>| and \verb|<new>| are names}														& \tiny{The group with the name \verb|<old>| is deleted, and the group with the name \verb|<new>| is renamed as \verb|<new>|} \\\hline
+\tiny{Canvas.Group.User.Add}			& \tiny{(no initial conditions)}					& \tiny{Admin runs the command \verb|grpadd <user> <group>|, where \verb|<user>| is the name of a user, and \verb|<group>| is the name of a group}			& \tiny{The specified user is added to the specified group, and his or her permissions are changed accordingly} \\\hline
+\tiny{Canvas.Group.User.Remove}			& \tiny{(no initial conditions)}					& \tiny{Admin runs the command \verb|grprm <user> <group>|, where \verb|<user>| is the name of a user, and \verb|<group>| is the name of a group}			& \tiny{The specified user is removed from the specified group, and his or her permissions are changed accordingly} \\\hline
 \end{tabular}
 \end{center}
 
