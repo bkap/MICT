@@ -168,181 +168,184 @@ public class ToolTest {
 			oldTool.draw(builder2,rig);
 		}
 		for(int x = 0; x < clientImage.getWidth(); x++) {
-			for(int y = 0; y < clientImage.getHeight(); y++) {
-				Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
+	    	for(int y = 0; y < clientImage.getHeight(); y++) {
+				    Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
+					Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
+			}
+		}
+	}
+    @org.junit.Test
+    public void testfilledovalSerialization() {
+		ClientState s = new ClientState();
+		ToolManager t = ToolManager.getServerToolManager(s);
+		String serializedTool = JythonBridge.serializeTool("filledoval");
+		Tool newTool = JythonBridge.deserializeTool("filledoval;" + serializedTool);
+		BufferedImage testGraphics = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+
+		BufferedImage testGraphics2 = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+		BufferedImage clientImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+		BufferedImage resultImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+		Graphics2D tg = (Graphics2D)testGraphics.getGraphics();
+		Graphics2D tg2 = (Graphics2D)testGraphics2.getGraphics();
+		Graphics2D cig = (Graphics2D)clientImage.getGraphics();
+		Graphics2D rig = (Graphics2D)resultImage.getGraphics();
+		Tool oldTool = t.getToolByID("filledoval");
+		System.out.println(newTool);
+		String builder = newTool.mousePressed(locations[0],tg);
+		String builder2 = oldTool.mousePressed(locations[1],tg2);
+		newTool.draw(builder,cig);
+		oldTool.draw(builder2,rig);
+		for(int i = 1; i < locations.length - 1; i++) {
+			builder = newTool.mouseDragged(locations[i],tg);
+			builder2 = newTool.mouseDragged(locations[i],tg2);
+			newTool.draw(builder,cig);
+			oldTool.draw(builder2,rig);
+		}
+		for(int x = 0; x < clientImage.getWidth(); x++) {
+	    	for(int y = 0; y < clientImage.getHeight(); y++) {
+			    Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
 				Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
 			}
 		}
 	}
 
-	@org.junit.Test
-	public void testfilledovalSerialization() {
-	ClientState s = new ClientState();
-	ToolManager t = ToolManager.getServerToolManager(s);
-	String serializedTool = JythonBridge.serializeTool("filledoval");
-	Tool newTool = JythonBridge.deserializeTool("filledoval;" + serializedTool);
-	BufferedImage testGraphics = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+    @org.junit.Test
+    public void testovalSerialization() {
+		ClientState s = new ClientState();
+		ToolManager t = ToolManager.getServerToolManager(s);
+		String serializedTool = JythonBridge.serializeTool("oval");
+		Tool newTool = JythonBridge.deserializeTool("oval;" + serializedTool);
+		BufferedImage testGraphics = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
 
-	BufferedImage testGraphics2 = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-	BufferedImage clientImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-	BufferedImage resultImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-	Graphics2D tg = (Graphics2D)testGraphics.getGraphics();
-	Graphics2D tg2 = (Graphics2D)testGraphics2.getGraphics();
-	Graphics2D cig = (Graphics2D)clientImage.getGraphics();
-	Graphics2D rig = (Graphics2D)resultImage.getGraphics();
-	Tool oldTool = t.getToolByID("filledoval");
-	System.out.println(newTool);
-	String builder = newTool.mousePressed(locations[0],tg);
-	String builder2 = oldTool.mousePressed(locations[1],tg2);
-	newTool.draw(builder,cig);
-	oldTool.draw(builder2,rig);
-	for(int i = 1; i < locations.length - 1; i++) {
-	builder = newTool.mouseDragged(locations[i],tg);
-	builder2 = newTool.mouseDragged(locations[i],tg2);
-	newTool.draw(builder,cig);
-	oldTool.draw(builder2,rig);
+		BufferedImage testGraphics2 = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+		BufferedImage clientImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+		BufferedImage resultImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+		Graphics2D tg = (Graphics2D)testGraphics.getGraphics();
+		Graphics2D tg2 = (Graphics2D)testGraphics2.getGraphics();
+		Graphics2D cig = (Graphics2D)clientImage.getGraphics();
+		Graphics2D rig = (Graphics2D)resultImage.getGraphics();
+		Tool oldTool = t.getToolByID("oval");
+		System.out.println(newTool);
+		String builder = newTool.mousePressed(locations[0],tg);
+		String builder2 = oldTool.mousePressed(locations[1],tg2);
+		newTool.draw(builder,cig);
+		oldTool.draw(builder2,rig);
+		for(int i = 1; i < locations.length - 1; i++) {
+			builder = newTool.mouseDragged(locations[i],tg);
+			builder2 = newTool.mouseDragged(locations[i],tg2);
+			newTool.draw(builder,cig);
+			oldTool.draw(builder2,rig);
+		}
+		for(int x = 0; x < clientImage.getWidth(); x++) {
+	    	for(int y = 0; y < clientImage.getHeight(); y++) {
+				    Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
+					Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
+			}
+		}
 	}
-	for(int x = 0; x < clientImage.getWidth(); x++) {
-	for(int y = 0; y < clientImage.getHeight(); y++) {
-	Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
-	Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
-	}
-	}
-	}
-	@org.junit.Test
-	public void testovalSerialization() {
-	ClientState s = new ClientState();
-	ToolManager t = ToolManager.getServerToolManager(s);
-	String serializedTool = JythonBridge.serializeTool("oval");
-	Tool newTool = JythonBridge.deserializeTool("oval;" + serializedTool);
-	BufferedImage testGraphics = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
 
-	BufferedImage testGraphics2 = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-	BufferedImage clientImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-	BufferedImage resultImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-	Graphics2D tg = (Graphics2D)testGraphics.getGraphics();
-	Graphics2D tg2 = (Graphics2D)testGraphics2.getGraphics();
-	Graphics2D cig = (Graphics2D)clientImage.getGraphics();
-	Graphics2D rig = (Graphics2D)resultImage.getGraphics();
-	Tool oldTool = t.getToolByID("oval");
-	System.out.println(newTool);
-	String builder = newTool.mousePressed(locations[0],tg);
-	String builder2 = oldTool.mousePressed(locations[1],tg2);
-	newTool.draw(builder,cig);
-	oldTool.draw(builder2,rig);
-	for(int i = 1; i < locations.length - 1; i++) {
-	builder = newTool.mouseDragged(locations[i],tg);
-	builder2 = newTool.mouseDragged(locations[i],tg2);
-	newTool.draw(builder,cig);
-	oldTool.draw(builder2,rig);
-	}
-	for(int x = 0; x < clientImage.getWidth(); x++) {
-	for(int y = 0; y < clientImage.getHeight(); y++) {
-	Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
-	Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
-	}
-	}
-	}
-	@org.junit.Test
-	public void testpanSerialization() {
-	ClientState s = new ClientState();
-	ToolManager t = ToolManager.getServerToolManager(s);
-	String serializedTool = JythonBridge.serializeTool("pan");
-	Tool newTool = JythonBridge.deserializeTool("pan;" + serializedTool);
-	BufferedImage testGraphics = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+    @org.junit.Test
+    public void testpanSerialization() {
+		ClientState s = new ClientState();
+		ToolManager t = ToolManager.getServerToolManager(s);
+		String serializedTool = JythonBridge.serializeTool("pan");
+		Tool newTool = JythonBridge.deserializeTool("pan;" + serializedTool);
+		BufferedImage testGraphics = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
 
-	BufferedImage testGraphics2 = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-	BufferedImage clientImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-	BufferedImage resultImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-	Graphics2D tg = (Graphics2D)testGraphics.getGraphics();
-	Graphics2D tg2 = (Graphics2D)testGraphics2.getGraphics();
-	Graphics2D cig = (Graphics2D)clientImage.getGraphics();
-	Graphics2D rig = (Graphics2D)resultImage.getGraphics();
-	Tool oldTool = t.getToolByID("pan");
-	System.out.println(newTool);
-	String builder = newTool.mousePressed(locations[0],tg);
-	String builder2 = oldTool.mousePressed(locations[1],tg2);
-	newTool.draw(builder,cig);
-	oldTool.draw(builder2,rig);
-	for(int i = 1; i < locations.length - 1; i++) {
-	builder = newTool.mouseDragged(locations[i],tg);
-	builder2 = newTool.mouseDragged(locations[i],tg2);
-	newTool.draw(builder,cig);
-	oldTool.draw(builder2,rig);
+		BufferedImage testGraphics2 = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+		BufferedImage clientImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+		BufferedImage resultImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+		Graphics2D tg = (Graphics2D)testGraphics.getGraphics();
+		Graphics2D tg2 = (Graphics2D)testGraphics2.getGraphics();
+		Graphics2D cig = (Graphics2D)clientImage.getGraphics();
+		Graphics2D rig = (Graphics2D)resultImage.getGraphics();
+		Tool oldTool = t.getToolByID("pan");
+		System.out.println(newTool);
+		String builder = newTool.mousePressed(locations[0],tg);
+		String builder2 = oldTool.mousePressed(locations[1],tg2);
+		newTool.draw(builder,cig);
+		oldTool.draw(builder2,rig);
+		for(int i = 1; i < locations.length - 1; i++) {
+			builder = newTool.mouseDragged(locations[i],tg);
+			builder2 = newTool.mouseDragged(locations[i],tg2);
+			newTool.draw(builder,cig);
+			oldTool.draw(builder2,rig);
+		}
+		for(int x = 0; x < clientImage.getWidth(); x++) {
+	    	for(int y = 0; y < clientImage.getHeight(); y++) {
+				    Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
+					Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
+			}
+		}
 	}
-	for(int x = 0; x < clientImage.getWidth(); x++) {
-	for(int y = 0; y < clientImage.getHeight(); y++) {
-	Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
-	Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
-	}
-	}
-	}
-	@org.junit.Test
-	public void testfillRectSerialization() {
-	ClientState s = new ClientState();
-	ToolManager t = ToolManager.getServerToolManager(s);
-	String serializedTool = JythonBridge.serializeTool("fillRect");
-	Tool newTool = JythonBridge.deserializeTool("fillRect;" + serializedTool);
-	BufferedImage testGraphics = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
 
-	BufferedImage testGraphics2 = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-	BufferedImage clientImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-	BufferedImage resultImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-	Graphics2D tg = (Graphics2D)testGraphics.getGraphics();
-	Graphics2D tg2 = (Graphics2D)testGraphics2.getGraphics();
-	Graphics2D cig = (Graphics2D)clientImage.getGraphics();
-	Graphics2D rig = (Graphics2D)resultImage.getGraphics();
-	Tool oldTool = t.getToolByID("fillRect");
-	System.out.println(newTool);
-	String builder = newTool.mousePressed(locations[0],tg);
-	String builder2 = oldTool.mousePressed(locations[1],tg2);
-	newTool.draw(builder,cig);
-	oldTool.draw(builder2,rig);
-	for(int i = 1; i < locations.length - 1; i++) {
-	builder = newTool.mouseDragged(locations[i],tg);
-	builder2 = newTool.mouseDragged(locations[i],tg2);
-	newTool.draw(builder,cig);
-	oldTool.draw(builder2,rig);
-	}
-	for(int x = 0; x < clientImage.getWidth(); x++) {
-	for(int y = 0; y < clientImage.getHeight(); y++) {
-	Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
-	Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
-	}
-	}
-	}
-	@org.junit.Test
-	public void testpencilSerialization() {
-	ClientState s = new ClientState();
-	ToolManager t = ToolManager.getServerToolManager(s);
-	String serializedTool = JythonBridge.serializeTool("pencil");
-	Tool newTool = JythonBridge.deserializeTool("pencil;" + serializedTool);
-	BufferedImage testGraphics = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+    @org.junit.Test
+    public void testfillRectSerialization() {
+		ClientState s = new ClientState();
+		ToolManager t = ToolManager.getServerToolManager(s);
+		String serializedTool = JythonBridge.serializeTool("fillRect");
+		Tool newTool = JythonBridge.deserializeTool("fillRect;" + serializedTool);
+		BufferedImage testGraphics = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
 
-	BufferedImage testGraphics2 = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-	BufferedImage clientImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-	BufferedImage resultImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
-	Graphics2D tg = (Graphics2D)testGraphics.getGraphics();
-	Graphics2D tg2 = (Graphics2D)testGraphics2.getGraphics();
-	Graphics2D cig = (Graphics2D)clientImage.getGraphics();
-	Graphics2D rig = (Graphics2D)resultImage.getGraphics();
-	Tool oldTool = t.getToolByID("pencil");
-	System.out.println(newTool);
-	String builder = newTool.mousePressed(locations[0],tg);
-	String builder2 = oldTool.mousePressed(locations[1],tg2);
-	newTool.draw(builder,cig);
-	oldTool.draw(builder2,rig);
-	for(int i = 1; i < locations.length - 1; i++) {
-	builder = newTool.mouseDragged(locations[i],tg);
-	builder2 = newTool.mouseDragged(locations[i],tg2);
-	newTool.draw(builder,cig);
-	oldTool.draw(builder2,rig);
+		BufferedImage testGraphics2 = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+		BufferedImage clientImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+		BufferedImage resultImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+		Graphics2D tg = (Graphics2D)testGraphics.getGraphics();
+		Graphics2D tg2 = (Graphics2D)testGraphics2.getGraphics();
+		Graphics2D cig = (Graphics2D)clientImage.getGraphics();
+		Graphics2D rig = (Graphics2D)resultImage.getGraphics();
+		Tool oldTool = t.getToolByID("fillRect");
+		System.out.println(newTool);
+		String builder = newTool.mousePressed(locations[0],tg);
+		String builder2 = oldTool.mousePressed(locations[1],tg2);
+		newTool.draw(builder,cig);
+		oldTool.draw(builder2,rig);
+		for(int i = 1; i < locations.length - 1; i++) {
+			builder = newTool.mouseDragged(locations[i],tg);
+			builder2 = newTool.mouseDragged(locations[i],tg2);
+			newTool.draw(builder,cig);
+			oldTool.draw(builder2,rig);
+		}
+		for(int x = 0; x < clientImage.getWidth(); x++) {
+	    	for(int y = 0; y < clientImage.getHeight(); y++) {
+				    Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
+					Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
+			}
+		}
 	}
-	for(int x = 0; x < clientImage.getWidth(); x++) {
-	for(int y = 0; y < clientImage.getHeight(); y++) {
-	Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
-	Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
-	}
-	}
+
+    @org.junit.Test
+    public void testpencilSerialization() {
+		ClientState s = new ClientState();
+		ToolManager t = ToolManager.getServerToolManager(s);
+		String serializedTool = JythonBridge.serializeTool("pencil");
+		Tool newTool = JythonBridge.deserializeTool("pencil;" + serializedTool);
+		BufferedImage testGraphics = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+
+		BufferedImage testGraphics2 = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+		BufferedImage clientImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+		BufferedImage resultImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+		Graphics2D tg = (Graphics2D)testGraphics.getGraphics();
+		Graphics2D tg2 = (Graphics2D)testGraphics2.getGraphics();
+		Graphics2D cig = (Graphics2D)clientImage.getGraphics();
+		Graphics2D rig = (Graphics2D)resultImage.getGraphics();
+		Tool oldTool = t.getToolByID("pencil");
+		System.out.println(newTool);
+		String builder = newTool.mousePressed(locations[0],tg);
+		String builder2 = oldTool.mousePressed(locations[1],tg2);
+		newTool.draw(builder,cig);
+		oldTool.draw(builder2,rig);
+		for(int i = 1; i < locations.length - 1; i++) {
+			builder = newTool.mouseDragged(locations[i],tg);
+			builder2 = newTool.mouseDragged(locations[i],tg2);
+			newTool.draw(builder,cig);
+			oldTool.draw(builder2,rig);
+		}
+		for(int x = 0; x < clientImage.getWidth(); x++) {
+	    	for(int y = 0; y < clientImage.getHeight(); y++) {
+				    Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
+					Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
+			}
+		}
 	}
 }
