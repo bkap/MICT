@@ -9,13 +9,13 @@ import mict.bridge.JythonBridge;
 import mict.networking.*;
 
 /**
- * @author  bkaplan
+ * @author rde
  */
 public class Waiter extends Thread {
 	public Waiter(SSLSocket patron, Server parent) throws IOException {
 		this.patron = patron;
 		this.parent = parent;
-		out = new patron.getOutputStream();
+		out = patron.getOutputStream();
 		in = new BufferedReader(new InputStreamReader(patron.getInputStream()));
 		setDaemon(true);
 	}
@@ -115,10 +115,9 @@ public class Waiter extends Thread {
 				long h = Long.parseLong(phrase.substring(index+1));
 				System.out.println("Stitching and sharing a rectangular portion of the canvas @(" + x + ',' + y + ") at " + w + " by " + h);
 				sendCanvasRectangle(x, y, w, h);
-			} else if(action.startsWith("requesttool")) {
+			} else if(action.equals("requesttool")) {
 				String pickled = JythonBridge.serializeTool(phrase);
-				out.write(("tool " + pickled + "\n").toBytes());
-				out.flush();
+				send("tool", pickled);
 			} else {
 				System.out.println("Oops, that action doesn't exist.");
 			}
@@ -142,8 +141,10 @@ public class Waiter extends Thread {
 	public void sendCanvasRectangle(long x, long y, long width, long height) {
 		try {
 			BufferedImage img = parent.getCanvas().getCanvasRect(x, y, width, height);
-			out.write(("imgrect" + x + '.' + y + ' ').toBytes());
-			ImageIO.write(img, "png", out); // TODO create ostream as a bytearrayoutputstream, send bytes through properly
+			out.write(("imgrect@" + x + '.' + y + ' ').getBytes());
+			EscapingOutputStream eout = new EscapingOutputStream(out);
+			ImageIO.write(img, "png", eout);
+			eout.flush();
 			out.flush();
 		} catch(IOException e) {
 			System.err.println("Bad operation while quilting a canvas patch:");
@@ -165,9 +166,14 @@ public class Waiter extends Thread {
 	}
 
 	protected void send(String type, String data) {
-		System.out.println('[' + type + " " + data + ']');
-		out.write((type.toBytes() + ' ' + data.toBytes()).toBytes());
-		out.flush();
+		try {
+			System.out.println('[' + type + " " + data + ']');
+			out.write((type + ' ' + data).getBytes());
+			out.flush();
+		} catch(IOException e) {
+			System.err.println("Error sending string: " + type + ' ' + data);
+			e.printStackTrace(System.err);
+		}
 	}
 
 	protected void sendClose(String reason) {

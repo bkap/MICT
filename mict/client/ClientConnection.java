@@ -8,7 +8,8 @@ import java.awt.image.*;
 import javax.imageio.*;
 import javax.net.ssl.*;
 
-import mict.tools.ToolManager;
+import mict.tools.*;
+import mict.networking.*;
 
 /**
  * @author rde
@@ -100,18 +101,18 @@ public class ClientConnection extends Thread {
 			canvas.draw(toolid, phrase);
 			canvas.repaint();
 		} else { // it's not a tool
-			if(action.equals("imgrect")) {
+			if(action.startsWith("imgrect")) {
 				try {
-					int index = phrase.indexOf('.');
-					long x = Long.parseLong(phrase.substring(0,index));
-					String rest = phrase.substring(index+1);
-					index = rest.indexOf('@');
-					long y = Long.parseLong(rest.substring(0,index));
-					int port = Integer.parseInt(rest.substring(index+1));
-					Socket s = new Socket(server, port);
-					BufferedImage img = ImageIO.read(s.getInputStream());
-					s.getInputStream().close();
-					s.close();
+					int index = action.indexOf('@');
+					String rest = action.substring(index+1);
+					index = rest.indexOf('.');
+					long x = Long.parseLong(rest.substring(0,index));
+					long y = Long.parseLong(rest.substring(index+1));
+					ByteArrayInputStream bin = new ByteArrayInputStream(phrase.getBytes());
+					EscapingInputStream ebin = new EscapingInputStream(bin);
+					BufferedImage img = ImageIO.read(ebin);
+					ebin.close();
+					bin.close();
 		
 					canvas.getCanvasGraphics().drawImage(img, (int)(canvas.getUserX() + x), (int)(canvas.getUserY() + y), canvas);
 					//mict.test.ImageTest.popup(img);
@@ -129,9 +130,9 @@ public class ClientConnection extends Thread {
 				out.println("requesttool" + tools);
 			} else if(action.equals("tool")) {
 				toolManager.addTool(phrase);
+			} else {
+				System.out.println("Nothing happened. Improper command '" + action + /*' ' + phrase +*/ "', could not be handled.");
 			}
-			// TODO fill this out later
-			else System.out.println("nothing happened. Improper action string, could not be handled.");
 		}
 	}
 
