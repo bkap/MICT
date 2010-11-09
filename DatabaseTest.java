@@ -8,35 +8,30 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import javax.swing.DebugGraphics;
-
 public class ToolTest {
-	private Point[] locations;
-	private Client testClient;
+    private Point[] locations;
+    private Client testClient;
 	private Server testServer;
-
 	public ToolTest() {
-		locations = new Point[7];
-		locations[0] = new Point(5,5);
-		locations[1] = new Point(7,10);
-		locations[2] = new Point(6,9);
-		locations[3] = new Point(2,4);
-		locations[4] = new Point(15,3);
-		locations[5] = new Point(7,2);
-		locations[6] = new Point(5,3);
+
+     locations = new Point[7];
+     locations[0] = new Point(5,5);
+     locations[1] = new Point(7,10);
+     locations[2] = new Point(6,9);
+     locations[3] = new Point(2,4);
+     locations[4] = new Point(15,3);
+     locations[5] = new Point(7,2);
+     locations[6] = new Point(5,3);
+     }
+    @Before
+    public void setup() {
 	}
-
-	@Before
-	public void setup() {
-
-	}
-
 	@After
 	public void tearDown() {
-
+		
 	}
-
-	@org.junit.Test
-	public void testfillRoundRectSerialization() {
+    @org.junit.Test
+    public void testfillRoundRectSerialization() {
 		ClientState s = new ClientState();
 		ToolManager t = ToolManager.getServerToolManager(s);
 		String serializedTool = JythonBridge.serializeTool("fillRoundRect");
@@ -63,15 +58,14 @@ public class ToolTest {
 			oldTool.draw(builder2,rig);
 		}
 		for(int x = 0; x < clientImage.getWidth(); x++) {
-			for(int y = 0; y < clientImage.getHeight(); y++) {
-				Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
-				Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
+	    	for(int y = 0; y < clientImage.getHeight(); y++) {
+				    Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
+					Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
 			}
 		}
 	}
-
-	@org.junit.Test
-	public void testrectSerialization() {
+    @org.junit.Test
+    public void testrectSerialization() {
 		ClientState s = new ClientState();
 		ToolManager t = ToolManager.getServerToolManager(s);
 		String serializedTool = JythonBridge.serializeTool("rect");
@@ -98,15 +92,14 @@ public class ToolTest {
 			oldTool.draw(builder2,rig);
 		}
 		for(int x = 0; x < clientImage.getWidth(); x++) {
-			for(int y = 0; y < clientImage.getHeight(); y++) {
-				Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
-				Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
+	    	for(int y = 0; y < clientImage.getHeight(); y++) {
+				    Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
+					Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
 			}
 		}
 	}
-
-	@org.junit.Test
-	public void testroundrectSerialization() {
+    @org.junit.Test
+    public void testroundrectSerialization() {
 		ClientState s = new ClientState();
 		ToolManager t = ToolManager.getServerToolManager(s);
 		String serializedTool = JythonBridge.serializeTool("roundrect");
@@ -133,15 +126,14 @@ public class ToolTest {
 			oldTool.draw(builder2,rig);
 		}
 		for(int x = 0; x < clientImage.getWidth(); x++) {
-			for(int y = 0; y < clientImage.getHeight(); y++) {
-				Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
-				Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
+	    	for(int y = 0; y < clientImage.getHeight(); y++) {
+				    Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
+					Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
 			}
 		}
 	}
-
-	@org.junit.Test
-	public void testlineSerialization() {
+    @org.junit.Test
+    public void testlineSerialization() {
 		ClientState s = new ClientState();
 		ToolManager t = ToolManager.getServerToolManager(s);
 		String serializedTool = JythonBridge.serializeTool("line");
@@ -203,12 +195,11 @@ public class ToolTest {
 		}
 		for(int x = 0; x < clientImage.getWidth(); x++) {
 	    	for(int y = 0; y < clientImage.getHeight(); y++) {
-			    Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
-				Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
+				    Assert.assertEquals(clientImage.getRGB(x,y), resultImage.getRGB(x,y));
+					Assert.assertEquals(testGraphics.getRGB(x,y), testGraphics.getRGB(x,y));
 			}
 		}
 	}
-
     @org.junit.Test
     public void testovalSerialization() {
 		ClientState s = new ClientState();
@@ -243,7 +234,6 @@ public class ToolTest {
 			}
 		}
 	}
-
     @org.junit.Test
     public void testpanSerialization() {
 		ClientState s = new ClientState();
@@ -278,7 +268,6 @@ public class ToolTest {
 			}
 		}
 	}
-
     @org.junit.Test
     public void testfillRectSerialization() {
 		ClientState s = new ClientState();
@@ -313,7 +302,6 @@ public class ToolTest {
 			}
 		}
 	}
-
     @org.junit.Test
     public void testpencilSerialization() {
 		ClientState s = new ClientState();
