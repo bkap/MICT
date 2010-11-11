@@ -6,10 +6,23 @@
 	<property name="serverclasspath" value= "${clientclasspath}:postgresql.jar" />
 	
 	<property name="STORE" value="rdebasekeystore" />
-	
+	<property name="cobertura.dir" value="cobertura" />
+	<path id="cobertura.classpath">
+		<fileset dir="${cobertura.dir}">
+			<include name="cobertura.jar" />
+			<include name="lib/**/*.jar" />
+		</fileset>
+	</path>
+<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
 	<java fork="true" jar="jython.jar" outputproperty="PASSWD" >
 		<arg value="readpassword.py" />
 	</java>
+	<delete file="cobertura.ser" />
+	<cobertura-instrument todir="instrumented" >
+		<fileset dir="mict">
+			<include name="**/*.class" />
+		</fileset>
+	</cobertura-instrument>
 	<target name="buildclient">
 		<javac srcdir="mict/client/:mict/bridge/:mict/networking/:mict/tools/" classpath="${clientclasspath}" />
 	</target>
