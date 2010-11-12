@@ -3,6 +3,7 @@ from mict.tools import Tool
 import re
 from java.awt.image import BufferedImage
 
+point_re = re.compile(r"\( *(\d+), *(\d+) *\) *")
 
 class LineTool(Tool) :
 	def __init__(self, clientState = None) :
