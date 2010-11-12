@@ -17,14 +17,29 @@
 	<java fork="true" jar="jython.jar" outputproperty="PASSWD" >
 		<arg value="readpassword.py" />
 	</java>
-	<delete file="cobertura.ser" />
-	<cobertura-instrument todir="instrumented" >
-		<fileset dir="mict">
-			<include name="**/*.class" />
-		</fileset>
-	</cobertura-instrument>
+	
+	<target name="instrument" depends="buildclient" >
+		<delete file="cobertura.ser" />
+		<cobertura-instrument todir="instrumented" >
+			<fileset dir="mict">
+				<include name="**/*.class" />
+			</fileset>
+		</cobertura-instrument>
+	</target>
+	<target name="runcoverage" depends="instrument">
+		<java fork="true" classpath="instrumented:cobertura/cobertura.jar:${clientclasspath}" classname="mict.client.Client" >
+			<sysproperty key="javax.net.ssl.trustStore" value="${STORE}" />
+			<sysproperty key="javax.net.ssl.keyStorePassword" value="${PASSWD}" />
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="${basedir}/cobertura.ser" />
+		</java>
+	</target>
+
+	<target name="report" depends="runcoverage" >
+		<cobertura-report format="html" destdir="coverage" srcdir="." />
+	</target>
+
 	<target name="buildclient">
-		<javac srcdir="mict/client/:mict/bridge/:mict/networking/:mict/tools/" classpath="${clientclasspath}" />
+		<javac srcdir="mict/client/:mict/bridge/:mict/networking/:mict/tools/" debug="true" classpath="${clientclasspath}" />
 	</target>
 	<target name="runclient" depends="buildclient">
 		<java fork="true" classpath="${clientclasspath}" classname="mict.client.Client">
