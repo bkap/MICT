@@ -32,6 +32,13 @@ public interface Tool extends Serializable {
 	 */
 	String mouseReleased(Point locationOnScreen, Graphics2D g);
 
+	/**this method is called when the mouse is pressed and released in the same
+	 * location. Only implement it if you want to use it.
+	 * @param locationOnScreen the location on the graphics context that the
+	 * user is drawing on
+	 * @param g: the artifact layer of the canvasUI
+	 */
+	String mouseClicked(Point locationOnScreen, Graphics2D g);
 	/** given the serialized string of the tool (the string that is sent to the server), update the graphics context accordingly
 	 * 
 	 * @param s the String containing the serialized form of this tool's action

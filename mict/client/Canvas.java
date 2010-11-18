@@ -18,7 +18,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	private static final int MOUSE_DRAGGED = 2;
 	private static final int MOUSE_PRESSED = 3;
 	private static final int MOUSE_RELEASED = 4;
-
+	private static final int MOUSE_CLICKED = 5;
 	public Canvas(ClientState state, String servername) {
 		this.state = state;
 		this.servername = servername;
@@ -127,7 +127,9 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		inside = false;
 	}
 
-	public void mouseClicked(MouseEvent e) {} // DO NOT USE
+	public void mouseClicked(MouseEvent e) {
+		render(e,MOUSE_CLICKED);
+	} 
 	public void componentHidden(ComponentEvent e) {}
 	public void componentShown(ComponentEvent e) {}
 	public void componentMoved(ComponentEvent e) {}
@@ -177,6 +179,9 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 			break;
 		case MOUSE_DRAGGED:
 			phrase = state.activeTool.mouseDragged(e.getPoint(), artifactsGraphics);
+			break;
+		case MOUSE_CLICKED:
+			phrase = state.activeTool.mouseClicked(e.getPoint(), artifactsGraphics);
 			break;
 		default:
 			return;
