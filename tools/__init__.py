@@ -482,3 +482,13 @@ def _get_tools() :
 					tools.append(obj)
 	return tools
 tools = _get_tools()
+def get_tool_definitions(toolnames) :
+	'''returns the text of all tool files
+	for the tools with the given names. If the tool is defined in __init__.py,
+	it doesn't get included
+	toolnames is a collection of toolIDs to get'''
+	tool_file_text = []
+	for tool in tools :
+		if tool().getToolID() in toolnames and hasattr(tool,'__file__') :
+			tool_file_text.append(open('tools/%s' % tool.__file__,'r').read())
+	return tool_file_text	

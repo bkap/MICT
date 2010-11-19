@@ -9,3 +9,5 @@ cachedir/*
 PrivateTemporaryConfigurationClass.java
 RDETest.java
 coverage/*
+cobertura.ser
+
