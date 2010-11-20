@@ -3,7 +3,7 @@
 		ClientState s = new ClientState();
 		ToolManager t = ToolManager.getServerToolManager(s);
 		String serializedTool = JythonBridge.serializeTool("%(tool)s");
-		Tool newTool = JythonBridge.deserializeTool("%(tool)s;" + serializedTool);
+		Tool newTool = JythonBridge.deserializeTool(serializedTool);
 		BufferedImage testGraphics = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
 
 		BufferedImage testGraphics2 = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);

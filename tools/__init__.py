@@ -43,5 +43,9 @@ def get_tool_definitions(toolnames) :
 	tool_file_text = []
 	for tool in tools :
 		if tool().getToolID() in toolnames and hasattr(tool,'__file__') :
-			tool_file_text.append(open('tools/%s' % tool.__file__,'r').read())
-	return tool_file_text	
+			tool_file_text.append(tool().getToolID() +  ';' + open('tools/%s' % tool.__file__,'r').read())
+	return tool_file_text
+
+def reload_tools() :
+	global tools
+	tools = _get_tools()
