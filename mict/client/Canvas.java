@@ -105,7 +105,9 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	public Graphics2D getArtifactCanvasGraphics() {
 		return artifactsGraphics;
 	}
-	
+	public BufferedImage getCanvasImage() {
+		return this.canvas;
+	}
 	public Graphics getClipboardGraphics() {
 		return state.clipboard_graphics;
 	}

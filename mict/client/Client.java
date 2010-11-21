@@ -31,6 +31,7 @@ public class Client extends JApplet {
 		canvas.setSize(300, 300);
 		this.getContentPane().setLayout(new java.awt.BorderLayout());
 		canvas.setPreferredSize(canvas.getSize());
+		this.state.canvas = canvas;
 		tools = ToolManager.getServerToolManager(state);
 		
 		state.tools = tools;
