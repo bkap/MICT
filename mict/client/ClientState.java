@@ -35,4 +35,6 @@ public class ClientState {
 	 * @uml.associationEnd  
 	 */
 	public ToolManager tools;
+
+	public Canvas canvas;
 }
