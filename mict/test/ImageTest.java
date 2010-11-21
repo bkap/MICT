@@ -18,8 +18,10 @@ public class ImageTest extends JPanel {
 	}
 
 	private Image img;
+	private int id = (int)(Math.random() * 1000);
 
 	public void paint(Graphics g) {
+		System.out.println("Image" + id + ": " + img);
 		g.drawImage(img, 0, 0, this);
 	}
 }

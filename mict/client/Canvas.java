@@ -8,9 +8,10 @@ import javax.swing.*;
 
 import mict.tools.ToolManager;
 
-/** This is the Canvas viewport. It contains the drawn image as well as maintaining the socketection to the server. All drawing operations
- * should go through here
- * @author  bkaplan
+/** This is the Canvas viewport. It contains the drawn image as well as
+ * maintaining the connection to the server. All drawing operations should go
+ * through here
+ * @author bkaplan
  */
 public class Canvas extends JPanel implements MouseListener, MouseMotionListener, ComponentListener {
 	private static final long serialVersionUID = 1L; // @Ben: do we really need this? I mean, Canvas isn't even Serializable.
@@ -105,9 +106,11 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	public Graphics2D getArtifactCanvasGraphics() {
 		return artifactsGraphics;
 	}
+
 	public BufferedImage getCanvasImage() {
 		return this.canvas;
 	}
+
 	public Graphics getClipboardGraphics() {
 		return state.clipboard_graphics;
 	}
@@ -130,9 +133,6 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		inside = false;
 	}
 
-	public void mouseClicked(MouseEvent e) {
-		render(e,MOUSE_CLICKED);
-	} 
 	public void componentHidden(ComponentEvent e) {}
 	public void componentShown(ComponentEvent e) {}
 	public void componentMoved(ComponentEvent e) {}
@@ -165,6 +165,10 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	public void mouseMoved(MouseEvent e) {
 		render(e, MOUSE_HOVERED);
 	}
+
+	public void mouseClicked(MouseEvent e) {
+		render(e,MOUSE_CLICKED);
+	} 
 
 	public void render(MouseEvent e, int type) {
 		if(!inside) return;

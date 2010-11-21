@@ -59,14 +59,12 @@ public class ClientConnection extends Thread {
 				int read = in.read();
 				if(read == -1) break;
 				if(read == ' ') {
-					System.out.println("RDETEST: {action=" + action + "}{buffer=" + buffer + "}");
 					if(action == "") {
 						action = buffer;
 						buffer = "";
 					} else dispatch(action, buffer);
 					buffer = "";
 				} else if(read == '\n') {
-					System.out.println("RDETEST: {action=" + action + "}{buffer=" + buffer + "}");
 					dispatch(action, buffer);
 					buffer = "";
 					action = "";
@@ -105,7 +103,11 @@ public class ClientConnection extends Thread {
 			canvas.draw(toolid, phrase, (int)(canvas.getUserX() + x), (int)(canvas.getUserY() + y));
 			canvas.repaint();
 		} else { // it's not a tool
-			System.out.println("Got a line from the server: " + action + "=" + phrase);
+			if(action.startsWith("imgrect")) {
+				System.out.println("Got a line from the server: " + action + "=[[IMAGE]]");
+			} else {
+				System.out.println("Got a line from the server: " + action + "=" + phrase);
+			}
 			if(action.startsWith("imgrect")) {
 				try {
 					int index = action.indexOf('@');
