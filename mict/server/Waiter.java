@@ -98,7 +98,7 @@ public class Waiter extends Thread {
 				int index = phrase.indexOf(',');
 				int dx = Integer.parseInt(phrase.substring(0,index));
 				int dy = Integer.parseInt(phrase.substring(index+1));
-				move(x + dx, y + dy);
+				move(x - dx, y - dy);
 			} else {
 				/*history.add(*/parent.getCanvas().draw(x, y, tool, phrase, this); //);
 			}
@@ -119,7 +119,7 @@ public class Waiter extends Thread {
 				String pickled = JythonBridge.serializeTool(phrase);
 				send("tool", pickled);
 			} else {
-				System.out.println("Oops, that action doesn't exist.");
+				System.err.println("Oops, that action doesn't exist.");
 			}
 		}
 		System.out.println();
@@ -145,6 +145,7 @@ public class Waiter extends Thread {
 			EscapingOutputStream eout = new EscapingOutputStream(out);
 			ImageIO.write(img, "png", eout);
 			eout.flush();
+			out.write('\n');
 			out.flush();
 		} catch(IOException e) {
 			System.err.println("Bad operation while quilting a canvas patch:");
@@ -168,7 +169,7 @@ public class Waiter extends Thread {
 	protected void send(String type, String data) {
 		try {
 			System.out.println('[' + type + " " + data + ']');
-			out.write((type + ' ' + data).getBytes());
+			out.write((type + ' ' + data + '\n').getBytes());
 			out.flush();
 		} catch(IOException e) {
 			System.err.println("Error sending string: " + type + ' ' + data);
@@ -191,7 +192,6 @@ public class Waiter extends Thread {
 			out.close();
 		} catch(IOException e) {
 			// Nothing to see here, move along.
-			System.out.println("Nothing to see here, move along.");
 		}
 		if(username != null) {
 			parent.getCanvas().saveAll();

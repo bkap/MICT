@@ -19,6 +19,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	private static final int MOUSE_PRESSED = 3;
 	private static final int MOUSE_RELEASED = 4;
 	private static final int MOUSE_CLICKED = 5;
+
 	public Canvas(ClientState state, String servername) {
 		this.state = state;
 		this.servername = servername;
@@ -198,7 +199,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 			int dy = Integer.parseInt(phrase.substring(index+1));
 			x += dx;
 			y += dy;
-			if(dx != 0 && dy != 0)
+			if(dx != 0 || dy != 0)
 				socket.requestCanvasRect(x, y, getWidth(), getHeight());
 			BufferedImage nc = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
 			Graphics g = nc.getGraphics();
@@ -210,7 +211,9 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		repaint();
 	}
 	
-	public void draw(String toolid, String phrase) {
-		this.state.tools.draw(toolid, phrase, this.getCanvasGraphics());
+	public void draw(String toolid, String phrase, int offx, int offy) {
+		Graphics2D g = (Graphics2D)getCanvasGraphics().create();
+		g.translate(offx, offy);
+		state.tools.draw(toolid, phrase, g);
 	}
 }

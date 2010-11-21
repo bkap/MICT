@@ -27,9 +27,9 @@ public class ClientConnection extends Thread {
 				this.toolManager = t;
 				SSLSocketFactory sockfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
 				waiter = (SSLSocket)sockfactory.createSocket(server, port);
-				out = new PrintWriter(new OutputStreamWriter(waiter.getOutputStream()), true);
+				out = waiter.getOutputStream();
 				in = new BufferedReader(new InputStreamReader(waiter.getInputStream()));
-				out.println(username + ' ' + passwd);
+				out.write((username + ' ' + passwd + '\n').getBytes());
 			} catch(IOException e) {
 				System.err.println("Could not open connection to server: ");
 				e.printStackTrace(System.err);
@@ -45,7 +45,7 @@ public class ClientConnection extends Thread {
 	private String server;
 	//private Object controller;
 	private SSLSocket waiter;
-	private PrintWriter out;
+	private OutputStream out;
 	private BufferedReader in;
 	private ToolManager toolManager;
 	private Canvas canvas;
@@ -59,10 +59,14 @@ public class ClientConnection extends Thread {
 				int read = in.read();
 				if(read == -1) break;
 				if(read == ' ') {
-					if(action == "") action = buffer;
-					else dispatch(action, buffer);
+					System.out.println("RDETEST: {action=" + action + "}{buffer=" + buffer + "}");
+					if(action == "") {
+						action = buffer;
+						buffer = "";
+					} else dispatch(action, buffer);
 					buffer = "";
 				} else if(read == '\n') {
+					System.out.println("RDETEST: {action=" + action + "}{buffer=" + buffer + "}");
 					dispatch(action, buffer);
 					buffer = "";
 					action = "";
@@ -80,15 +84,17 @@ public class ClientConnection extends Thread {
 		try {
 			waiter.close();
 		} catch (IOException e) {
-			// oh boo hoo. If the connection fails to terminate, it's no  good anyway
+			// oh boo hoo. If the connection fails to terminate, it's no good anyway
 		}
 	}
+
 	public void finalize() {
 		terminateConnection();
 	}
-	private void dispatch(String action, String phrase) {
+
+	private void dispatch(String action, String phrase) throws IOException {
 		if(action.startsWith(".")) { // it's a tool
-			System.out.println("Recieving draw from the server: " + action + " " + phrase);
+			System.out.println("Receiving draw from the server: " + action + " " + phrase);
 			String t = action.substring(1);
 			int index = t.indexOf('@');
 			String toolid = t.substring(0,index);
@@ -96,11 +102,10 @@ public class ClientConnection extends Thread {
 			index = t.indexOf(',');
 			int x = Integer.parseInt(t.substring(0,index));
 			int y = Integer.parseInt(t.substring(index+1));
-			Graphics2D g = (Graphics2D)canvas.getCanvasGraphics().create();
-			g.translate(canvas.getUserX() - x, canvas.getUserY() - y);
-			canvas.draw(toolid, phrase);
+			canvas.draw(toolid, phrase, (int)(canvas.getUserX() + x), (int)(canvas.getUserY() + y));
 			canvas.repaint();
 		} else { // it's not a tool
+			System.out.println("Got a line from the server: " + action + "=" + phrase);
 			if(action.startsWith("imgrect")) {
 				try {
 					int index = action.indexOf('@');
@@ -114,7 +119,7 @@ public class ClientConnection extends Thread {
 					ebin.close();
 					bin.close();
 		
-					canvas.getCanvasGraphics().drawImage(img, (int)(canvas.getUserX() + x), (int)(canvas.getUserY() + y), canvas);
+					canvas.getCanvasGraphics().drawImage(img, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()), canvas);
 					//mict.test.ImageTest.popup(img);
 					canvas.repaint();
 				} catch(IOException e) {
@@ -123,24 +128,29 @@ public class ClientConnection extends Thread {
 				}
 			} else if(action.equals("querytools")) {
 				List<String> needed = toolManager.updateClientTools(phrase);
-				String tools = " ";
+				String tools = "";
 				for(String toolID: needed) {
 					tools = tools.concat(toolID + " ");
 				}
-				out.println("requesttool" + tools);
+				send("requesttool", tools);
 			} else if(action.equals("tool")) {
 				toolManager.addTool(phrase);
 			} else {
-				System.out.println("Nothing happened. Improper command '" + action + /*' ' + phrase +*/ "', could not be handled.");
+				System.err.println("Nothing happened. Improper command '" + action + /*' ' + phrase +*/ "', could not be handled.");
 			}
 		}
 	}
 
 	public void requestCanvasRect(long x, long y, long width, long height) {
-		if(out != null) {
-			out.println("imgrect " + x + '.' + y + '.' + width + '.' + height);
-		} else {
-			System.err.println("Tried to request a rectangle before establishing a connection. Oops.");
+		try {
+			if(out != null) {
+				send("imgrect", "" + x + '.' + y + '.' + width + '.' + height);
+			} else {
+				System.err.println("Tried to request a rectangle before establishing a connection. Oops.");
+			}
+		} catch(IOException e) {
+			System.err.println("Could not request rectangular section of canvas:");
+			e.printStackTrace(System.err);
 		}
 	}
 
@@ -156,11 +166,25 @@ public class ClientConnection extends Thread {
 	}
 
 	public void sendDraw(String tool, String data) {
+		try {
+			if(out == null) {
+				System.err.println("Tried to send an action before establishing a connection. Oops.");
+				return;
+			}
+			System.out.println("Drawing! ." + tool + ' ' + data);
+			send('.' + tool, data);
+		} catch(IOException e) {
+			System.err.println("Could not send a draw command:");
+			e.printStackTrace(System.err);
+		}
+	}
+
+	public void send(String action, String phrase) throws IOException {
 		if(out == null) {
 			System.err.println("Tried to send an action before establishing a connection. Oops.");
 			return;
 		}
-		System.out.println("Drawing! ." + tool + ' ' + data);
-		out.println('.' + tool + ' ' + data);
+		out.write((action + ' ' + phrase + '\n').getBytes());
+		out.flush();
 	}
 }
