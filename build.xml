@@ -24,6 +24,7 @@
 			<fileset dir="mict">
 				<include name="**/*.class" />
 				<exclude name="server/*.class" />
+				<exclude name="test/*.class" />
 			</fileset>
 		</cobertura-instrument>
 	</target>
@@ -39,7 +40,7 @@
 		<cobertura-report format="html" destdir="coverage" srcdir="." />
 	</target>
 	<target name="buildclient">
-		<javac srcdir="mict/client/:mict/bridge/:mict/networking/:mict/tools/" debug="true" classpath="${clientclasspath}" />
+		<javac srcdir="mict/client/:mict/bridge/:mict/networking/:mict/tools/:mict/util" debug="true" classpath="${clientclasspath}" />
 	</target>
 	<target name="runclient" depends="buildclient">
 		<java fork="true" classpath="${clientclasspath}" classname="mict.client.Client">

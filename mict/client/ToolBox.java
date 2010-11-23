@@ -20,13 +20,21 @@ public class ToolBox extends JPanel {
 
 	public ToolBox(ClientState state, ToolManager tools) {
 		this(state);
+		setToolManager(tools);
+	
+		
+	}
+	public void setToolManager(ToolManager tools) {
+		
 		for(Tool t : tools.getAllTools()) {
 			this.addTool(t);
 		}
-		bg.setSelected(bg.getElements().nextElement().getModel(), true);
-		state.activeTool = ((ToolButton)bg.getElements().nextElement()).getTool();
-	
-		
+		if(bg.getButtonCount()> 0) {
+			this.remove(loading);
+			bg.setSelected(bg.getElements().nextElement().getModel(), true);
+			state.activeTool = ((ToolButton)bg.getElements().nextElement()).getTool();
+			this.validate();
+		}
 	}
 	public ToolBox(ClientState state) {
 		this.state = state;
@@ -35,6 +43,7 @@ public class ToolBox extends JPanel {
 		bg = new ButtonGroup();
 		toolButtons = new Vector<ToolButton>();
 		toolPanel = new JPanel();
+		this.add(loading);
 		this.add(toolPanel);
 		this.add(Box.createVerticalGlue());
 		colorButton = new JButton(new ColorIcon());
@@ -52,6 +61,7 @@ public class ToolBox extends JPanel {
 	private Vector<ToolButton> toolButtons;
 	private ButtonGroup bg;
 	private JPanel toolPanel;
+	private JLabel loading = new JLabel("Loading...");
 	/**
 	 * @uml.property  name="state"
 	 * @uml.associationEnd  
@@ -62,6 +72,7 @@ public class ToolBox extends JPanel {
 	 * @uml.associationEnd  
 	 */
 	public void addTools(List<Tool> tools) {
+		this.remove(loading);
 		for(Tool t: tools) {
 			addTool(t);
 		}

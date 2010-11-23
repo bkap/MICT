@@ -114,14 +114,10 @@ public class ClientConnection extends Thread {
 			canvas.repaint();
 		} else { // it's not a tool
 			if(action.equals("querytools")) {
-				List<String> needed = toolManager.updateClientTools(phrase);
-				String tools = "";
-				for(String toolID: needed) {
-					tools = tools.concat(toolID + " ");
-				}
-				send("requesttool", tools);
+				String needed = toolManager.updateClientTools(phrase);
+				send("requesttool", needed);
 			} else if(action.equals("tool")) {
-				toolManager.addTool(phrase);
+				toolManager.addTools(phrase);
 			} else {
 				System.err.println("Nothing happened. Improper command '" + action + /*' ' + phrase +*/ "', could not be handled.");
 			}
@@ -153,7 +149,9 @@ public class ClientConnection extends Thread {
 			System.err.println("Nothing happened. Improper command '" + action + "', could not be handled.");
 		}
 	}
-
+	public boolean isConnected() {
+		return out != null;
+	}
 	public void requestCanvasRect(long x, long y, long width, long height) {
 		try {
 			if(out != null) {

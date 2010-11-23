@@ -41,7 +41,9 @@ def add_file(filestr) :
 	f = open(toolfile,'w')
 	f.write(filetxt)
 	f.close()
-	tools.extend(load_tools(filename))
+	newtools = (load_tools(filename))
+	tools.extend(newtools)
+	return newtools
 def _get_tools() :
 	#hacky way to get the list of tools
 	tools = []
@@ -70,6 +72,8 @@ def get_tool_definitions(toolnames) :
 		if tool().getToolID() in toolnames and hasattr(tool,'__file__') :
 			tool_file_text.append(tool().getToolID() +  ';' + open('tools/%s' % tool.__file__,'r').read())
 	return tool_file_text
+def get_tool_file(f) :
+	return f + ':' + open('tools/%s' % f,'r').read()
 
 def reload_tools() :
 	global tools
