@@ -30,7 +30,6 @@ public class ClientConnection extends Thread {
 				waiter = (SSLSocket)sockfactory.createSocket(server, port);
 				out = waiter.getOutputStream();
 				in = waiter.getInputStream();
-				//in = new BufferedReader(new InputStreamReader(waiter.getInputStream()));
 				out.write((username + ' ' + passwd + '\n').getBytes());
 			} catch(IOException e) {
 				System.err.println("Could not open connection to server: ");
@@ -49,7 +48,6 @@ public class ClientConnection extends Thread {
 	private SSLSocket waiter;
 	private OutputStream out;
 	private InputStream in;
-	//private BufferedReader in;
 	private ToolManager toolManager;
 	private Canvas canvas;
 	
@@ -105,7 +103,6 @@ public class ClientConnection extends Thread {
 
 	private void dispatch(String action, String phrase) throws IOException {
 		if(action.startsWith(".")) { // it's a tool
-			System.out.println("Receiving draw from the server: " + action + " " + phrase);
 			String t = action.substring(1);
 			int index = t.indexOf('@');
 			String toolid = t.substring(0,index);
@@ -153,7 +150,7 @@ public class ClientConnection extends Thread {
 				e.printStackTrace(System.err);
 			}
 		} else {
-			System.err.println("Nothing happened. Improper command '" + action + /*' ' + phrase +*/ "', could not be handled.");
+			System.err.println("Nothing happened. Improper command '" + action + "', could not be handled.");
 		}
 	}
 
