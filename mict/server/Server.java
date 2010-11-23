@@ -7,11 +7,11 @@ import java.util.*;
 import mict.networking.*;
 
 /**
- * @author  bkaplan
+ * @author rde
  */
 public class Server extends Thread {
 	public static void main(String[] args) {
-		new Server(args).start();
+		new Server(Utility.expand(args)).start();
 	}
 
 	public Server(String[] options) { // todo pass a configuration set based on args
