@@ -27,29 +27,12 @@ public class Client extends JApplet {
 	private static final long serialVersionUID = -6467296753041382320L;
 
 	public Client(String server) { 
-		if(server == null || server.equals("")) {
-			tools = ToolManager.getServerToolManager(state);
-		} else {
-				//tools = ToolManager.getClientToolManager(state);
-				tools = ToolManager.getServerToolManager(state);
-		}
-			
-		state.tools = tools;
-		toolbox = new ToolBox(state,tools);
-		tools.setToolBox(toolbox);
 		canvas = new Canvas(state, server);
 		canvas.setSize(300, 300);
 		this.getContentPane().setLayout(new java.awt.BorderLayout());
 		canvas.setPreferredSize(canvas.getSize());
 		this.state.canvas = canvas;
-
-		/* toolbox = new ToolBox(state);
-		 * tools= ToolManager.getClientToolManager(state,toolbox);
-		 * state.tools = tools;
-			
-		*/
-		this.getContentPane().add(toolbox, java.awt.BorderLayout.WEST);
-		this.getContentPane().add(canvas, java.awt.BorderLayout.CENTER);
+		
 		
 	}
 	public Client() {
@@ -77,7 +60,32 @@ public class Client extends JApplet {
 	 * Swing event thread isn't created when the  constructor is called 
 	 */
 	public void start() {
-		canvas.start(tools);
+
+		String servername = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
+
+		//if we still haven't specified a server, don't connect to a server
+		if(servername == null) servername = "";
+		if(servername.equals("")) {
+			System.out.println("not connected");
+			tools = ToolManager.getServerToolManager(state);
+		} else {
+				tools = ToolManager.getClientToolManager(state);
+				//tools = ToolManager.getServerToolManager(state);
+		}
+			
+		state.tools = tools;
+		toolbox = new ToolBox(state,tools);
+		tools.setToolBox(toolbox);
+		
+
+		/* toolbox = new ToolBox(state);
+		 * tools= ToolManager.getClientToolManager(state,toolbox);
+		 * state.tools = tools;
+			
+		*/
+		this.getContentPane().add(toolbox, java.awt.BorderLayout.WEST);
+		this.getContentPane().add(canvas, java.awt.BorderLayout.CENTER);
+		canvas.start(tools, servername);
 	}
 
 	public ClientState getClientState() {

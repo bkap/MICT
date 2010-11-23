@@ -72,6 +72,7 @@ public class ToolBox extends JPanel {
 	 * @uml.associationEnd  
 	 */
 	public void addTools(List<Tool> tools) {
+		this.remove(loading);
 		for(Tool t: tools) {
 			addTool(t);
 		}

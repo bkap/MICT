@@ -29,13 +29,9 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		addComponentListener(this);
 	}
 
-	public void start(ToolManager t) {
+	public void start(ToolManager t, String servername) {
 		//if we haven't already specified a server, ask for it
-		if(servername == null) {
-			servername = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
-		}
-		//if we still haven't specified a server, don't connect to a server
-		if(servername == null) servername = "";
+		this.servername = servername;
 		socket = new ClientConnection(servername, "username", "password", this,t);
 		socket.requestCanvasRect(this.getUserX(), this.getUserY(), this.getWidth(), this.getHeight());
 		this.setCanvas(new BufferedImage(this.getWidth(), this.getHeight(),BufferedImage.TYPE_INT_ARGB));
@@ -171,7 +167,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	} 
 
 	public void render(MouseEvent e, int type) {
-		if(!inside) return;
+		if(!inside || state.activeTool == null) return;
 		String phrase;
 		artifactsGraphics.clearRect(0, 0, getWidth(), getHeight());
 		switch(type) {

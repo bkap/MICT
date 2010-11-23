@@ -31,8 +31,10 @@ def get_tools(clientstate= None) :
 active_tools = []
 
 def get_client_tools(clientState = None):
+	print "client tools: ",tools.tools
 	return [tool(clientState) for tool in tools.tools]
 def get_needed_tools(serverTools):
+	print "getting needed tools"
 	return tools.check_files(serverTools)
 get_tool_files_and_hashes = tools.get_tool_files_and_hashes;
 def get_server_tools(clientState = None) :

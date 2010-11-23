@@ -149,7 +149,9 @@ public class ClientConnection extends Thread {
 			System.err.println("Nothing happened. Improper command '" + action + "', could not be handled.");
 		}
 	}
-
+	public boolean isConnected() {
+		return out != null;
+	}
 	public void requestCanvasRect(long x, long y, long width, long height) {
 		try {
 			if(out != null) {
