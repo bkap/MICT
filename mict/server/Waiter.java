@@ -2,11 +2,13 @@ package mict.server;
 
 import java.awt.image.*;
 import java.io.*;
+import java.util.*;
 import javax.net.ssl.*;
 import javax.imageio.*;
 
 import mict.bridge.JythonBridge;
 import mict.networking.*;
+import mict.util.*;
 
 /**
  * @author rde
@@ -184,8 +186,21 @@ public class Waiter extends Thread {
 
 	protected void send(String type, String data) {
 		try {
-			System.out.println('[' + type + " " + data + ']');
 			out.write((type + ' ' + data + '\n').getBytes());
+			out.flush();
+		} catch(IOException e) {
+			System.err.println("Error sending string: " + type + ' ' + data);
+			e.printStackTrace(System.err);
+		}
+	}
+
+	protected void sendEscapedData(String type, String data) {
+		try {
+			out.write((type + ' ').getBytes());
+			EscapingOutputStream eout = new EscapingOutputStream(out);
+			eout.write(data.getBytes());
+			eout.flush();
+			out.write('\n');
 			out.flush();
 		} catch(IOException e) {
 			System.err.println("Error sending string: " + type + ' ' + data);
