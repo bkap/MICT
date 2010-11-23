@@ -211,7 +211,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 			Graphics g = nc.getGraphics();
 			g.setColor(Color.GRAY);
 			g.fillRect(0, 0, getWidth(), getHeight());
-			g.drawImage(canvas, dx, dy, this);
+			g.drawImage(canvas, -dx, -dy, this);
 			setCanvas(nc);
 		}
 		repaint();

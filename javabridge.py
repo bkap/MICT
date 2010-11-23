@@ -21,16 +21,11 @@ from java.awt import Point, Color, Graphics, Image
 from mict.tools import Tool
 
 def get_tools(clientstate= None) :
+	tools.reload_tools()
 	tools_instances = []
 	for tool in tools.tools :
 		tools_instances.append(tool(clientstate))
 	return tools_instances
-
-def reload_tools(clientstate=None) :
-	global tools
-	tools = reload(tools)
-	return get_tools(clientstate)
-
 
 PICKLE_FILE = 'tools.pickle'
 
@@ -61,7 +56,7 @@ def serialize_tool(toolID):
 			s_tool = tool
 			break
 	if s_tool == None :
-		print "no tool"
+		print "no tool: %s" % toolID
 		return ""
 	if s_tool.__file__ != None :
 		return ';'.join((s_tool.__file__,open('tools/%s' %
@@ -69,10 +64,14 @@ def serialize_tool(toolID):
 	print "bad"
 	return ''
 
-def unserialize_tool(tool_string, client_state = None): 
+def unserialize_tool(tool_string, client_state = None):
 	print "deserializing"
 	print tool_string
-	file_name, contents = tool_string.split(';',1)
+	if not tool_string :
+		return None
+	stuff = tool_string.split(';',1)
+	file_name = stuff[0]
+	contents = stuff[1]
 	i = 0
 	base_name = os.path.splitext(file_name)[0]
 	print base_name
@@ -81,8 +80,10 @@ def unserialize_tool(tool_string, client_state = None):
 		i += 1
 	f = open('tools/%s' % file_name, 'w')
 	f.write(contents)
-	tool = __import__('tools.' + file_name[:-3],fromlist=['__name__'])
+	tool = __import__('tools.' + file_name[:-3], fromlist=['*'])
+	print tool.__file__
 	for name in dir(tool) :
+		print name
 		obj = getattr(tool,name)
 		if isinstance(obj,type) and issubclass(obj, Tool) and not obj == Tool :
 			obj.__file__ = file_name

@@ -30,13 +30,13 @@ class PanTool(Tool) :
 	def mouseHovered(self, locationOnScreen, g) :
 		return ""
 	def mouseDragged(self, locationOnScreen, g) :
-		dx = locationOnScreen.x - self.last_point.x
-		dy = locationOnScreen.y - self.last_point.y
+		dx = -(locationOnScreen.x - self.last_point.x)
+		dy = -(locationOnScreen.y - self.last_point.y)
 		self.last_point = locationOnScreen
 		return "%d,%d" % (dx, dy)
 	def mouseReleased(self, locationOnScreen, g) :
-		dx = locationOnScreen.x - self.last_point.x
-		dy = locationOnScreen.y - self.last_point.y
+		dx = -(locationOnScreen.x - self.last_point.x)
+		dy = -(locationOnScreen.y - self.last_point.y)
 		self.last_point = None
 		return "%d,%d" % (dx, dy)
 	def draw(self, s, g) :
@@ -48,5 +48,5 @@ class PanTool(Tool) :
 	def getTooltip(self) :
 		return "move to a new section of the canvas defined by the starting point and the point at which the mouse was released"
 	def getToolID(self) :
-		return 'pan'	
+		return 'pan'
 
