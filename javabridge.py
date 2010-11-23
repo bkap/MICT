@@ -27,7 +27,6 @@ def get_tools(clientstate= None) :
 		tools_instances.append(tool(clientstate))
 	return tools_instances
 
-PICKLE_FILE = 'tools.pickle'
 
 active_tools = []
 

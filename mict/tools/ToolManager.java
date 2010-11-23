@@ -47,12 +47,19 @@ public class ToolManager {
 	public List<Tool> getAllTools() {
 		return toolList;
 	}
-	public void addTool(String serial_form) {
-		Tool t = JythonBridge.addClientTool(serial_form, state);
+	public void addTools(String serial_form) {
+		List<Tool> newtools = JythonBridge.addClientTool(serial_form, state);
+		for(Tool t: newtools) {
 		toolList.add(t);
 		tools.put(t.getToolID(), t);
+		if(this.b != null) {
+			b.addTool(t);
+		}
+		}
 	}
-
+	public void setToolBox(ToolBox b) {
+		this.b = b;
+	}
 	/**This method passses the given phrase and graphics to the Tool with the given ID.
 	 * 
 	 * @param toolid the toolID of the tool to use for parsing the draw command
@@ -78,7 +85,6 @@ public class ToolManager {
 				this.toolList.add(t);
 				this.tools.put(t.getToolID(), t);
 			}
-			
 		}
 		
 		return neededTools;
@@ -106,5 +112,8 @@ public class ToolManager {
 	}
 	public static ToolManager getClientToolManager(ClientState s, ToolBox b) {
 		return new ToolManager(JythonBridge.getClientTools(s), b,s);
+	}
+	public static ToolManager getClientToolManager(ClientState s) {
+		return new ToolManager(JythonBridge.getClientTools(s),null,s);
 	}
 }

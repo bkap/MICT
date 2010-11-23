@@ -59,6 +59,15 @@ public abstract class JythonBridge {
 			return new Vector<Tool>();
 		}
 	}
+	public static String getSerializedToolFile(String file) {
+		try {
+			jython.eval("import " + SCRIPT_NAME);
+			return (String)jython.eval(SCRIPT_NAME + ".tools.get_tool_file(\"" + file + "\")");
+			
+		} catch(ScriptException ex) {
+			return "";
+		}
+	}
 	public static String serializeTool(String toolID) {
 		
 		try {
@@ -71,17 +80,30 @@ public abstract class JythonBridge {
 		}
 		
 	}
-	public static Tool addClientTool(String phrase, ClientState state) {
+	public static List<Tool> addClientTool(String phrase, ClientState state) {
 		try {
 			jython.eval("import " + SCRIPT_NAME);
 			jython.put("phrase",phrase);
 			jython.put("state",state);
-			return (Tool)jython.eval(SCRIPT_NAME + ".deserialize_tool(phrase,state)");
+			List tools = (List)jython.eval(SCRIPT_NAME + ".deserialize_tool(phrase,state)");
+			List<Tool> tools_t = new Vector<Tool>();
+			for(Object o: tools) {
+				tools_t.add((Tool)o);
+			}
+			return tools_t;
 		} catch(ScriptException e) {
 			e.printStackTrace();
 			return null;
 		}
 
+	}
+	public static String getToolDescriptions() {
+		try {
+			jython.eval("import " + SCRIPT_NAME);
+			return (String)jython.eval(SCRIPT_NAME + ".tools.get_tool_files_and_hashes()");
+		} catch(ScriptException ex) {
+			return "";
+		}
 	}
 	public static void main(String[] args) {
 

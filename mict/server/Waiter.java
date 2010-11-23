@@ -4,10 +4,10 @@ import java.awt.image.*;
 import java.io.*;
 import javax.net.ssl.*;
 import javax.imageio.*;
-
+import java.util.LinkedList;
 import mict.bridge.JythonBridge;
 import mict.networking.*;
-
+import mict.util.Utility;
 /**
  * @author rde
  */
@@ -128,8 +128,10 @@ public class Waiter extends Thread {
 				System.out.println("Stitching and sharing a rectangular portion of the canvas @(" + x + ',' + y + ") at " + w + " by " + h);
 				sendCanvasRectangle(x, y, w, h);
 			} else if(action.equals("requesttool")) {
-				String pickled = JythonBridge.serializeTool(phrase);
-				send("tool", pickled);
+				String[] neededFiles = phrase.split(":");
+				for(String file: neededFiles) {
+					send("tool", JythonBridge.getSerializedToolFile(file));
+				}
 			} else {
 				System.err.println("Oops, that action doesn't exist.");
 			}
@@ -174,7 +176,7 @@ public class Waiter extends Thread {
 	}
 
 	public void sendToolSet() {
-		
+		sendEscapedData("querytool",JythonBridge.getToolDescriptions());
 	}
 
 	public void sendCanvasChange(long x, long y, String tool, String data) {
