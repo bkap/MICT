@@ -2,14 +2,15 @@ package mict.client;
 
 import java.io.*;
 import java.net.*;
-import java.util.List;
 import java.awt.Graphics2D;
 import java.awt.image.*;
+import java.util.*;
 import javax.imageio.*;
 import javax.net.ssl.*;
 
-import mict.tools.*;
 import mict.networking.*;
+import mict.tools.*;
+import mict.util.*;
 
 /**
  * @author rde
@@ -28,7 +29,7 @@ public class ClientConnection extends Thread {
 				SSLSocketFactory sockfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
 				waiter = (SSLSocket)sockfactory.createSocket(server, port);
 				out = waiter.getOutputStream();
-				in = new BufferedReader(new InputStreamReader(waiter.getInputStream()));
+				in = waiter.getInputStream();
 				out.write((username + ' ' + passwd + '\n').getBytes());
 			} catch(IOException e) {
 				System.err.println("Could not open connection to server: ");
@@ -46,28 +47,38 @@ public class ClientConnection extends Thread {
 	//private Object controller;
 	private SSLSocket waiter;
 	private OutputStream out;
-	private BufferedReader in;
+	private InputStream in;
 	private ToolManager toolManager;
 	private Canvas canvas;
 	
 	public void run() {
 		// DO WORK SON
 		String buffer = "";
+		LinkedList<Byte> bitbuffer = new LinkedList<Byte>();
 		String action = "";
 		try {
 			while(!waiter.isClosed()) {
 				int read = in.read();
 				if(read == -1) break;
 				if(read == ' ') {
-					if(action == "") {
+					if(action.equals("")) {
 						action = buffer;
-						buffer = "";
+					} else if(action.startsWith("#")) {
+						dispatch(action.substring(1), Utility.toByteArray(bitbuffer));
 					} else dispatch(action, buffer);
+					// Utility.toByteArray consumes bitbuffer.
 					buffer = "";
 				} else if(read == '\n') {
-					dispatch(action, buffer);
+					if(action.startsWith("#")) {
+						dispatch(action.substring(1), Utility.toByteArray(bitbuffer));
+					} else {
+						dispatch(action, buffer);
+					}
+					// Utility.toByteArray consumes bitbuffer.
 					buffer = "";
 					action = "";
+				} else if(action.startsWith("#")) {
+					bitbuffer.addLast(new Byte((byte)read));
 				} else {
 					buffer += (char)read;
 				}
@@ -92,7 +103,6 @@ public class ClientConnection extends Thread {
 
 	private void dispatch(String action, String phrase) throws IOException {
 		if(action.startsWith(".")) { // it's a tool
-			System.out.println("Receiving draw from the server: " + action + " " + phrase);
 			String t = action.substring(1);
 			int index = t.indexOf('@');
 			String toolid = t.substring(0,index);
@@ -103,32 +113,7 @@ public class ClientConnection extends Thread {
 			canvas.draw(toolid, phrase, (int)(canvas.getUserX() + x), (int)(canvas.getUserY() + y));
 			canvas.repaint();
 		} else { // it's not a tool
-			if(action.startsWith("imgrect")) {
-				System.out.println("Got a line from the server: " + action + "=[[IMAGE]]");
-			} else {
-				System.out.println("Got a line from the server: " + action + "=" + phrase);
-			}
-			if(action.startsWith("imgrect")) {
-				try {
-					int index = action.indexOf('@');
-					String rest = action.substring(index+1);
-					index = rest.indexOf('.');
-					long x = Long.parseLong(rest.substring(0,index));
-					long y = Long.parseLong(rest.substring(index+1));
-					ByteArrayInputStream bin = new ByteArrayInputStream(phrase.getBytes());
-					EscapingInputStream ebin = new EscapingInputStream(bin);
-					BufferedImage img = ImageIO.read(ebin);
-					ebin.close();
-					bin.close();
-		
-					canvas.getCanvasGraphics().drawImage(img, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()), canvas);
-					//mict.test.ImageTest.popup(img);
-					canvas.repaint();
-				} catch(IOException e) {
-					System.err.println("Wow, that really should never have happened:");
-					e.printStackTrace(System.err);
-				}
-			} else if(action.equals("querytools")) {
+			if(action.equals("querytools")) {
 				List<String> needed = toolManager.updateClientTools(phrase);
 				String tools = "";
 				for(String toolID: needed) {
@@ -140,6 +125,32 @@ public class ClientConnection extends Thread {
 			} else {
 				System.err.println("Nothing happened. Improper command '" + action + /*' ' + phrase +*/ "', could not be handled.");
 			}
+		}
+	}
+
+	public void dispatch(String action, byte[] data) {
+		if(action.startsWith("imgrect")) {
+			try {
+				int index = action.indexOf('@');
+				String rest = action.substring(index+1);
+				index = rest.indexOf('.');
+				long x = Long.parseLong(rest.substring(0,index));
+				long y = Long.parseLong(rest.substring(index+1));
+				ByteArrayInputStream bin = new ByteArrayInputStream(data);
+				EscapingInputStream ebin = new EscapingInputStream(bin);
+				BufferedImage img = ImageIO.read(ebin);
+				ebin.close();
+				bin.close();
+	
+				canvas.getCanvasGraphics().drawImage(img, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()), canvas);
+				//mict.test.ImageTest.popup(img);
+				canvas.repaint();
+			} catch(IOException e) {
+				System.err.println("Wow, that really should never have happened:");
+				e.printStackTrace(System.err);
+			}
+		} else {
+			System.err.println("Nothing happened. Improper command '" + action + "', could not be handled.");
 		}
 	}
 

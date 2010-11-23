@@ -16,7 +16,7 @@ public class Waiter extends Thread {
 		this.patron = patron;
 		this.parent = parent;
 		out = patron.getOutputStream();
-		in = new BufferedReader(new InputStreamReader(patron.getInputStream()));
+		in = patron.getInputStream();
 		setDaemon(true);
 	}
 
@@ -28,7 +28,7 @@ public class Waiter extends Thread {
 	 */
 	private Server parent;
 	private OutputStream out;
-	private BufferedReader in;
+	private InputStream in;
 	private long x = 0;
 	private long y = 0;
 	private long w = 1024;
@@ -67,18 +67,30 @@ public class Waiter extends Thread {
 			// send tool set
 			// set prior x,y
 			String buffer = "";
+			LinkedList<Byte> bitbuffer = new LinkedList<Byte>();
 			String action = "";
 			while(true) {
 				int read = in.read();
 				if(read == -1) break;
 				if(read == ' ') {
-					if(action == "") action = buffer;
-					else dispatch(action, buffer);
+					if(action.equals("")) {
+						action = buffer;
+					} else if(action.startsWith("#")) {
+						dispatch(action.substring(1), Utility.toByteArray(bitbuffer));
+					} else dispatch(action, buffer);
+					// Utility.toByteArray consumes bitbuffer.
 					buffer = "";
 				} else if(read == '\n') {
-					dispatch(action, buffer);
+					if(action.startsWith("#")) {
+						dispatch(action.substring(1), Utility.toByteArray(bitbuffer));
+					} else {
+						dispatch(action, buffer);
+					}
+					// Utility.toByteArray consumes bitbuffer.
 					buffer = "";
 					action = "";
+				} else if(action.startsWith("#")) {
+					bitbuffer.addLast(new Byte((byte)read));
 				} else {
 					buffer += (char)read;
 				}
@@ -98,7 +110,7 @@ public class Waiter extends Thread {
 				int index = phrase.indexOf(',');
 				int dx = Integer.parseInt(phrase.substring(0,index));
 				int dy = Integer.parseInt(phrase.substring(index+1));
-				move(x - dx, y - dy);
+				move(x + dx, y + dy);
 			} else {
 				/*history.add(*/parent.getCanvas().draw(x, y, tool, phrase, this); //);
 			}
@@ -125,6 +137,10 @@ public class Waiter extends Thread {
 		System.out.println();
 	}
 
+	private void dispatch(String action, byte[] data) {
+		System.err.println("Nothing happened. Improper command '" + action + ", could not be handled.");
+	}
+
 	/** checks to see if the given four-member long[] intersects with the user's viewing area
 	 */
 	public boolean intersects(long[] rect) {
@@ -141,7 +157,7 @@ public class Waiter extends Thread {
 	public void sendCanvasRectangle(long x, long y, long width, long height) {
 		try {
 			BufferedImage img = parent.getCanvas().getCanvasRect(x, y, width, height);
-			out.write(("imgrect@" + x + '.' + y + ' ').getBytes());
+			out.write(("#imgrect@" + x + '.' + y + ' ').getBytes());
 			EscapingOutputStream eout = new EscapingOutputStream(out);
 			ImageIO.write(img, "png", eout);
 			eout.flush();

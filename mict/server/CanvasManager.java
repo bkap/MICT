@@ -2,13 +2,15 @@ package mict.server;
 
 import java.awt.*;
 import java.awt.image.*;
+import java.io.*;
 import java.util.*;
 import java.util.List;
+import javax.imageio.*;
 
 import mict.tools.*;
 
 /**
- * @author rwiesler
+ * @author rde
  */
 public class CanvasManager implements ImageObserver {
 	public CanvasManager(DatabaseLayer database, Server parent) {
@@ -88,7 +90,6 @@ public class CanvasManager implements ImageObserver {
 				);
 			}
 		}
-		// do I have to wait? probably. ick.
 		return img;
 	}
 
