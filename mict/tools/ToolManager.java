@@ -69,8 +69,8 @@ public class ToolManager {
 	 * @param tools
 	 * @return
 	 */
-	public List<String> updateClientTools(String toolstr) {
-		List<String> neededTools = ToolManager.getNeededClientTools(toolstr);
+	public String updateClientTools(String toolstr) {
+		String neededTools = ToolManager.getNeededClientTools(toolstr);
 		List<Tool> newTools = JythonBridge.getClientTools(state);
 		for(Tool t : newTools) {
 			if(!tools.containsKey(t.getToolID())) {
@@ -101,10 +101,9 @@ public class ToolManager {
 		return new ToolManager(JythonBridge.getToolList(s));
 	}
 
-	public static List<String> getNeededClientTools(String tools) {
+	public static String getNeededClientTools(String tools) {
 		return JythonBridge.getNeededClientTools(tools);
 	}
-
 	public static ToolManager getClientToolManager(ClientState s, ToolBox b) {
 		return new ToolManager(JythonBridge.getClientTools(s), b,s);
 	}

@@ -32,65 +32,26 @@ PICKLE_FILE = 'tools.pickle'
 active_tools = []
 
 def get_client_tools(clientState = None):
-	return [tool(clientState) for tool in active_tools]
+	return [tool(clientState) for tool in tools.tools]
 def get_needed_tools(serverTools):
-	all_tools = [(x[0],x[1]) for x in tool.split(':',1) for tool in serverTools.split(';')]
-	needed_tools = []
-	hashed_tools = {}
-	for tool in tools.tools :
-		hashed_tools[(tool.getToolID(None),hash(open('tools/' +
-			tool.__file__).read()))] = tool
-	global active_tools
-	for tool in all_tools:
-		in_cache = hashed_tools.get(tool, None)
-		if not in_cache :
-			needed_tools.add(tool[0]) #this is the toolID
-		else :
-			active_tools.append(in_cache)
-	return needed_tools
-
-def serialize_tool(toolID):
-	s_tool = None
-	for tool in tools.tools :
-		if tool().getToolID() == toolID :
-			s_tool = tool
+	return tools.check_files(serverTools)
+get_tool_files_and_hashes = tools.get_tool_files_and_hashes;
+def get_server_tools(clientState = None) :
+	tools.tools = tools._get_tools()
+	return [tool(clientState) for tool in tools.tools]
+def serialize_tool(toolID) :
+	ser_tool = None
+	for tool in tools :
+		ser_tool = tool
+		if ser_tool.getToolID() == toolID :
 			break
-	if s_tool == None :
-		print "no tool: %s" % toolID
+	if ser_tool is None :
 		return ""
-	if s_tool.__file__ != None :
-		return ';'.join((s_tool.__file__,open('tools/%s' %
-		s_tool.__file__,'r').read()))
-	print "bad"
-	return ''
-
-def unserialize_tool(tool_string, client_state = None):
-	print "deserializing"
-	print tool_string
-	if not tool_string :
-		return None
-	stuff = tool_string.split(';',1)
-	file_name = stuff[0]
-	contents = stuff[1]
-	i = 0
-	base_name = os.path.splitext(file_name)[0]
-	print base_name
-	while os.path.exists('tools/%s'%file_name) :
-		file_name = base_name + str(i) + '.py'
-		i += 1
-	f = open('tools/%s' % file_name, 'w')
-	f.write(contents)
-	tool = __import__('tools.' + file_name[:-3], fromlist=['*'])
-	print tool.__file__
-	for name in dir(tool) :
-		print name
-		obj = getattr(tool,name)
-		if isinstance(obj,type) and issubclass(obj, Tool) and not obj == Tool :
-			obj.__file__ = file_name
-			return obj(client_state)
-	return None
-if __name__ == "__main__" :
-	x = serialize_tool('rect')
-	y = unserialize_tool( x)
-	print dir(y)
-	
+	else :
+		tool = tools.get_tool_definitions([toolID])
+		if not tool :
+			return ""
+		else :
+			return tool[0]
+def deserializeTool(phrase, clientState=None) :
+	return [tool(clientState) for tool in tools.add_file(phrase)]

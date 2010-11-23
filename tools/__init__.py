@@ -13,7 +13,7 @@ def check_files(filestr) :
 	global tools
 	tooldir = os.path.dirname(__file__)
 	needed = []
-	for tool in filestr.split(':')
+	for tool in filestr.split(':'):
 		tool_file, sha1 = tool.split(';',1)
 		tool_f = os.path.join(tooldir, tool_file)
 		if not os.path.exists(os.path.join(tooldir,tool_file)) or hashlib.sha1(open(tool_f)).hexdigest() != sha1 :
@@ -41,7 +41,9 @@ def add_file(filestr) :
 	f = open(toolfile,'w')
 	f.write(filetxt)
 	f.close()
-	tools.extend(load_tools(filename))
+	newtools = (load_tools(filename))
+	tools.extend(newtools)
+	return newtools
 def _get_tools() :
 	#hacky way to get the list of tools
 	tools = []
