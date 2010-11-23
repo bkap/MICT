@@ -141,7 +141,7 @@ public class Waiter extends Thread {
 	public void sendCanvasRectangle(long x, long y, long width, long height) {
 		try {
 			BufferedImage img = parent.getCanvas().getCanvasRect(x, y, width, height);
-			out.write(("imgrect@" + x + '.' + y + ' ').getBytes());
+			out.write(("#imgrect@" + x + '.' + y + ' ').getBytes());
 			EscapingOutputStream eout = new EscapingOutputStream(out);
 			ImageIO.write(img, "png", eout);
 			eout.flush();
