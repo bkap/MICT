@@ -1,9 +1,10 @@
 from mict.tools import Tool
 import os.path
 import hashlib
+tooldir = os.path.dirname(__file__.split('/',1)[1])
 def get_tool_files_and_hashes() :
 	tools = []
-	tooldir = os.path.dirname(__file__.split('/',1)[1])
+
 	for f_name in os.listdir(tooldir) :
 		if f_name.endswith('.py') and f_name != "__init__.py" :
 			tools.append(f_name + ';' + hashlib.sha1(open(os.path.join(tooldir, f_name),'r').read()).hexdigest())
@@ -11,15 +12,16 @@ def get_tool_files_and_hashes() :
 tools = []
 def check_files(filestr) :
 	global tools
-	tooldir = os.path.dirname(__file__)
+	print "checking: " + filestr
 	needed = []
 	for tool in filestr.split(':'):
 		tool_file, sha1 = tool.split(';',1)
 		tool_f = os.path.join(tooldir, tool_file)
-		if not os.path.exists(os.path.join(tooldir,tool_file)) or hashlib.sha1(open(tool_f)).hexdigest() != sha1 :
+		if not os.path.exists(os.path.join(tooldir,tool_file)) or hashlib.sha1(open(tool_f).read()).hexdigest() != sha1 :
 			needed.append(tool_file)
 		else :
 			tools.extend(load_tools(tool_file))
+	print tools
 	return ':'.join(needed)
 def load_tools(filename) :
 	tools = []
@@ -34,7 +36,7 @@ def load_tools(filename) :
 
 def add_file(filestr) :
 	filename, filetxt = filestr.split(':',1)
-	tooldir = os.path.dirname(__file__)
+	print filetxt
 	toolfile = os.path.join(tooldir, filename)
 	if os.path.exists(toolfile):
 		os.remove(toolfile)

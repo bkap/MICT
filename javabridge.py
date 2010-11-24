@@ -54,5 +54,5 @@ def serialize_tool(toolID) :
 			return ""
 		else :
 			return tool[0]
-def deserializeTool(phrase, clientState=None) :
+def deserialize_tool(phrase, clientState=None) :
 	return [tool(clientState) for tool in tools.add_file(phrase)]

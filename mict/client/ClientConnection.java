@@ -117,7 +117,14 @@ public class ClientConnection extends Thread {
 				String needed = toolManager.updateClientTools(phrase);
 				send("requesttool", needed);
 			} else if(action.equals("tool")) {
-				toolManager.addTools(phrase);
+				ByteArrayInputStream bin = new ByteArrayInputStream(phrase.getBytes());
+				EscapingInputStream ein = new EscapingInputStream(bin);
+				ByteArrayOutputStream bout = new ByteArrayOutputStream();
+				while(ein.available() > 0) {
+					bout.write(ein.read());
+				}
+				
+				toolManager.addTools(bout.toString());
 			} else {
 				System.err.println("Nothing happened. Improper command '" + action + /*' ' + phrase +*/ "', could not be handled.");
 			}
