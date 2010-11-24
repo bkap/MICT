@@ -117,7 +117,7 @@ public class Waiter extends Thread {
 				/*history.add(*/parent.getCanvas().draw(x, y, tool, phrase, this); //);
 			}
 		} else { // it's not a tool
-			if(action.startsWith("imgrect")) {
+			if(action.startsWith("imgrect")) { // receiving a request for an image
 				int index = phrase.indexOf('.');
 				long x = Long.parseLong(phrase.substring(0,index));
 				phrase = phrase.substring(index+1);
@@ -132,7 +132,7 @@ public class Waiter extends Thread {
 			} else if(action.equals("requesttool")) {
 				String[] neededFiles = phrase.split(":");
 				for(String file: neededFiles) {
-					send("tool", JythonBridge.getSerializedToolFile(file));
+					sendEscapedData("tool", JythonBridge.getSerializedToolFile(file));
 				}
 			} else {
 				System.err.println("Oops, that action doesn't exist.");
@@ -143,6 +143,24 @@ public class Waiter extends Thread {
 
 	private void dispatch(String action, byte[] data) {
 		System.err.println("Nothing happened. Improper command '" + action + ", could not be handled.");
+		if(action.startsWith("imgrect")) { // receiving an image
+			try {
+				int index = action.indexOf('@');
+				String rest = action.substring(index+1);
+				index = rest.indexOf('.');
+				long x = Long.parseLong(rest.substring(0,index));
+				long y = Long.parseLong(rest.substring(index+1));
+				ByteArrayInputStream bin = new ByteArrayInputStream(data);
+				EscapingInputStream ebin = new EscapingInputStream(bin);
+				BufferedImage img = ImageIO.read(ebin);
+				ebin.close();
+				bin.close();
+				// TODO do something with the image
+			} catch(IOException e) {
+				System.err.println("Wow, that really should never have happened:");
+				e.printStackTrace(System.err);
+			}
+		}
 	}
 
 	/** checks to see if the given four-member long[] intersects with the user's viewing area

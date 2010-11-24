@@ -1,4 +1,4 @@
-package mict.util;
+package mict.networking;
 
 import java.io.*;
 

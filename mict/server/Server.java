@@ -5,29 +5,31 @@ import java.io.*;
 import java.util.*;
 
 import mict.networking.*;
-import mict.util.*;
 
 /**
  * @author rde
  */
 public class Server extends Thread {
 	public static void main(String[] args) {
-		new Server(Utility.expand(args)).start();
+		new Server(expand(args)).start();
 	}
 
-	public Server(String[] options) { // todo pass a configuration set based on args
-		// read config files first, if applicable. Probably not.
-		// load tool files
-		// set config options from parameters
+	public Server(String[] options) {
 		boolean database_enabled = true;
-		for(int i = 0; i < options.length; i++) {
-			if(options[i].equals("--disable-database")) database_enabled = false;
-		}
-		// read user information
-		// load whatever parts of canvas need to be loaded
 		String connstring = "jdbc:postgresql://rdebase.com/mict?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory";
 		String dbusername = "mict";
 		String dbpasswd = PrivateTemporaryConfigurationClass.dbpasswd; // Sorry, github.
+		for(int i = 0; i < options.length; i++) {
+			String option = options[i];
+			while(option.startsWith("-")) option = option.substring(1);
+			if(option.equals("disable-database")) database_enabled = false;
+			else if(option.equals("enable-database")) database_enabled = true;
+			else if(option.equals("dbconnstring")) try { connstring = options[i++]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --dbconnstring. Ignoring."); }
+			else if(option.equals("dbusername")) try { dbusername = options[i++]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --dbusername. Ignoring."); }
+			else if(option.equals("dbpasswd")) try { dbpasswd = options[i++]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --dbpasswd. Ignoring."); }
+		}
+		// read user information
+		// load whatever parts of canvas need to be loaded
 		DatabaseLayer database = new DatabaseLayer(connstring, dbusername, dbpasswd, database_enabled);
 		canvas = new CanvasManager(database, this);
 
@@ -53,6 +55,84 @@ public class Server extends Thread {
 	private CanvasManager canvas;
 	private int startport;
 	private Vector<Integer> portsopen = new Vector<Integer>();
+	private Hashtable<String, PermissionSet> permissions = new Hashtable<String, PermissionSet>();
+
+	public void refreshPermissions() {
+		Hashtable<String, PermissionSet> permissions = new Hashtable<String, PermissionSet>();
+		// TODO for each user, and default users, get the permission set and load it
+		this.permissions = permissions;
+	}
+
+	protected static String[] expand(String[] args) {
+		LinkedList<String> xargs = new LinkedList<String>();
+		for(int i = 0; i < args.length; i++) {
+			xargs.add(args[i]);
+		}
+		ListIterator<String> i = xargs.listIterator(0);
+		while(i.hasNext()) {
+			String s = i.next();
+			while(s.startsWith("-")) s = s.substring(1);
+			if(s.equals("")) {
+				i.remove();
+				continue;
+			}
+			if(s.startsWith("config=")) {
+				i.remove();
+				String file = s.substring("config=".length());
+				expand(i, file);
+			}
+		}
+		args = new String[xargs.size()];
+		int j = 0;
+		for(i = xargs.listIterator(); i.hasNext(); j++) {
+			String s = i.next();
+			args[j] = s;
+		}
+		return args;
+	}
+
+	protected static void expand(ListIterator<String> i, String file) {
+		LinkedList<String> yargs = new LinkedList<String>();
+		try {
+			FileInputStream fin = new FileInputStream(file);
+			String line = "";
+			boolean reading = true;
+			while(reading) {
+				int read = fin.read();
+				if(read < 0) {
+					reading = false;
+					read = '\n';
+				}
+				if(read == '\n' && !line.equals("")) {
+					int index = line.indexOf('=');
+					if(index < 0) yargs.add(line);
+					else {
+						yargs.add(line.substring(0,index).trim());
+						yargs.add(line.substring(index+1).trim());
+					}
+					line = "";
+				}
+			}
+			fin.close();
+		} catch(IOException e) {
+			System.err.println("Could not read configuration file " + file + ". Contents ignored.");
+		}
+		ListIterator<String> j = yargs.listIterator(0);
+		while(j.hasNext()) {
+			String s = j.next();
+			String t = s;
+			while(s.startsWith("-")) s = s.substring(1);
+			if(s.equals("")) {
+				continue;
+			}
+			if(s.startsWith("config=")) {
+				String file2 = s.substring("config=".length());
+				expand(j, file2);
+			} else {
+				i.add(t);
+			}
+		}
+	}
 
 	public void run() {
 		// start serving the canvas!
@@ -131,5 +211,9 @@ public class Server extends Thread {
 			System.exit(6);
 		}
 		return null;
+	}
+
+	public String toString() {
+		return "mict.server.Server";
 	}
 }
