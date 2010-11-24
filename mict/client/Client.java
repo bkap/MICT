@@ -28,7 +28,7 @@ public class Client extends JApplet {
 
 	public Client(String server) { 
 		canvas = new Canvas(state, server);
-		canvas.setSize(300, 300);
+		canvas.setSize(500, 500);
 		this.getContentPane().setLayout(new java.awt.BorderLayout());
 		canvas.setPreferredSize(canvas.getSize());
 		this.state.canvas = canvas;
@@ -54,6 +54,7 @@ public class Client extends JApplet {
 	 */
 	private ToolBox toolbox;
 	private ToolManager tools;
+	private AdminPanel panel;
 	@Override
 	/**
 	 * any initialization on graphical stuff should go here because the
@@ -75,6 +76,7 @@ public class Client extends JApplet {
 			
 		state.tools = tools;
 		toolbox = new ToolBox(state,tools);
+		panel = new AdminPanel(state);
 		tools.setToolBox(toolbox);
 		
 
@@ -85,6 +87,7 @@ public class Client extends JApplet {
 		*/
 		this.getContentPane().add(toolbox, java.awt.BorderLayout.WEST);
 		this.getContentPane().add(canvas, java.awt.BorderLayout.CENTER);
+		this.getContentPane().add(panel, java.awt.BorderLayout.EAST);
 		canvas.start(tools, servername);
 	}
 
