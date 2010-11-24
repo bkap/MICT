@@ -35,7 +35,6 @@ public class Waiter extends Thread {
 	private long y = 0;
 	private long w = 1024;
 	private long h = 1024;
-	//private PermissionSet perms;
 	//private Vector<HistoryLayer> history = new Vector<HistoryLayer>();
 
 	public void run() {
@@ -114,7 +113,7 @@ public class Waiter extends Thread {
 				int dy = Integer.parseInt(phrase.substring(index+1));
 				move(x + dx, y + dy);
 			} else {
-				/*history.add(*/parent.getCanvas().draw(x, y, tool, phrase, this); //);
+				/*history.add(*/parent.getCanvas().draw(x, y, tool, phrase, this, null); //);
 			}
 		} else { // it's not a tool
 			if(action.startsWith("imgrect")) { // receiving a request for an image
@@ -155,7 +154,7 @@ public class Waiter extends Thread {
 				BufferedImage img = ImageIO.read(ebin);
 				ebin.close();
 				bin.close();
-				// TODO do something with the image
+				parent.getCanvas().draw(this.x + x, this.y + y, "imgrect", "[[IMAGE]]", this, img);
 			} catch(IOException e) {
 				System.err.println("Wow, that really should never have happened:");
 				e.printStackTrace(System.err);
@@ -177,8 +176,12 @@ public class Waiter extends Thread {
 	}
 
 	public void sendCanvasRectangle(long x, long y, long width, long height) {
+		BufferedImage img = parent.getCanvas().getCanvasRect(x, y, width, height);
+		sendCanvasRectangle(x, y, img);
+	}
+
+	public void sendCanvasRectangle(long x, long y, BufferedImage img) {
 		try {
-			BufferedImage img = parent.getCanvas().getCanvasRect(x, y, width, height);
 			out.write(("#imgrect@" + x + '.' + y + ' ').getBytes());
 			EscapingOutputStream eout = new EscapingOutputStream(out);
 			ImageIO.write(img, "png", eout);

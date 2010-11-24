@@ -166,7 +166,6 @@ public class ClientConnection extends Thread {
 
 	public void sendImage(String type, int x, int y, BufferedImage img) {
 		try {
-			BufferedImage img = parent.getCanvas().getCanvasRect(x, y, width, height);
 			out.write(("#imgrect@" + x + '.' + y + ' ').getBytes());
 			EscapingOutputStream eout = new EscapingOutputStream(out);
 			ImageIO.write(img, "png", eout);
