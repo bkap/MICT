@@ -53,6 +53,8 @@ public class Chunk implements ImageObserver {
 			loading = false;
 		} else {
 			this.img = new BufferedImage(img.getWidth(this), img.getHeight(this), BufferedImage.TYPE_INT_ARGB);
+			this.img.getGraphics().setColor(Color.WHITE);
+			this.img.getGraphics().fillRect(0, 0, getWidth(), getHeight());
 			this.img.getGraphics().drawImage(img, 0, 0, this);
 			loading = true;
 			try {

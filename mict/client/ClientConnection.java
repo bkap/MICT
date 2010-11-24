@@ -109,7 +109,7 @@ public class ClientConnection extends Thread {
 			index = t.indexOf(',');
 			int x = Integer.parseInt(t.substring(0,index));
 			int y = Integer.parseInt(t.substring(index+1));
-			canvas.draw(toolid, phrase, (int)(canvas.getUserX() + x), (int)(canvas.getUserY() + y));
+			canvas.draw(toolid, phrase, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()));
 			canvas.repaint();
 		} else { // it's not a tool
 			if(action.equals("querytools")) {
