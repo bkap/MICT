@@ -102,10 +102,11 @@ public abstract class JythonBridge {
 			jython.eval("import " + SCRIPT_NAME);
 			return (String)jython.eval(SCRIPT_NAME + ".tools.get_tool_files_and_hashes()");
 		} catch(ScriptException ex) {
+			ex.printStackTrace();
 			return "";
 		}
 	}
 	public static void main(String[] args) {
-
+		System.out.println(JythonBridge.getToolDescriptions());
 	}
 }
