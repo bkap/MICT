@@ -79,11 +79,14 @@ public class ToolManager {
 	public String updateClientTools(String toolstr) {
 		String neededTools = ToolManager.getNeededClientTools(toolstr);
 		List<Tool> newTools = JythonBridge.getClientTools(state);
+		System.out.println("adding tools");
 		for(Tool t : newTools) {
 			if(!tools.containsKey(t.getToolID())) {
-				this.b.addTool(t);
+				System.out.println("adding new tool");
+				
 				this.toolList.add(t);
 				this.tools.put(t.getToolID(), t);
+				this.b.addTool(t);
 			}
 		}
 		
