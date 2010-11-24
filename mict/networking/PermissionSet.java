@@ -1,4 +1,4 @@
-package mict.util;
+package mict.networking;
 
 import java.io.*;
 import java.util.*;
@@ -6,16 +6,7 @@ import java.util.*;
 import mict.networking.*;
 
 public class PermissionSet extends Hashtable<String, Permission> {
-	public PermissionSet(ProtocolSource parent) {
-		this.parent = parent;
-		read();
-	}
-
-	private ProtocolSource parent = null;
-
-	public void setParent(ProtocolSource parent) {
-		this.parent = parent;
-	}
+	public PermissionSet() {}
 
 	public Permission setPermission(Permission p) {
 		Permission prev = remove(p.getKey());
@@ -43,18 +34,13 @@ public class PermissionSet extends Hashtable<String, Permission> {
 		return get(action).capableOf(value);
 	}
 
-	public void read() {
-		parent.refreshPermissions();
-	}
-
-	public void write() {
+	public void write(OutputStream out, String prefix, String separator) {
 		try {
-			OutputStream out = parent.getOutputStream();
 			Iterator<Permission> i = values().iterator();
-			out.write(parent.getPrefix().getBytes());
+			out.write(prefix.getBytes());
 			EscapingOutputStream eout = new EscapingOutputStream(out);
 			while(i.hasNext()) {
-				out.write(parent.getSeparator().getBytes());
+				out.write(separator.getBytes());
 				ObjectOutputStream oout = new ObjectOutputStream(eout);
 				oout.writeObject(i.next());
 				eout.flush();
@@ -62,7 +48,7 @@ public class PermissionSet extends Hashtable<String, Permission> {
 			out.write("\n".getBytes());
 			out.flush();
 		} catch(IOException e) {
-			System.err.println("Could not write permissions to target given by " + parent);
+			System.err.println("Could not write permissions to target");
 			e.printStackTrace(System.err);
 		}
 	}

@@ -10,7 +10,6 @@ import javax.net.ssl.*;
 
 import mict.networking.*;
 import mict.tools.*;
-import mict.util.*;
 
 /**
  * @author rde
@@ -54,7 +53,7 @@ public class ClientConnection extends Thread {
 	public void run() {
 		// DO WORK SON
 		String buffer = "";
-		LinkedList<Byte> bitbuffer = new LinkedList<Byte>();
+		ByteArrayOutputStream bitbuffer = new ByteArrayOutputStream();
 		String action = "";
 		try {
 			while(!waiter.isClosed()) {
@@ -64,21 +63,21 @@ public class ClientConnection extends Thread {
 					if(action.equals("")) {
 						action = buffer;
 					} else if(action.startsWith("#")) {
-						dispatch(action.substring(1), Utility.toByteArray(bitbuffer));
+						dispatch(action.substring(1), bitbuffer.toByteArray());
 					} else dispatch(action, buffer);
-					// Utility.toByteArray consumes bitbuffer.
+					bitbuffer.reset();
 					buffer = "";
 				} else if(read == '\n') {
 					if(action.startsWith("#")) {
-						dispatch(action.substring(1), Utility.toByteArray(bitbuffer));
+						dispatch(action.substring(1), bitbuffer.toByteArray());
 					} else {
 						dispatch(action, buffer);
 					}
-					// Utility.toByteArray consumes bitbuffer.
+					bitbuffer.reset();
 					buffer = "";
 					action = "";
 				} else if(action.startsWith("#")) {
-					bitbuffer.addLast(new Byte((byte)read));
+					bitbuffer.write(read);
 				} else {
 					buffer += (char)read;
 				}
@@ -147,9 +146,7 @@ public class ClientConnection extends Thread {
 				BufferedImage img = ImageIO.read(ebin);
 				ebin.close();
 				bin.close();
-	
 				canvas.getCanvasGraphics().drawImage(img, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()), canvas);
-				//mict.test.ImageTest.popup(img);
 				canvas.repaint();
 			} catch(IOException e) {
 				System.err.println("Wow, that really should never have happened:");
@@ -159,9 +156,11 @@ public class ClientConnection extends Thread {
 			System.err.println("Nothing happened. Improper command '" + action + "', could not be handled.");
 		}
 	}
+
 	public boolean isConnected() {
 		return out != null;
 	}
+
 	public void requestCanvasRect(long x, long y, long width, long height) {
 		try {
 			if(out != null) {
@@ -171,6 +170,21 @@ public class ClientConnection extends Thread {
 			}
 		} catch(IOException e) {
 			System.err.println("Could not request rectangular section of canvas:");
+			e.printStackTrace(System.err);
+		}
+	}
+
+	public void sendImage(String type, int x, int y, BufferedImage img) {
+		try {
+			BufferedImage img = parent.getCanvas().getCanvasRect(x, y, width, height);
+			out.write(("#imgrect@" + x + '.' + y + ' ').getBytes());
+			EscapingOutputStream eout = new EscapingOutputStream(out);
+			ImageIO.write(img, "png", eout);
+			eout.flush();
+			out.write('\n');
+			out.flush();
+		} catch(IOException e) {
+			System.err.println("Bad operation while sending an image to the server:");
 			e.printStackTrace(System.err);
 		}
 	}
@@ -207,5 +221,9 @@ public class ClientConnection extends Thread {
 		}
 		out.write((action + ' ' + phrase + '\n').getBytes());
 		out.flush();
+	}
+
+	public String toString() {
+		return "mict.client.ClientConnection";
 	}
 }
