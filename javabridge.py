@@ -15,7 +15,6 @@ import cPickle as pickle
 import mict.client.ClientState
 import types
 import mict.tools
-import misc
 import os.path
 from java.awt import Point, Color, Graphics, Image
 from mict.tools import Tool
