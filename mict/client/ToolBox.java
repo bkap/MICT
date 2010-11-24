@@ -78,13 +78,17 @@ public class ToolBox extends JPanel {
 		}
 		bg.setSelected(bg.getElements().nextElement().getModel(), true);
 		state.activeTool = ((ToolButton)bg.getElements().nextElement()).getTool();
+		System.out.println("tools added: " + bg.getButtonCount());
+		
 	}
 	public void addTool(Tool t) {
+		this.remove(loading);
 		ToolButton newButton = new ToolButton(t, state);
 		bg.add(newButton);
 		toolButtons.add(newButton);
 		toolPanel.setLayout(new GridLayout((bg.getButtonCount() + 1) / 2,2));
 		toolPanel.add(newButton);
+		this.revalidate();
 		
 	}
 	private class ColorIcon implements Icon {

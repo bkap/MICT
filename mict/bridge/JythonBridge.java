@@ -54,8 +54,10 @@ public abstract class JythonBridge {
 			for(Object tool_o : tools) {
 				result_list.add((Tool)tool_o);
 			}
+			System.out.println("got tools");
 			return result_list;
 		} catch(ScriptException e) {
+			e.printStackTrace();
 			return new Vector<Tool>();
 		}
 	}
