@@ -1,6 +1,11 @@
 package mict.util;
 
-public class PermissionSet extends HashTable<String, Permission> {
+import java.io.*;
+import java.util.*;
+
+import mict.networking.*;
+
+public class PermissionSet extends Hashtable<String, Permission> {
 	public PermissionSet(ProtocolSource parent) {
 		this.parent = parent;
 		read();
@@ -19,13 +24,13 @@ public class PermissionSet extends HashTable<String, Permission> {
 	}
 
 	public Permission setPermission(String p) {
-		int index = action.lastIndexOf('.');
+		int index = p.lastIndexOf('.');
 		String value = "";
 		if(index >= 0) {
-			value = action.substring(index+1);
-			action = action.substring(0,index);
+			value = p.substring(index+1);
+			p = p.substring(0,index);
 		}
-		return setPermission(new Permission(action, value));
+		return setPermission(new Permission(p, value));
 	}
 
 	public boolean capableOf(String action) {
@@ -43,17 +48,22 @@ public class PermissionSet extends HashTable<String, Permission> {
 	}
 
 	public void write() {
-		OutputStream out = parent.getOutputStream();
-		Iterator<Permission> i = iterator();
-		out.write(parent.getPrefix().getBytes());
-		EscapingOutputStream eout = new EscapingOutputStream(out);
-		while(i.hasNext()) {
-			out.write(parent.getSeparator().getBytes());
-			ObjectOutputStream oout = new ObjectOutputStream(eout);
-			oout.writeObject(i.next());
-			eout.flush();
+		try {
+			OutputStream out = parent.getOutputStream();
+			Iterator<Permission> i = values().iterator();
+			out.write(parent.getPrefix().getBytes());
+			EscapingOutputStream eout = new EscapingOutputStream(out);
+			while(i.hasNext()) {
+				out.write(parent.getSeparator().getBytes());
+				ObjectOutputStream oout = new ObjectOutputStream(eout);
+				oout.writeObject(i.next());
+				eout.flush();
+			}
+			out.write("\n".getBytes());
+			out.flush();
+		} catch(IOException e) {
+			System.err.println("Could not write permissions to target given by " + parent);
+			e.printStackTrace(System.err);
 		}
-		out.write("\n".getBytes());
-		out.flush();
 	}
 }

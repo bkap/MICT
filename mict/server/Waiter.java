@@ -66,7 +66,7 @@ public class Waiter extends Thread {
 			}*/
 			this.username = username;
 
-			// send tool set
+			sendToolSet();
 			// set prior x,y
 			String buffer = "";
 			LinkedList<Byte> bitbuffer = new LinkedList<Byte>();
@@ -178,7 +178,7 @@ public class Waiter extends Thread {
 	}
 
 	public void sendToolSet() {
-		sendEscapedData("querytool",JythonBridge.getToolDescriptions());
+		sendEscapedData("querytool", JythonBridge.getToolDescriptions());
 	}
 
 	public void sendCanvasChange(long x, long y, String tool, String data) {

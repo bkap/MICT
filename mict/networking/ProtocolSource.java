@@ -1,4 +1,6 @@
-package mict.util;
+package mict.networking;
+
+import java.io.*;
 
 public interface ProtocolSource {
 	public OutputStream getOutputStream();

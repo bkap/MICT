@@ -1,5 +1,6 @@
 package mict.util;
 
+import java.io.*;
 import java.util.*;
 
 public abstract class Utility {
@@ -25,12 +26,12 @@ public abstract class Utility {
 			}
 			if(s.startsWith("config=")) {
 				xargs.remove(i);
+				String file = s.substring("config=".length());
 				try {
-					String file = s.substring("config=".length);
 					FileInputStream fin = new FileInputStream(file);
 					String line = "";
 					while(true) {
-						int read = in.read();
+						int read = fin.read();
 						if(read < 0) break;
 						if(read == '\n' && !line.equals("")) {
 							i.add(line);
@@ -46,7 +47,7 @@ public abstract class Utility {
 		}
 		args = new String[xargs.size()];
 		int j = 0;
-		for(ListIterator i = xargs.listIterator(); i.hasNext(); j++) {
+		for(ListIterator<String> i = xargs.listIterator(); i.hasNext(); j++) {
 			String s = i.next();
 			args[j] = s;
 		}
