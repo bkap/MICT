@@ -3,7 +3,7 @@ import os.path
 import hashlib
 def get_tool_files_and_hashes() :
 	tools = []
-	tooldir = os.path.dirname(__file__)
+	tooldir = os.path.dirname(__file__.split('/',1)[1])
 	for f_name in os.listdir(tooldir) :
 		if f_name.endswith('.py') and f_name != "__init__.py" :
 			tools.append(f_name + ';' + hashlib.sha1(open(os.path.join(tooldir, f_name),'r').read()).hexdigest())
