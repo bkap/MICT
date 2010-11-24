@@ -178,7 +178,7 @@ public class Waiter extends Thread {
 	}
 
 	public void sendToolSet() {
-		sendEscapedData("querytool", JythonBridge.getToolDescriptions());
+		sendEscapedData("querytools", JythonBridge.getToolDescriptions());
 	}
 
 	public void sendCanvasChange(long x, long y, String tool, String data) {
