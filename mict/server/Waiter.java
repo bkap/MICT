@@ -113,7 +113,7 @@ public class Waiter extends Thread {
 				int dy = Integer.parseInt(phrase.substring(index+1));
 				move(x + dx, y + dy);
 			} else {
-				/*history.add(*/parent.getCanvas().draw(x, y, tool, phrase, this, null); //);
+				/*history.add(*/parent.getCanvas().draw(x, y, tool, phrase, this, null);//);
 			}
 		} else { // it's not a tool
 			if(action.startsWith("imgrect")) { // receiving a request for an image
