@@ -2,7 +2,7 @@ package mict.client;
 
 import java.io.*;
 import java.net.*;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.*;
 import java.util.*;
 import javax.imageio.*;
@@ -146,6 +146,15 @@ public class ClientConnection extends Thread {
 				BufferedImage img = ImageIO.read(ebin);
 				ebin.close();
 				bin.close();
+				if(img == null) System.err.println("Oh noes! got a null image from the server.");
+				/*else {
+					canvas.getCanvasGraphics().setColor(new Color(
+						(int)(Math.random() * 256),
+						(int)(Math.random() * 256),
+						(int)(Math.random() * 256)
+					));
+					canvas.getCanvasGraphics().fillRect(0, 0, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()));
+				}*/
 				canvas.getCanvasGraphics().drawImage(img, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()), canvas);
 				canvas.repaint();
 			} catch(IOException e) {

@@ -102,6 +102,7 @@ public class CanvasManager implements ImageObserver {
 				);
 			}
 		}
+		// TODO ensure that the image has finished loading, somehow
 		return img;
 	}
 
