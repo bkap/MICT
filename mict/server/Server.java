@@ -24,9 +24,9 @@ public class Server extends Thread {
 			while(option.startsWith("-")) option = option.substring(1);
 			if(option.equals("disable-database")) database_enabled = false;
 			else if(option.equals("enable-database")) database_enabled = true;
-			else if(option.startsWith("dbconnstring=")) connstring = option.substring("dbconnstring=".length());
-			else if(option.equals("dbusername")) dbusername = option.substring("dbusername=".length());
-			else if(option.equals("dbpasswd")) dbpasswd = option.substring("dbpasswd=".length());
+			else if(option.equals("dbconnstring")) try { connstring = options[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --dbconnstring. Ignoring."); }
+			else if(option.equals("dbusername")) try { dbusername = options[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --dbusername. Ignoring."); }
+			else if(option.equals("dbpasswd")) try { dbpasswd = options[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --dbpasswd. Ignoring."); }
 		}
 		// read user information
 		// load whatever parts of canvas need to be loaded
@@ -102,6 +102,8 @@ public class Server extends Thread {
 				if(read < 0) {
 					reading = false;
 					read = '\n';
+				} else {
+					line += (char)read;
 				}
 				if(read == '\n' && !line.equals("")) {
 					int index = line.indexOf('=');
@@ -125,9 +127,15 @@ public class Server extends Thread {
 			if(s.equals("")) {
 				continue;
 			}
-			if(s.startsWith("config=")) {
-				String file2 = s.substring("config=".length());
-				expand(j, file2);
+			if(s.equals("config")) {
+				j.remove();
+				if(j.hasNext()) {
+					String file2 = j.next();
+					j.remove();
+					expand(i, file2);
+				} else {
+					System.err.println("In file " + file + ", expected filename after config= directive. Ignoring.");
+				}
 			} else {
 				i.add(t);
 			}
