@@ -14,8 +14,13 @@ import mict.tools.Tool;
 public abstract class JythonBridge {
 	private static final String SCRIPT_NAME = "javabridge";
 	private static ScriptEngine jython = new ScriptEngineManager().getEngineByName("jython");
-
-
+	/*should only be used in tests
+	 * 
+	 */
+	public static void resetJython() {
+		jython = new ScriptEngineManager().getEngineByName("jython");
+	}
+	                              
 	public static List<Tool> getToolList(ClientState s) {
 		try {
 			jython.eval("from " + SCRIPT_NAME + " import get_server_tools");
