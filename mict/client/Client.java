@@ -1,11 +1,10 @@
 package mict.client;
 
 import javax.swing.*;
+import java.awt.*;
 
-
-import java.awt.Graphics2D;
-
-import mict.tools.ToolManager;
+import mict.tools.*;
+import mict.util.*;
 
 /**
  * The Client is the main class for the client side. It consists of a Canvas and a Toolbox. It also does the work to bridge those. All initialization should happen here. It is an Applet, but can be run as an application by sticking its contentPane in a JFrame.
@@ -13,14 +12,26 @@ import mict.tools.ToolManager;
  */
 public class Client extends JApplet {
 	public static void main(String[] args) {
-		Client c = new Client();
+		args = ConfigParser.expand(args);
+		String server = null;
+		String username = null;
+		String passwd = null;
+		for(int i = 0; i < options.length; i++) {
+			String option = options[i].trim();
+			while(option.startsWith("-")) option = option.substring(1);
+			if(option.equals("server")) try { server = options[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --server. Ignoring."); }
+			else if(option.equals("username")) try { username = options[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --username. Ignoring."); }
+			else if(option.equals("passwd")) try { passwd = options[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --passwd. Ignoring."); }
+		}
+		Client c = new Client(server);
+		c.username = username;
+		c.passwd = passwd;
 		JFrame frame = new JFrame("MICT v0.0");
 		frame.setContentPane(c.getContentPane());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		c.start();
 		frame.pack();
-		
 		frame.setVisible(true);
 	}
 
@@ -32,9 +43,9 @@ public class Client extends JApplet {
 		this.getContentPane().setLayout(new java.awt.BorderLayout());
 		canvas.setPreferredSize(canvas.getSize());
 		this.state.canvas = canvas;
-		
-		
+		this.server = server;
 	}
+
 	public Client() {
 		this(null);
 	}
@@ -55,14 +66,18 @@ public class Client extends JApplet {
 	private ToolBox toolbox;
 	private ToolManager tools;
 	private AdminPanel panel;
+
+	private String server;
+	private String username = null;
+	private String passwd = null;
 	@Override
 	/**
 	 * any initialization on graphical stuff should go here because the
 	 * Swing event thread isn't created when the  constructor is called 
 	 */
 	public void start() {
-
-		String servername = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
+		if(server == null)
+			server = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
 
 		//if we still haven't specified a server, don't connect to a server
 		if(servername == null) servername = "";
@@ -70,25 +85,23 @@ public class Client extends JApplet {
 			System.out.println("not connected");
 			tools = ToolManager.getServerToolManager(state);
 		} else {
-				tools = ToolManager.getClientToolManager(state);
-				//tools = ToolManager.getServerToolManager(state);
+			tools = ToolManager.getClientToolManager(state);
 		}
 			
 		state.tools = tools;
 		toolbox = new ToolBox(state,tools);
 		panel = new AdminPanel(state);
 		tools.setToolBox(toolbox);
-		
 
 		/* toolbox = new ToolBox(state);
 		 * tools= ToolManager.getClientToolManager(state,toolbox);
 		 * state.tools = tools;
-			
-		*/
+		 */
+
 		this.getContentPane().add(toolbox, java.awt.BorderLayout.WEST);
 		this.getContentPane().add(canvas, java.awt.BorderLayout.CENTER);
 		this.getContentPane().add(panel, java.awt.BorderLayout.EAST);
-		canvas.start(tools, servername);
+		canvas.start(tools, servername, username, passwd);
 	}
 
 	public ClientState getClientState() {
