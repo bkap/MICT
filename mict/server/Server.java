@@ -18,15 +18,15 @@ public class Server extends Thread {
 		boolean database_enabled = true;
 		String connstring = "jdbc:postgresql://rdebase.com/mict?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory";
 		String dbusername = "mict";
-		String dbpasswd = PrivateTemporaryConfigurationClass.dbpasswd; // Sorry, github.
+		String dbpasswd = "";
 		for(int i = 0; i < options.length; i++) {
-			String option = options[i];
+			String option = options[i].trim();
 			while(option.startsWith("-")) option = option.substring(1);
 			if(option.equals("disable-database")) database_enabled = false;
 			else if(option.equals("enable-database")) database_enabled = true;
-			else if(option.equals("dbconnstring")) try { connstring = options[i++]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --dbconnstring. Ignoring."); }
-			else if(option.equals("dbusername")) try { dbusername = options[i++]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --dbusername. Ignoring."); }
-			else if(option.equals("dbpasswd")) try { dbpasswd = options[i++]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --dbpasswd. Ignoring."); }
+			else if(option.startsWith("dbconnstring=")) connstring = option.substring("dbconnstring=".length());
+			else if(option.equals("dbusername")) dbusername = option.substring("dbusername=".length());
+			else if(option.equals("dbpasswd")) dbpasswd = option.substring("dbpasswd=".length());
 		}
 		// read user information
 		// load whatever parts of canvas need to be loaded

@@ -8,7 +8,6 @@ import javax.imageio.*;
 import java.util.LinkedList;
 import mict.bridge.JythonBridge;
 import mict.networking.*;
-import mict.util.*;
 
 /**
  * @author rde
@@ -68,7 +67,7 @@ public class Waiter extends Thread {
 			sendToolSet();
 			// set prior x,y
 			String buffer = "";
-			LinkedList<Byte> bitbuffer = new LinkedList<Byte>();
+			ByteArrayOutputStream bitbuffer = new ByteArrayOutputStream();
 			String action = "";
 			while(true) {
 				int read = in.read();
@@ -77,21 +76,21 @@ public class Waiter extends Thread {
 					if(action.equals("")) {
 						action = buffer;
 					} else if(action.startsWith("#")) {
-						dispatch(action.substring(1), Utility.toByteArray(bitbuffer));
+						dispatch(action.substring(1), bitbuffer.toByteArray());
 					} else dispatch(action, buffer);
-					// Utility.toByteArray consumes bitbuffer.
+					bitbuffer = new ByteArrayOutputStream();
 					buffer = "";
 				} else if(read == '\n') {
 					if(action.startsWith("#")) {
-						dispatch(action.substring(1), Utility.toByteArray(bitbuffer));
+						dispatch(action.substring(1), bitbuffer.toByteArray());
 					} else {
 						dispatch(action, buffer);
 					}
-					// Utility.toByteArray consumes bitbuffer.
+					bitbuffer = new ByteArrayOutputStream();
 					buffer = "";
 					action = "";
 				} else if(action.startsWith("#")) {
-					bitbuffer.addLast(new Byte((byte)read));
+					bitbuffer.write(read);
 				} else {
 					buffer += (char)read;
 				}
