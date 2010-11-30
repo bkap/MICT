@@ -2,9 +2,10 @@ package mict.server;
 
 import java.awt.image.*;
 import java.io.*;
+import java.util.*;
 import javax.net.ssl.*;
 import javax.imageio.*;
-
+import java.util.LinkedList;
 import mict.bridge.JythonBridge;
 import mict.networking.*;
 
@@ -16,7 +17,7 @@ public class Waiter extends Thread {
 		this.patron = patron;
 		this.parent = parent;
 		out = patron.getOutputStream();
-		in = new BufferedReader(new InputStreamReader(patron.getInputStream()));
+		in = patron.getInputStream();
 		setDaemon(true);
 	}
 
@@ -28,12 +29,11 @@ public class Waiter extends Thread {
 	 */
 	private Server parent;
 	private OutputStream out;
-	private BufferedReader in;
+	private InputStream in;
 	private long x = 0;
 	private long y = 0;
 	private long w = 1024;
 	private long h = 1024;
-	//private PermissionSet perms;
 	//private Vector<HistoryLayer> history = new Vector<HistoryLayer>();
 
 	public void run() {
@@ -64,21 +64,33 @@ public class Waiter extends Thread {
 			}*/
 			this.username = username;
 
-			// send tool set
+			sendToolSet();
 			// set prior x,y
 			String buffer = "";
+			ByteArrayOutputStream bitbuffer = new ByteArrayOutputStream();
 			String action = "";
 			while(true) {
 				int read = in.read();
 				if(read == -1) break;
 				if(read == ' ') {
-					if(action == "") action = buffer;
-					else dispatch(action, buffer);
+					if(action.equals("")) {
+						action = buffer;
+					} else if(action.startsWith("#")) {
+						dispatch(action.substring(1), bitbuffer.toByteArray());
+					} else dispatch(action, buffer);
+					bitbuffer = new ByteArrayOutputStream();
 					buffer = "";
 				} else if(read == '\n') {
-					dispatch(action, buffer);
+					if(action.startsWith("#")) {
+						dispatch(action.substring(1), bitbuffer.toByteArray());
+					} else {
+						dispatch(action, buffer);
+					}
+					bitbuffer = new ByteArrayOutputStream();
 					buffer = "";
 					action = "";
+				} else if(action.startsWith("#")) {
+					bitbuffer.write(read);
 				} else {
 					buffer += (char)read;
 				}
@@ -100,10 +112,10 @@ public class Waiter extends Thread {
 				int dy = Integer.parseInt(phrase.substring(index+1));
 				move(x + dx, y + dy);
 			} else {
-				/*history.add(*/parent.getCanvas().draw(x, y, tool, phrase, this); //);
+				/*history.add(*/parent.getCanvas().draw(x, y, tool, phrase, this, null);//);
 			}
 		} else { // it's not a tool
-			if(action.startsWith("imgrect")) {
+			if(action.startsWith("imgrect")) { // receiving a request for an image
 				int index = phrase.indexOf('.');
 				long x = Long.parseLong(phrase.substring(0,index));
 				phrase = phrase.substring(index+1);
@@ -116,13 +128,37 @@ public class Waiter extends Thread {
 				System.out.println("Stitching and sharing a rectangular portion of the canvas @(" + x + ',' + y + ") at " + w + " by " + h);
 				sendCanvasRectangle(x, y, w, h);
 			} else if(action.equals("requesttool")) {
-				String pickled = JythonBridge.serializeTool(phrase);
-				send("tool", pickled);
+				String[] neededFiles = phrase.split(":");
+				for(String file: neededFiles) {
+					sendEscapedData("tool", JythonBridge.getSerializedToolFile(file));
+				}
 			} else {
-				System.out.println("Oops, that action doesn't exist.");
+				System.err.println("Oops, that action doesn't exist.");
 			}
 		}
 		System.out.println();
+	}
+
+	private void dispatch(String action, byte[] data) {
+		System.err.println("Nothing happened. Improper command '" + action + ", could not be handled.");
+		if(action.startsWith("imgrect")) { // receiving an image
+			try {
+				int index = action.indexOf('@');
+				String rest = action.substring(index+1);
+				index = rest.indexOf('.');
+				long x = Long.parseLong(rest.substring(0,index));
+				long y = Long.parseLong(rest.substring(index+1));
+				ByteArrayInputStream bin = new ByteArrayInputStream(data);
+				EscapingInputStream ebin = new EscapingInputStream(bin);
+				BufferedImage img = ImageIO.read(ebin);
+				ebin.close();
+				bin.close();
+				parent.getCanvas().draw(this.x + x, this.y + y, "imgrect", "[[IMAGE]]", this, img);
+			} catch(IOException e) {
+				System.err.println("Wow, that really should never have happened:");
+				e.printStackTrace(System.err);
+			}
+		}
 	}
 
 	/** checks to see if the given four-member long[] intersects with the user's viewing area
@@ -139,12 +175,17 @@ public class Waiter extends Thread {
 	}
 
 	public void sendCanvasRectangle(long x, long y, long width, long height) {
+		BufferedImage img = parent.getCanvas().getCanvasRect(x, y, width, height);
+		sendCanvasRectangle(x, y, img);
+	}
+
+	public void sendCanvasRectangle(long x, long y, BufferedImage img) {
 		try {
-			BufferedImage img = parent.getCanvas().getCanvasRect(x, y, width, height);
-			out.write(("imgrect@" + x + '.' + y + ' ').getBytes());
+			out.write(("#imgrect@" + x + '.' + y + ' ').getBytes());
 			EscapingOutputStream eout = new EscapingOutputStream(out);
 			ImageIO.write(img, "png", eout);
 			eout.flush();
+			out.write('\n');
 			out.flush();
 		} catch(IOException e) {
 			System.err.println("Bad operation while quilting a canvas patch:");
@@ -157,7 +198,7 @@ public class Waiter extends Thread {
 	}
 
 	public void sendToolSet() {
-		
+		sendEscapedData("querytools", JythonBridge.getToolDescriptions());
 	}
 
 	public void sendCanvasChange(long x, long y, String tool, String data) {
@@ -167,8 +208,21 @@ public class Waiter extends Thread {
 
 	protected void send(String type, String data) {
 		try {
-			System.out.println('[' + type + " " + data + ']');
-			out.write((type + ' ' + data).getBytes());
+			out.write((type + ' ' + data + '\n').getBytes());
+			out.flush();
+		} catch(IOException e) {
+			System.err.println("Error sending string: " + type + ' ' + data);
+			e.printStackTrace(System.err);
+		}
+	}
+
+	protected void sendEscapedData(String type, String data) {
+		try {
+			out.write((type + ' ').getBytes());
+			EscapingOutputStream eout = new EscapingOutputStream(out);
+			eout.write(data.getBytes());
+			eout.flush();
+			out.write('\n');
 			out.flush();
 		} catch(IOException e) {
 			System.err.println("Error sending string: " + type + ' ' + data);
@@ -191,7 +245,6 @@ public class Waiter extends Thread {
 			out.close();
 		} catch(IOException e) {
 			// Nothing to see here, move along.
-			System.out.println("Nothing to see here, move along.");
 		}
 		if(username != null) {
 			parent.getCanvas().saveAll();

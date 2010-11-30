@@ -2,14 +2,14 @@ package mict.client;
 
 import java.io.*;
 import java.net.*;
-import java.util.List;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.*;
+import java.util.*;
 import javax.imageio.*;
 import javax.net.ssl.*;
 
-import mict.tools.*;
 import mict.networking.*;
+import mict.tools.*;
 
 /**
  * @author rde
@@ -27,9 +27,9 @@ public class ClientConnection extends Thread {
 				this.toolManager = t;
 				SSLSocketFactory sockfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
 				waiter = (SSLSocket)sockfactory.createSocket(server, port);
-				out = new PrintWriter(new OutputStreamWriter(waiter.getOutputStream()), true);
-				in = new BufferedReader(new InputStreamReader(waiter.getInputStream()));
-				out.println(username + ' ' + passwd);
+				out = waiter.getOutputStream();
+				in = waiter.getInputStream();
+				out.write((username + ' ' + passwd + '\n').getBytes());
 			} catch(IOException e) {
 				System.err.println("Could not open connection to server: ");
 				e.printStackTrace(System.err);
@@ -45,27 +45,39 @@ public class ClientConnection extends Thread {
 	private String server;
 	//private Object controller;
 	private SSLSocket waiter;
-	private PrintWriter out;
-	private BufferedReader in;
+	private OutputStream out;
+	private InputStream in;
 	private ToolManager toolManager;
 	private Canvas canvas;
 	
 	public void run() {
 		// DO WORK SON
 		String buffer = "";
+		ByteArrayOutputStream bitbuffer = new ByteArrayOutputStream();
 		String action = "";
 		try {
 			while(!waiter.isClosed()) {
 				int read = in.read();
 				if(read == -1) break;
 				if(read == ' ') {
-					if(action == "") action = buffer;
-					else dispatch(action, buffer);
+					if(action.equals("")) {
+						action = buffer;
+					} else if(action.startsWith("#")) {
+						dispatch(action.substring(1), bitbuffer.toByteArray());
+					} else dispatch(action, buffer);
+					bitbuffer.reset();
 					buffer = "";
 				} else if(read == '\n') {
-					dispatch(action, buffer);
+					if(action.startsWith("#")) {
+						dispatch(action.substring(1), bitbuffer.toByteArray());
+					} else {
+						dispatch(action, buffer);
+					}
+					bitbuffer.reset();
 					buffer = "";
 					action = "";
+				} else if(action.startsWith("#")) {
+					bitbuffer.write(read);
 				} else {
 					buffer += (char)read;
 				}
@@ -80,15 +92,16 @@ public class ClientConnection extends Thread {
 		try {
 			waiter.close();
 		} catch (IOException e) {
-			// oh boo hoo. If the connection fails to terminate, it's no  good anyway
+			// oh boo hoo. If the connection fails to terminate, it's no good anyway
 		}
 	}
+
 	public void finalize() {
 		terminateConnection();
 	}
-	private void dispatch(String action, String phrase) {
+
+	private void dispatch(String action, String phrase) throws IOException {
 		if(action.startsWith(".")) { // it's a tool
-			System.out.println("Recieving draw from the server: " + action + " " + phrase);
 			String t = action.substring(1);
 			int index = t.indexOf('@');
 			String toolid = t.substring(0,index);
@@ -96,51 +109,91 @@ public class ClientConnection extends Thread {
 			index = t.indexOf(',');
 			int x = Integer.parseInt(t.substring(0,index));
 			int y = Integer.parseInt(t.substring(index+1));
-			Graphics2D g = (Graphics2D)canvas.getCanvasGraphics().create();
-			g.translate(canvas.getUserX() - x, canvas.getUserY() - y);
-			canvas.draw(toolid, phrase);
+			canvas.draw(toolid, phrase, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()));
 			canvas.repaint();
 		} else { // it's not a tool
-			if(action.startsWith("imgrect")) {
-				try {
-					int index = action.indexOf('@');
-					String rest = action.substring(index+1);
-					index = rest.indexOf('.');
-					long x = Long.parseLong(rest.substring(0,index));
-					long y = Long.parseLong(rest.substring(index+1));
-					ByteArrayInputStream bin = new ByteArrayInputStream(phrase.getBytes());
-					EscapingInputStream ebin = new EscapingInputStream(bin);
-					BufferedImage img = ImageIO.read(ebin);
-					ebin.close();
-					bin.close();
-		
-					canvas.getCanvasGraphics().drawImage(img, (int)(canvas.getUserX() + x), (int)(canvas.getUserY() + y), canvas);
-					//mict.test.ImageTest.popup(img);
-					canvas.repaint();
-				} catch(IOException e) {
-					System.err.println("Wow, that really should never have happened:");
-					e.printStackTrace(System.err);
+			if(action.equals("querytools")) {
+				String needed = toolManager.updateClientTools(phrase);
+				if(!needed.equals("")) {
+					send("requesttool", needed);
 				}
-			} else if(action.equals("querytools")) {
-				List<String> needed = toolManager.updateClientTools(phrase);
-				String tools = " ";
-				for(String toolID: needed) {
-					tools = tools.concat(toolID + " ");
-				}
-				out.println("requesttool" + tools);
 			} else if(action.equals("tool")) {
-				toolManager.addTool(phrase);
+				ByteArrayInputStream bin = new ByteArrayInputStream(phrase.getBytes());
+				EscapingInputStream ein = new EscapingInputStream(bin);
+				ByteArrayOutputStream bout = new ByteArrayOutputStream();
+				while(ein.available() > 0) {
+					bout.write(ein.read());
+				}
+				System.out.println(phrase);
+				System.out.println(bout.toString());
+				toolManager.addTools(bout.toString());
 			} else {
-				System.out.println("Nothing happened. Improper command '" + action + /*' ' + phrase +*/ "', could not be handled.");
+				System.err.println("Nothing happened. Improper command '" + action + /*' ' + phrase +*/ "', could not be handled.");
 			}
 		}
 	}
 
-	public void requestCanvasRect(long x, long y, long width, long height) {
-		if(out != null) {
-			out.println("imgrect " + x + '.' + y + '.' + width + '.' + height);
+	public void dispatch(String action, byte[] data) {
+		if(action.startsWith("imgrect")) {
+			try {
+				int index = action.indexOf('@');
+				String rest = action.substring(index+1);
+				index = rest.indexOf('.');
+				long x = Long.parseLong(rest.substring(0,index));
+				long y = Long.parseLong(rest.substring(index+1));
+				ByteArrayInputStream bin = new ByteArrayInputStream(data);
+				EscapingInputStream ebin = new EscapingInputStream(bin);
+				BufferedImage img = ImageIO.read(ebin);
+				ebin.close();
+				bin.close();
+				if(img == null) System.err.println("Oh noes! got a null image from the server.");
+				/*else {
+					canvas.getCanvasGraphics().setColor(new Color(
+						(int)(Math.random() * 256),
+						(int)(Math.random() * 256),
+						(int)(Math.random() * 256)
+					));
+					canvas.getCanvasGraphics().fillRect(0, 0, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()));
+				}*/
+				canvas.getCanvasGraphics().drawImage(img, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()), canvas);
+				canvas.repaint();
+			} catch(IOException e) {
+				System.err.println("Wow, that really should never have happened:");
+				e.printStackTrace(System.err);
+			}
 		} else {
-			System.err.println("Tried to request a rectangle before establishing a connection. Oops.");
+			System.err.println("Nothing happened. Improper command '" + action + "', could not be handled.");
+		}
+	}
+
+	public boolean isConnected() {
+		return out != null;
+	}
+
+	public void requestCanvasRect(long x, long y, long width, long height) {
+		try {
+			if(out != null) {
+				send("imgrect", "" + x + '.' + y + '.' + width + '.' + height);
+			} else {
+				System.err.println("Tried to request a rectangle before establishing a connection. Oops.");
+			}
+		} catch(IOException e) {
+			System.err.println("Could not request rectangular section of canvas:");
+			e.printStackTrace(System.err);
+		}
+	}
+
+	public void sendImage(String type, int x, int y, BufferedImage img) {
+		try {
+			out.write(("#imgrect@" + x + '.' + y + ' ').getBytes());
+			EscapingOutputStream eout = new EscapingOutputStream(out);
+			ImageIO.write(img, "png", eout);
+			eout.flush();
+			out.write('\n');
+			out.flush();
+		} catch(IOException e) {
+			System.err.println("Bad operation while sending an image to the server:");
+			e.printStackTrace(System.err);
 		}
 	}
 
@@ -156,11 +209,29 @@ public class ClientConnection extends Thread {
 	}
 
 	public void sendDraw(String tool, String data) {
+		try {
+			if(out == null) {
+				System.err.println("Tried to send an action before establishing a connection. Oops.");
+				return;
+			}
+			System.out.println("Drawing! ." + tool + ' ' + data);
+			send('.' + tool, data);
+		} catch(IOException e) {
+			System.err.println("Could not send a draw command:");
+			e.printStackTrace(System.err);
+		}
+	}
+
+	public void send(String action, String phrase) throws IOException {
 		if(out == null) {
 			System.err.println("Tried to send an action before establishing a connection. Oops.");
 			return;
 		}
-		System.out.println("Drawing! ." + tool + ' ' + data);
-		out.println('.' + tool + ' ' + data);
+		out.write((action + ' ' + phrase + '\n').getBytes());
+		out.flush();
+	}
+
+	public String toString() {
+		return "mict.client.ClientConnection";
 	}
 }

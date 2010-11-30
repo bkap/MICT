@@ -8,9 +8,10 @@ import javax.swing.*;
 
 import mict.tools.ToolManager;
 
-/** This is the Canvas viewport. It contains the drawn image as well as maintaining the socketection to the server. All drawing operations
- * should go through here
- * @author  bkaplan
+/** This is the Canvas viewport. It contains the drawn image as well as
+ * maintaining the connection to the server. All drawing operations should go
+ * through here
+ * @author bkaplan
  */
 public class Canvas extends JPanel implements MouseListener, MouseMotionListener, ComponentListener {
 	private static final long serialVersionUID = 1L; // @Ben: do we really need this? I mean, Canvas isn't even Serializable.
@@ -19,6 +20,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	private static final int MOUSE_PRESSED = 3;
 	private static final int MOUSE_RELEASED = 4;
 	private static final int MOUSE_CLICKED = 5;
+
 	public Canvas(ClientState state, String servername) {
 		this.state = state;
 		this.servername = servername;
@@ -27,13 +29,9 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		addComponentListener(this);
 	}
 
-	public void start(ToolManager t) {
+	public void start(ToolManager t, String servername) {
 		//if we haven't already specified a server, ask for it
-		if(servername == null) {
-			servername = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
-		}
-		//if we still haven't specified a server, don't connect to a server
-		if(servername == null) servername = "";
+		this.servername = servername;
 		socket = new ClientConnection(servername, "username", "password", this,t);
 		socket.requestCanvasRect(this.getUserX(), this.getUserY(), this.getWidth(), this.getHeight());
 		this.setCanvas(new BufferedImage(this.getWidth(), this.getHeight(),BufferedImage.TYPE_INT_ARGB));
@@ -104,9 +102,11 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	public Graphics2D getArtifactCanvasGraphics() {
 		return artifactsGraphics;
 	}
+
 	public BufferedImage getCanvasImage() {
 		return this.canvas;
 	}
+
 	public Graphics getClipboardGraphics() {
 		return state.clipboard_graphics;
 	}
@@ -129,9 +129,6 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		inside = false;
 	}
 
-	public void mouseClicked(MouseEvent e) {
-		render(e,MOUSE_CLICKED);
-	} 
 	public void componentHidden(ComponentEvent e) {}
 	public void componentShown(ComponentEvent e) {}
 	public void componentMoved(ComponentEvent e) {}
@@ -165,8 +162,12 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		render(e, MOUSE_HOVERED);
 	}
 
+	public void mouseClicked(MouseEvent e) {
+		render(e,MOUSE_CLICKED);
+	} 
+
 	public void render(MouseEvent e, int type) {
-		if(!inside) return;
+		if(!inside || state.activeTool == null) return;
 		String phrase;
 		artifactsGraphics.clearRect(0, 0, getWidth(), getHeight());
 		switch(type) {
@@ -198,21 +199,70 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 			int index = phrase.indexOf(',');
 			int dx = Integer.parseInt(phrase.substring(0,index));
 			int dy = Integer.parseInt(phrase.substring(index+1));
+			if(dx != 0 || dy != 0)
+				requestAdditionalCanvas(x, y, dx, dy);
 			x += dx;
 			y += dy;
-			if(dx != 0 && dy != 0)
-				socket.requestCanvasRect(x, y, getWidth(), getHeight());
 			BufferedImage nc = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
 			Graphics g = nc.getGraphics();
 			g.setColor(Color.GRAY);
 			g.fillRect(0, 0, getWidth(), getHeight());
-			g.drawImage(canvas, dx, dy, this);
+			g.drawImage(canvas, -dx, -dy, this);
 			setCanvas(nc);
 		}
 		repaint();
 	}
 	
-	public void draw(String toolid, String phrase) {
-		this.state.tools.draw(toolid, phrase, this.getCanvasGraphics());
+	public void draw(String toolid, String phrase, int offx, int offy) {
+		Graphics2D g = (Graphics2D)getCanvasGraphics().create();
+		g.translate(offx, offy);
+		state.tools.draw(toolid, phrase, g);
+	}
+
+	public void requestAdditionalCanvas(long x, long y, int dx, int dy) {
+		Graphics2D g = (Graphics2D)getCanvasGraphics().create();
+		g.translate(-x, -y);
+		if(dx > 0) {
+			socket.requestCanvasRect(x + getWidth() - dx, dy < 0 ? y - dy : y, dx, getHeight() - Math.abs(dy));
+			g.setColor(Color.BLUE);
+			g.fillRect((int)(x + getWidth() - dx), (int)(dy < 0 ? y - dy : y), dx, getHeight() - Math.abs(dy));
+			g.setColor(new Color(
+				(int)(Math.random() * 256),
+				(int)(Math.random() * 256),
+				(int)(Math.random() * 256)
+			));
+			g.drawRect((int)(x + getWidth() - dx), (int)(dy < 0 ? y - dy : y), dx, getHeight() - Math.abs(dy));
+		} else if(dx < 0) {
+			socket.requestCanvasRect(x, dy < 0 ? y - dy : y, -1 * dx, getHeight() - Math.abs(dy));
+			g.setColor(Color.RED);
+			g.fillRect((int)x, (int)(dy < 0 ? y - dy : y), -1 * dx, getHeight() - Math.abs(dy));
+			g.setColor(new Color(
+				(int)(Math.random() * 256),
+				(int)(Math.random() * 256),
+				(int)(Math.random() * 256)
+			));
+			g.drawRect((int)x, (int)(dy < 0 ? y - dy : y), -1 * dx, getHeight() - Math.abs(dy));
+		}
+		if(dy > 0) {
+			socket.requestCanvasRect(dx < 0 ? x - dx : x, y + getHeight() - dy, getWidth() - Math.abs(dx), dy);
+			g.setColor(Color.YELLOW);
+			g.fillRect((int)(dx < 0 ? x - dx : x), (int)(y + getHeight() - dy), getWidth() - Math.abs(dx), dy);
+			g.setColor(new Color(
+				(int)(Math.random() * 256),
+				(int)(Math.random() * 256),
+				(int)(Math.random() * 256)
+			));
+			g.drawRect((int)(dx < 0 ? x - dx : x), (int)(y + getHeight() - dy), getWidth() - Math.abs(dx), dy);
+		} else if(dy < 0) {
+			socket.requestCanvasRect(dx < 0 ? x - dx : x, y, getWidth() - Math.abs(dx), -1 * dy);
+			g.setColor(Color.GREEN);
+			g.fillRect((int)(dx < 0 ? x - dx : x), (int)y, getWidth() - Math.abs(dx), -1 * dy);
+			g.setColor(new Color(
+				(int)(Math.random() * 256),
+				(int)(Math.random() * 256),
+				(int)(Math.random() * 256)
+			));
+			g.drawRect((int)(dx < 0 ? x - dx : x), (int)y, getWidth() - Math.abs(dx), -1 * dy);
+		}
 	}
 }

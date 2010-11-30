@@ -2,13 +2,15 @@ package mict.server;
 
 import java.awt.*;
 import java.awt.image.*;
+import java.io.*;
 import java.util.*;
 import java.util.List;
+import javax.imageio.*;
 
 import mict.tools.*;
 
 /**
- * @author rwiesler
+ * @author rde
  */
 public class CanvasManager implements ImageObserver {
 	public CanvasManager(DatabaseLayer database, Server parent) {
@@ -33,28 +35,40 @@ public class CanvasManager implements ImageObserver {
 	private ToolManager tools = ToolManager.getServerToolManager();
 	private HashMap<Point, Chunk> cache = new HashMap<Point, Chunk>();
 
-	public Object /*HistoryLayer*/ draw(long x, long y, String tool, String data, Waiter user) {
+	public Object /*HistoryLayer*/ draw(long x, long y, String tool, String data, Waiter user, BufferedImage alt) {
 		System.out.println("CM: drawing a thing!");
 		Tool t = tools.getToolByID(tool);
+		long[] rect;
 		if(t == null) {
-			// TODO COMPLAIN
-			return null;	
+			if(tool.equals("imgrect")) {
+				rect = new long[] { x, y, alt.getWidth(null), alt.getHeight(null) };
+			} else {
+				// TODO COMPLAIN
+				return null;	
+			}
+		} else {
+			if(data.trim().equals("")) return null;
+			rect = t.getAffectedArea(data);
 		}
-		if(data.trim().equals("")) return null;
-		long[] rect = t.getAffectedArea(data);
 		System.out.println("rect=" + rect + " phrase=" + data);
 		int[] area = Chunk.getAffectedChunks(rect);
 		for(int i = area[0]; i < area[2]; i++) {
 			for(int j = area[1]; j < area[3]; j++) {
 				Graphics2D g = getChunk(i, j).getGraphics(x, y);
-				t.draw(data, g);
+				if(t != null)
+					t.draw(data, g);
+				else
+					g.drawImage(alt, (int)x, (int)y, this);
 			}
 		}
 		Waiter[] users = parent.getUsers();
 		for(Waiter u : users) {
 			System.out.println("Sending to user " + u.getUserName() + "? " + (u.intersects(rect) ? "intersects" : "does not intersect"));
 			if(!u.intersects(rect)) continue;
-			u.sendCanvasChange(x, y, tool, data);
+			if(t != null)
+				u.sendCanvasChange(x, y, tool, data);
+			else
+				u.sendCanvasRectangle(x, y, alt);
 		}
 		return null;
 	}
@@ -88,7 +102,7 @@ public class CanvasManager implements ImageObserver {
 				);
 			}
 		}
-		// do I have to wait? probably. ick.
+		// TODO ensure that the image has finished loading, somehow
 		return img;
 	}
 

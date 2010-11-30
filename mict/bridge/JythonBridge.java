@@ -14,32 +14,19 @@ import mict.tools.Tool;
 public abstract class JythonBridge {
 	private static final String SCRIPT_NAME = "javabridge";
 	private static ScriptEngine jython = new ScriptEngineManager().getEngineByName("jython");
-
-	/** gets the panel containing all of the tools and their handlers from
-	* the server. In order to keep this from being too hacky, we're using
-	* Jython for this.
-	* 
-	* @param serverURL : the server to connect to in order to get the tool
-	* information
-	* 
-	* @param g: The graphics context used for the drawing. This will be used by the tools' event handlers to actually
-	* modify the canvas.
-	*
-	* @return a JPanel containing all of the tools, with icons.
-	*/
-	public static void initialize() {
-		PySystemState engineSys = new PySystemState();
-		engineSys.path.append(Py.newString((JythonBridge.class.getResource("pylib")).getPath()));
-		Py.setSystemState(engineSys);
-		jython = new ScriptEngineManager().getEngineByName("python");
+	/*should only be used in tests
+	 * 
+	 */
+	public static void resetJython() {
+		jython = new ScriptEngineManager().getEngineByName("jython");
 	}
-
+	                              
 	public static List<Tool> getToolList(ClientState s) {
 		try {
-			jython.eval("from " + SCRIPT_NAME + " import get_tools");
+			jython.eval("from " + SCRIPT_NAME + " import get_server_tools");
 			System.out.println("imported tools");
 			jython.put("state", s);
-			List list = (List)jython.eval("get_tools(state)");
+			List list = (List)jython.eval("get_server_tools(state)");
 			Vector<Tool> result = new Vector<Tool>();
 			for(Object o : list) {
 				result.add((Tool)o);
@@ -52,45 +39,16 @@ public abstract class JythonBridge {
 		}
 	}
 
-	public static List<Tool> updateToolList() {
+	public static String getNeededClientTools(String server_tools) {
 		try {
 			jython.eval("import " + SCRIPT_NAME);
-			jython.eval(SCRIPT_NAME + ".reload_tools()");
-			List list = (List)jython.get(SCRIPT_NAME + ".tools_list");
-			Vector<Tool> result = new Vector<Tool>();
-			for(Object o : list) {
-				result.add((Tool)o);
-			}
-			return result;
+			String needed_tools = (String)jython.eval(SCRIPT_NAME + ".get_needed_tools(\"" + server_tools + "\")");
+			return needed_tools;
 		} catch(ScriptException e) {
-			return new java.util.ArrayList<Tool>();
-		}
-	}
-	public static List<String> getNeededClientTools(String required_tools) {
-		try {
-			jython.eval("import " + SCRIPT_NAME);
-			List needed_tools = (List)jython.eval(SCRIPT_NAME + ".get_needed_tools(\"" + required_tools + "\")");
-			List<String> tools = new ArrayList<String>();
-			for(Object tool_o: needed_tools) {
-				tools.add((String)tool_o);
-				//need to request tools
-			}
-			return tools;
-		} catch(ScriptException e) {
-			return new Vector<String>();
+			e.printStackTrace(System.err);
+			return "";
 		}
 		
-	}
-	public static Tool addClientTool(String form, ClientState s) {
-		try {
-			//this should not be called unless the script has already been imported
-			jython.put("state", s);
-			jython.put("serialized_tool", form);
-			Tool t = (Tool)jython.eval(SCRIPT_NAME + ".add_tool(serialized_tool,state)");
-			return t;
-		} catch(ScriptException e) {
-			return null;
-		}
 	}
 	public static List<Tool> getClientTools(ClientState s) {
 		try {
@@ -101,9 +59,20 @@ public abstract class JythonBridge {
 			for(Object tool_o : tools) {
 				result_list.add((Tool)tool_o);
 			}
+			System.out.println("got tools");
 			return result_list;
 		} catch(ScriptException e) {
+			e.printStackTrace();
 			return new Vector<Tool>();
+		}
+	}
+	public static String getSerializedToolFile(String file) {
+		try {
+			jython.eval("import " + SCRIPT_NAME);
+			return (String)jython.eval(SCRIPT_NAME + ".tools.get_tool_file(\"" + file + "\")");
+			
+		} catch(ScriptException ex) {
+			return "";
 		}
 	}
 	public static String serializeTool(String toolID) {
@@ -118,18 +87,33 @@ public abstract class JythonBridge {
 		}
 		
 	}
-	public static Tool deserializeTool(String phrase) {
+	public static List<Tool> addClientTool(String phrase, ClientState state) {
 		try {
 			jython.eval("import " + SCRIPT_NAME);
 			jython.put("phrase",phrase);
-			return (Tool)jython.eval(SCRIPT_NAME + ".unserialize_tool(phrase)");
+			jython.put("state",state);
+			List tools = (List)jython.eval(SCRIPT_NAME + ".deserialize_tool(phrase,state)");
+			List<Tool> tools_t = new Vector<Tool>();
+			for(Object o: tools) {
+				tools_t.add((Tool)o);
+			}
+			return tools_t;
 		} catch(ScriptException e) {
 			e.printStackTrace();
 			return null;
 		}
 
 	}
+	public static String getToolDescriptions() {
+		try {
+			jython.eval("import " + SCRIPT_NAME);
+			return (String)jython.eval(SCRIPT_NAME + ".tools.get_tool_files_and_hashes()");
+		} catch(ScriptException ex) {
+			ex.printStackTrace();
+			return "";
+		}
+	}
 	public static void main(String[] args) {
-
+		System.out.println(JythonBridge.getToolDescriptions());
 	}
 }

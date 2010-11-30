@@ -18,6 +18,8 @@ class ImageTool(Tool) :
 			return file_dialog.getSelectedFile()
 		else :
 			return None
+	def getToolID(self) :
+			return "image"
 	def getIcon(self) :
 		return None #TODO: implement
 	def getToolName(self) :

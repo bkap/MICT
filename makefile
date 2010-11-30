@@ -24,7 +24,7 @@ buildcommon:
 	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/test/*.java
 
 runserver:		buildserver
-	java $(CLASSPATH) $(KEY_STORE) $(KEY_PASSWD) $(DEBUG) mict.server.Server
+	java $(CLASSPATH) $(KEY_STORE) $(KEY_PASSWD) $(DEBUG) mict.server.Server --config=conf/server.conf
 
 runclient:		buildclient
 	java $(CLASSPATH) $(TRUST_STORE) $(TRUST_PASSWD) $(DEBUG) mict.client.Client

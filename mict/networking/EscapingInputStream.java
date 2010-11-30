@@ -11,9 +11,10 @@ public class EscapingInputStream extends FilterInputStream {
 		int read = super.read();
 		if(read == '\\') {
 			read = super.read();
-			if(read == 'n') return '\n';
-			if(read == 's') return ' ';
-			if(read == '\\') return '\\';
+			if(read == 0x6e) return 0x0a; // 'n'  for '\n'
+			if(read == 0x73) return 0x20; // 's'  for ' '
+			if(read == 0x5c) return 0x5c; // '\\' for '\\'
+			if(read == 0x00) return super.read() + 0x80;
 		}
 		return read;
 	}

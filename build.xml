@@ -24,6 +24,7 @@
 			<fileset dir="mict">
 				<include name="**/*.class" />
 				<exclude name="server/*.class" />
+				<exclude name="test/*.class" />
 			</fileset>
 		</cobertura-instrument>
 	</target>
