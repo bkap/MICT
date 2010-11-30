@@ -1,8 +1,21 @@
-package mict.networking;
+package mict.util;
 
 import java.io.*;
 
 public class Permission implements Serializable, Comparable {
+	public static Permission parse(String s) {
+		int index = s.indexOf("=");
+		if(index < 0) return new Permission(s);
+		return new Permission(
+			s.substring(0,index),
+			s.substring(index+1)
+		);
+	}
+
+	public Permission(String value) {
+		this(value, value);
+	}
+
 	public Permission(String key, String value) {
 		this.key = key;
 		this.value = value;

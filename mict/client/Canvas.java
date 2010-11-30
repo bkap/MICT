@@ -69,6 +69,10 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	 * @uml.associationEnd  
 	 */
 	public ClientConnection socket;
+
+	public ClientState getClientState() {
+		return state;
+	}
 	
 	public long getUserX() {
 		return x;

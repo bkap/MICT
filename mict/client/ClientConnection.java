@@ -10,6 +10,7 @@ import javax.net.ssl.*;
 
 import mict.networking.*;
 import mict.tools.*;
+import mict.util.*;
 
 /**
  * @author rde
@@ -127,6 +128,8 @@ public class ClientConnection extends Thread {
 				System.out.println(phrase);
 				System.out.println(bout.toString());
 				toolManager.addTools(bout.toString());
+			} else if(action.equals("permissions")) {
+				canvas.getClientState().permissions.setPermission(Permission.parse(phrase));
 			} else {
 				System.err.println("Nothing happened. Improper command '" + action + /*' ' + phrase +*/ "', could not be handled.");
 			}

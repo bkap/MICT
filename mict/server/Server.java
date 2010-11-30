@@ -182,10 +182,11 @@ public class Server extends Thread {
 		return canvas;
 	}
 
-	public Object /*PermissionSet*/ authenticate(String username, String password) {
-		// todo
-		System.out.println("Authenticating user " + username + " with password " + password + ": success by default.");
-		return null;
+	public PermissionSet authenticate(String username, String password) {
+		String perms = db.authenticate(username, password);
+		PermissionSet ps = new PermissionSet();
+		ps.read(perms, "", ",", false);
+		return ps;
 	}
 
 	public void stopServer() {

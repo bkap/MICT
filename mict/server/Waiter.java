@@ -34,6 +34,7 @@ public class Waiter extends Thread {
 	private long y = 0;
 	private long w = 1024;
 	private long h = 1024;
+	private PermissionSet perms = null;
 	//private Vector<HistoryLayer> history = new Vector<HistoryLayer>();
 
 	public void run() {
@@ -57,13 +58,13 @@ public class Waiter extends Thread {
 					username += (char)read;
 				}
 			}
-			/*perms = */parent.authenticate(username, password);
-			/*if(!perms.acceptConnection()) {
+			perms = parent.authenticate(username, password);
+			if(!capableOf("login")) {
 				close();
 				return;
-			}*/
+			}
 			this.username = username;
-
+			sendPermissions();
 			sendToolSet();
 			// set prior x,y
 			String buffer = "";
@@ -100,6 +101,11 @@ public class Waiter extends Thread {
 			e.printStackTrace(System.err);
 		}
 		close();
+	}
+
+	public boolean capableOf(String action) {
+		if(perms == null) return false;
+		return perms.capableOf(action);
 	}
 
 	private void dispatch(String action, String phrase) {
@@ -199,6 +205,15 @@ public class Waiter extends Thread {
 
 	public void sendToolSet() {
 		sendEscapedData("querytools", JythonBridge.getToolDescriptions());
+	}
+
+	public void sendPermissions() {
+		if(perms == null) return;
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		perms.write(bout, "permissions ", " ");
+		bout.write('\n');
+		out.write(bout.toByteArray());
+		out.flush();
 	}
 
 	public void sendCanvasChange(long x, long y, String tool, String data) {
