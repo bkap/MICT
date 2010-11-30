@@ -18,8 +18,8 @@ public class DatabaseLayer {
 			create = con.prepareStatement("insert into chunks values (?,?,?)");
 			write = con.prepareStatement("update chunks set img = ? where x = ? and y = ?");
 			read = con.prepareStatement("select img from chunks where x = ? and y = ?");
-			auth = con.prepareStatement("select perms from users where user = ? and passwd = ?");
-			userexists = con.prepareStatement("select passwd from users where user = ?");
+			auth = con.prepareStatement("select permissions from users where username = ? and passwd = ?");
+			userexists = con.prepareStatement("select passwd from users where username = ?");
 			adduser = con.prepareStatement("insert into users values (?,?,?)");
 			rand = new Random();
 		} catch(ClassNotFoundException e) {
@@ -104,15 +104,20 @@ public class DatabaseLayer {
 					int saltlength = 3;
 					byte[] salt = new byte[saltlength];
 					rand.nextBytes(salt);
+					md.update(salt);
 					byte[] pbs = md.digest(passwd.getBytes());
 					byte[] field = new byte[pbs.length + saltlength];
 					for(int i = 0; i < saltlength; i++) field[i] = salt[i];
 					for(int i = 0, j = saltlength; i < pbs.length; i++, j++) field[j] = pbs[i];
+					/*
+					System.out.print("===");
+					for(int i = 0; i < field.length; i++) System.out.print(" " + (int)field[i]);
+					System.out.println();
+					*/
 					adduser.setString(1, username);
 					adduser.setBytes(2, field);
 					adduser.setString(3, permissions);
-					results = adduser.executeQuery();
-					// TODO is this enough?
+					adduser.executeUpdate();
 					return true;
 				} else {
 					return false;
@@ -130,7 +135,7 @@ public class DatabaseLayer {
 		return false;
 	}
 
-	public String getPermissions(String username, String passwd) {
+	public String authenticate(String username, String passwd) {
 		String result = null;
 		if(enabled) {
 			try {
@@ -139,17 +144,22 @@ public class DatabaseLayer {
 				if(results.next()) {
 					MessageDigest md = MessageDigest.getInstance("SHA");
 					InputStream in = results.getBinaryStream("passwd");
-					in.close();
 					int saltlength = 3;
 					byte[] salt = new byte[saltlength];
 					for(int i = 0; i < salt.length; i++) {
 						salt[i] = (byte)in.read();
 						md.update(salt[i]);
 					}
+					in.close();
 					byte[] pbs = md.digest(passwd.getBytes());
 					byte[] field = new byte[pbs.length + saltlength];
 					for(int i = 0; i < saltlength; i++) field[i] = salt[i];
 					for(int i = 0, j = saltlength; i < pbs.length; i++, j++) field[j] = pbs[i];
+					/*
+					System.out.print("===");
+					for(int i = 0; i < field.length; i++) System.out.print(" " + (int)field[i]);
+					System.out.println();
+					*/
 					auth.setString(1, username);
 					auth.setBytes(2, field);
 					results = auth.executeQuery();
