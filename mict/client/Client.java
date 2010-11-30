@@ -16,12 +16,12 @@ public class Client extends JApplet {
 		String server = null;
 		String username = null;
 		String passwd = null;
-		for(int i = 0; i < options.length; i++) {
-			String option = options[i].trim();
+		for(int i = 0; i < args.length; i++) {
+			String option = args[i].trim();
 			while(option.startsWith("-")) option = option.substring(1);
-			if(option.equals("server")) try { server = options[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --server. Ignoring."); }
-			else if(option.equals("username")) try { username = options[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --username. Ignoring."); }
-			else if(option.equals("passwd")) try { passwd = options[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --passwd. Ignoring."); }
+			if(option.equals("server")) try { server = args[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --server. Ignoring."); }
+			else if(option.equals("username")) try { username = args[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --username. Ignoring."); }
+			else if(option.equals("passwd")) try { passwd = args[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --passwd. Ignoring."); }
 		}
 		Client c = new Client(server);
 		c.username = username;
@@ -80,8 +80,8 @@ public class Client extends JApplet {
 			server = JOptionPane.showInputDialog(this, "Please enter the URL of the server to connect to","MICT",JOptionPane.PLAIN_MESSAGE);
 
 		//if we still haven't specified a server, don't connect to a server
-		if(servername == null) servername = "";
-		if(servername.equals("")) {
+		if(server == null) server = "";
+		if(server.equals("")) {
 			System.out.println("not connected");
 			tools = ToolManager.getServerToolManager(state);
 		} else {
@@ -101,7 +101,7 @@ public class Client extends JApplet {
 		this.getContentPane().add(toolbox, java.awt.BorderLayout.WEST);
 		this.getContentPane().add(canvas, java.awt.BorderLayout.CENTER);
 		this.getContentPane().add(panel, java.awt.BorderLayout.EAST);
-		canvas.start(tools, servername, username, passwd);
+		canvas.start(tools, server, username, passwd);
 	}
 
 	public ClientState getClientState() {

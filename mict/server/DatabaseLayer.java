@@ -20,6 +20,8 @@ public class DatabaseLayer {
 			read = con.prepareStatement("select img from chunks where x = ? and y = ?");
 			auth = con.prepareStatement("select perms from users where user = ? and passwd = ?");
 			userexists = con.prepareStatement("select passwd from users where user = ?");
+			adduser = con.prepareStatement("insert into users values (?,?,?)");
+			rand = new Random();
 		} catch(ClassNotFoundException e) {
 			System.err.println("Driver class init is fail:\n" + e);
 			e.printStackTrace(System.err);
@@ -38,6 +40,8 @@ public class DatabaseLayer {
 	private PreparedStatement read;
 	private PreparedStatement auth;
 	private PreparedStatement userexists;
+	private PreparedStatement adduser;
+	private Random rand;
 	private boolean enabled;
 
 	public Chunk getChunk(int x, int y) {
@@ -90,6 +94,46 @@ public class DatabaseLayer {
 		}
 	}
 
+	public boolean addUser(String username, String passwd, String permissions) {
+		if(enabled) {
+			try {
+				userexists.setString(1, username);
+				ResultSet results = userexists.executeQuery();
+				if(!results.next()) {
+					MessageDigest md = MessageDigest.getInstance("SHA");
+					in.close();
+					int saltlength = 3;
+					byte[] salt = new byte[saltlength];
+					rand.nextBytes(salt);
+					byte[] pbs = md.digest(passwd.getBytes());
+					byte[] field = new byte[pbs.length + saltlength];
+					for(int i = 0, i < saltlength; i++) field[i] = salt[i];
+					for(int i = 0, j = saltlength; i < pbs.length; i++, j++) field[j] = pbs[i];
+					adduser.setString(1, username);
+					adduser.setBytes(2, field);
+					adduser.setString(3, permissions);
+					results = adduser.executeQuery();
+					// TODO is this enough?
+					return true;
+				} else {
+					return false;
+				}
+			} catch(SQLException e) {
+				System.err.println("SQL is fail:");
+				e.printStackTrace(System.err);
+			} catch(IOException e) {
+				System.err.println("IO porblems. Go die in a fire, Java:");
+				e.printStackTrace(System.err);
+			} catch(NoSuchAlgorithmException e) {
+				System.err.println("SHA not supported. Upgrade your damn system.");
+				e.printStackTrace(System.err);
+			}
+		} else {
+			// @Ben: I'm not sure what this should return when running tests.
+		}
+		return false;
+	}
+
 	public String getPermissions(String username, String passwd) {
 		String result = null;
 		if(enabled) {
@@ -98,7 +142,7 @@ public class DatabaseLayer {
 				ResultSet results = userexists.executeQuery();
 				if(results.next()) {
 					MessageDigest md = MessageDigest.getInstance("SHA");
-					InputStream in = getBinaryStream("passwd");
+					InputStream in = results.getBinaryStream("passwd");
 					in.close();
 					int saltlength = 3;
 					byte[] salt = new byte[saltlength];
@@ -125,7 +169,7 @@ public class DatabaseLayer {
 				e.printStackTrace(System.err);
 			} catch(NoSuchAlgorithmException e) {
 				System.err.println("SHA not supported. Upgrade your damn system.");
-				e.printStackTrace(
+				e.printStackTrace(System.err);
 			}
 		} else {
 			// @Ben: I'm not sure what this should return when running tests.
