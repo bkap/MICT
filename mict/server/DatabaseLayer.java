@@ -1,12 +1,12 @@
 package mict.server;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.awt.*;
+import java.awt.image.*;
+import java.io.*;
+import java.security.*;
 import java.sql.*;
-import javax.imageio.ImageIO;
+import java.util.*;
+import javax.imageio.*;
 
 public class DatabaseLayer {
 	public DatabaseLayer(String connection, String username, String password, boolean enabled) {
@@ -101,13 +101,12 @@ public class DatabaseLayer {
 				ResultSet results = userexists.executeQuery();
 				if(!results.next()) {
 					MessageDigest md = MessageDigest.getInstance("SHA");
-					in.close();
 					int saltlength = 3;
 					byte[] salt = new byte[saltlength];
 					rand.nextBytes(salt);
 					byte[] pbs = md.digest(passwd.getBytes());
 					byte[] field = new byte[pbs.length + saltlength];
-					for(int i = 0, i < saltlength; i++) field[i] = salt[i];
+					for(int i = 0; i < saltlength; i++) field[i] = salt[i];
 					for(int i = 0, j = saltlength; i < pbs.length; i++, j++) field[j] = pbs[i];
 					adduser.setString(1, username);
 					adduser.setBytes(2, field);
@@ -120,9 +119,6 @@ public class DatabaseLayer {
 				}
 			} catch(SQLException e) {
 				System.err.println("SQL is fail:");
-				e.printStackTrace(System.err);
-			} catch(IOException e) {
-				System.err.println("IO porblems. Go die in a fire, Java:");
 				e.printStackTrace(System.err);
 			} catch(NoSuchAlgorithmException e) {
 				System.err.println("SHA not supported. Upgrade your damn system.");
@@ -147,12 +143,12 @@ public class DatabaseLayer {
 					int saltlength = 3;
 					byte[] salt = new byte[saltlength];
 					for(int i = 0; i < salt.length; i++) {
-						salt[i] = (byte)in.read;
+						salt[i] = (byte)in.read();
 						md.update(salt[i]);
 					}
 					byte[] pbs = md.digest(passwd.getBytes());
 					byte[] field = new byte[pbs.length + saltlength];
-					for(int i = 0, i < saltlength; i++) field[i] = salt[i];
+					for(int i = 0; i < saltlength; i++) field[i] = salt[i];
 					for(int i = 0, j = saltlength; i < pbs.length; i++, j++) field[j] = pbs[i];
 					auth.setString(1, username);
 					auth.setBytes(2, field);

@@ -22,6 +22,7 @@ buildcommon:
 	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/tools/*.java
 	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/bridge/*.java
 	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/test/*.java
+	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/util/*.java
 
 server:		buildserver runserver
 
@@ -33,6 +34,8 @@ client:		buildclient runclient
 runclient:
 	java $(CLASSPATH) $(TRUST_STORE) $(TRUST_PASSWD) $(DEBUG) mict.client.Client --config=conf/client.conf
 
-runrdetest:	build
+rdetest:	build
 	javac $(CLASSPATH) $(BUILD_OPTIONS) RDETest.java
+
+runrdetest:
 	java $(CLASSPATH) $(KEY_STORE) $(KEY_PASSWD) $(DEBUG) RDETest
