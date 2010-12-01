@@ -132,6 +132,8 @@ public class ClientConnection extends Thread {
 				toolManager.addTools(bout.toString());
 			} else if(action.equals("permissions")) {
 				canvas.getClientState().permissions.setPermission(Permission.parse(phrase));
+			} else if(action.equals("user")) {
+				// username is phrase
 			} else {
 				System.err.println("Nothing happened. Improper command '" + action + /*' ' + phrase +*/ "', could not be handled.");
 			}
@@ -160,6 +162,9 @@ public class ClientConnection extends Thread {
 					));
 					canvas.getCanvasGraphics().fillRect(0, 0, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()));
 				}*/
+				canvas.getCanvasGraphics().setColor(Color.BLACK);
+				canvas.getCanvasGraphics().fillRect((int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()), img.getWidth(canvas), img.getHeight(canvas));
+				System.out.println("Canvas rect @" + x + "," + y + " at (" + img.getWidth(canvas) + "," + img.getHeight(canvas) + ")");
 				canvas.getCanvasGraphics().drawImage(img, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()), canvas);
 				canvas.repaint();
 			} catch(IOException e) {
@@ -175,7 +180,17 @@ public class ClientConnection extends Thread {
 		return out != null;
 	}
 
+	public void requestUserList() {
+		try {
+			send("userlist", "userlist");
+		} catch(IOException e) {
+			System.err.println("Connection failed us whilst trying to request list of users:");
+			e.printStackTrace(System.err);
+		}
+	}
+
 	public void requestCanvasRect(long x, long y, long width, long height) {
+		if(width < 1 || height < 1) return;
 		try {
 			if(out != null) {
 				send("imgrect", "" + x + '.' + y + '.' + width + '.' + height);
@@ -223,7 +238,7 @@ public class ClientConnection extends Thread {
 				System.err.println("Tried to send an action before establishing a connection. Oops.");
 				return;
 			}
-			System.out.println("Drawing! ." + tool + ' ' + data);
+			//System.out.println("Drawing! ." + tool + ' ' + data);
 			send('.' + tool, data);
 		} catch(IOException e) {
 			System.err.println("Could not send a draw command:");

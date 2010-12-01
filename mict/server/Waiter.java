@@ -67,6 +67,10 @@ public class Waiter extends Thread {
 				return;
 			} else {
 				System.out.println("User " + username + " is logging in witn permissions " + perms);
+				for(Waiter w : parent.getUsers()) {
+					send("user", w.getUserName());
+					w.send("user", username);
+				}
 			}
 			this.username = username;
 			sendPermissions();
@@ -142,6 +146,10 @@ public class Waiter extends Thread {
 				String[] neededFiles = phrase.split(":");
 				for(String file: neededFiles) {
 					sendEscapedData("tool", JythonBridge.getSerializedToolFile(file));
+				}
+			} else if(action.equals("userlist")) {
+				for(Waiter w : parent.getUsers()) {
+					send("user", w.getUserName());
 				}
 			} else {
 				System.err.println("Oops, that action doesn't exist.");
