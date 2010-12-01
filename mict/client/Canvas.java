@@ -235,16 +235,19 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	public void requestAdditionalCanvas(long x, long y, long dx, long dy) {
 		Graphics2D g = (Graphics2D)getCanvasGraphics().create();
 		g.translate(-x, -y);
+		//socket.requestCanvasRect((int)(x + dx), (int)(y + dy), getWidth(), getHeight());
 		long rx, ry, rw, rh;
 		g.setColor(Color.WHITE);
+		//System.out.println("Requesting rectangles based on: x=" + x + " y=" + y + " w=" + getWidth() + " h=" + getHeight() + " dx=" + dx + " dy=" + dy);
+		long buffer = 0;
 		if(dx > 0) {
-			rx = (int)(x + getWidth() - dx);
-			ry = 0;
+			rx = x + getWidth() - dx;
+			ry = y + dy;
 			rw = dx;
 			rh = getHeight();
 		} else if(dx < 0) {
-			rx = 0;
-			ry = 0;
+			rx = x;
+			ry = y + dy;
 			rw = -dx;
 			rh = getHeight();
 		} else {
@@ -253,16 +256,23 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 			rw = 0;
 			rh = 0;
 		}
+		rx -= buffer/2;
+		ry -= buffer/2;
+		rw += buffer;
+		rh += buffer;
+		//System.out.println("Requesting rectangle #1: x=" + rx + " y=" + ry + " w=" + rw + " h=" + rh);
+		//for(int i = 0; i < rw; i++)
+		//	socket.requestCanvasRect((int)rx + i, (int)ry, 1, (int)rh);
 		socket.requestCanvasRect((int)rx, (int)ry, (int)rw, (int)rh);
 		g.fillRect((int)rx, (int)ry, (int)rw, (int)rh);
 		if(dy > 0) {
-			rx = 0;
-			ry = (int)(y + getHeight() - dy);
+			rx = x + dx;
+			ry = y + getHeight() - dy;
 			rw = getWidth();
 			rh = dy;
 		} else if(dy < 0) {
-			rx = 0;
-			ry = 0;
+			rx = x + dx;
+			ry = y;
 			rw = getWidth();
 			rh = -dy;
 		} else {
@@ -271,7 +281,15 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 			rw = 0;
 			rh = 0;
 		}
+		rx -= buffer/2;
+		ry -= buffer/2;
+		rw += buffer;
+		rh += buffer;
+		//System.out.println("Requesting rectangle #2: x=" + rx + " y=" + ry + " w=" + rw + " h=" + rh);
+		//for(int i = 0; i < rh; i++)
+		//	socket.requestCanvasRect((int)rx, (int)ry + i, (int)rw, 1);
 		socket.requestCanvasRect((int)rx, (int)ry, (int)rw, (int)rh);
 		g.fillRect((int)rx, (int)ry, (int)rw, (int)rh);
+		repaint();
 	}
 }

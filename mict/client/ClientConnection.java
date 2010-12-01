@@ -20,8 +20,6 @@ public class ClientConnection extends Thread {
 
 	public ClientConnection(String server, int port, String username, String passwd, Canvas canvas, ToolManager t) {
 		this.server = server;
-		//this.controller = controller;
-		//this.serverport = port;
 		this.canvas = canvas;
 		if(server != "") {
 			try {
@@ -44,7 +42,6 @@ public class ClientConnection extends Thread {
 	}
 
 	private String server;
-	//private Object controller;
 	private SSLSocket waiter;
 	private OutputStream out;
 	private InputStream in;
@@ -110,6 +107,8 @@ public class ClientConnection extends Thread {
 			index = t.indexOf(',');
 			int x = Integer.parseInt(t.substring(0,index));
 			int y = Integer.parseInt(t.substring(index+1));
+			canvas.getCanvasGraphics().setColor(Color.WHITE);
+			canvas.getCanvasGraphics().fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 			canvas.draw(toolid, phrase, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()));
 			canvas.repaint();
 		} else { // it's not a tool
@@ -154,18 +153,12 @@ public class ClientConnection extends Thread {
 				ebin.close();
 				bin.close();
 				if(img == null) System.err.println("Oh noes! got a null image from the server.");
-				/*else {
-					canvas.getCanvasGraphics().setColor(new Color(
-						(int)(Math.random() * 256),
-						(int)(Math.random() * 256),
-						(int)(Math.random() * 256)
-					));
-					canvas.getCanvasGraphics().fillRect(0, 0, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()));
-				}*/
-				canvas.getCanvasGraphics().setColor(Color.BLACK);
-				canvas.getCanvasGraphics().fillRect((int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()), img.getWidth(canvas), img.getHeight(canvas));
-				System.out.println("Canvas rect @" + x + "," + y + " at (" + img.getWidth(canvas) + "," + img.getHeight(canvas) + ")");
-				canvas.getCanvasGraphics().drawImage(img, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()), canvas);
+				Graphics2D g = (Graphics2D)canvas.getCanvasGraphics().create();
+				g.translate(-canvas.getUserX(), -canvas.getUserY());
+				g.setColor(Color.WHITE);
+				g.fillRect((int)x, (int)y, img.getWidth(canvas), img.getHeight(canvas));
+				//System.out.println("Canvas rect @" + x + "," + y + " at (" + img.getWidth(canvas) + "," + img.getHeight(canvas) + ")");
+				g.drawImage(img, (int)x, (int)y, canvas);
 				canvas.repaint();
 			} catch(IOException e) {
 				System.err.println("Wow, that really should never have happened:");
