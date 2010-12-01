@@ -49,7 +49,7 @@
 		</java>
 	</target>
 	<target name="buildserver">
-		<javac srcdir="mict/server/*.java:mict/bridge/*.java:mict/networking/*.java:mict/tools/*.java:mict/util/" classpath="${serverclasspath}" />
+		<javac srcdir="mict/server/:mict/bridge/:mict/networking/:mict/tools/:mict/util/" classpath="${serverclasspath}" />
 	</target>
 	<target name="instrumentserver" depends="buildserver">
 		<delete file="cobertura.ser" />
@@ -61,7 +61,7 @@
 		</cobertura-instrument>
 	</target>
 	<target name="runcoverage-server" depends="instrumentserver">
-		<java fork="true" classpath="instrumented:cobertura/cobertura.jar:${clientclasspath}" classname="mict.server.Server" >
+		<java fork="true" classpath="instrumented:cobertura/cobertura.jar:${serverclasspath}" classname="mict.server.Server" >
 			<sysproperty key="javax.net.ssl.keyStore" value="${STORE}" />
 			<sysproperty key="javax.net.ssl.keyStorePassword" value="${PASSWD}" />
 			<sysproperty key="net.sourceforge.cobertura.datafile" file="${basedir}/cobertura.ser" />

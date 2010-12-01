@@ -114,8 +114,10 @@ public class ClientConnection extends Thread {
 			canvas.repaint();
 		} else { // it's not a tool
 			if(action.equals("querytools")) {
+				System.out.println("tools queried");
 				String needed = toolManager.updateClientTools(phrase);
 				if(!needed.equals("")) {
+					System.out.println("requesting " + needed);
 					send("requesttool", needed);
 				}
 			} else if(action.equals("tool")) {
@@ -186,7 +188,7 @@ public class ClientConnection extends Thread {
 		}
 	}
 
-	public void sendImage(String type, int x, int y, BufferedImage img) {
+	public void sendImage(int x, int y, BufferedImage img) {
 		try {
 			out.write(("#imgrect@" + x + '.' + y + ' ').getBytes());
 			EscapingOutputStream eout = new EscapingOutputStream(out);
