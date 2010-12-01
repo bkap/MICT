@@ -62,8 +62,11 @@ public class Waiter extends Thread {
 			}
 			perms = parent.authenticate(username, password);
 			if(!capableOf("login")) {
+				System.out.println("Access denied to user claiming to be " + username);
 				close();
 				return;
+			} else {
+				System.out.println("User " + username + " is logging in witn permissions " + perms);
 			}
 			this.username = username;
 			sendPermissions();

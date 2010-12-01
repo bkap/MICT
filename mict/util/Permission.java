@@ -12,8 +12,8 @@ public class Permission implements Serializable, Comparable {
 		);
 	}
 
-	public Permission(String value) {
-		this(value, value);
+	public Permission(String key) {
+		this(key, key);
 	}
 
 	public Permission(String key, String value) {
@@ -46,5 +46,10 @@ public class Permission implements Serializable, Comparable {
 
 	public int compareTo(Permission other) {
 		return key.compareTo(other.key);
+	}
+
+	public String toString() {
+		if(key.equals(value)) return key;
+		return key + '=' + value;
 	}
 }

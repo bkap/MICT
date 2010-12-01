@@ -37,9 +37,11 @@ client:		buildclient runclient
 runclient:
 	java $(CLASSPATH) $(TRUST_STORE) $(TRUST_PASSWD) $(DEBUG) mict.client.Client --config=conf/client.conf
 
-rdetest:	build
+buildrdetest:	build
 	rm -rf RDETest.class
 	javac $(CLASSPATH) $(BUILD_OPTIONS) RDETest.java
 
 runrdetest:
 	java $(CLASSPATH) $(KEY_STORE) $(KEY_PASSWD) $(DEBUG) RDETest
+
+rdetest:	buildrdetest runrdetest

@@ -37,7 +37,7 @@ public class PermissionSet extends Hashtable<String, Permission> {
 
 	public boolean capableOf(String action) {
 		int index = action.lastIndexOf('.');
-		String value = "";
+		String value = action;
 		if(index >= 0) {
 			value = action.substring(index+1);
 			action = action.substring(0,index);
@@ -58,18 +58,17 @@ public class PermissionSet extends Hashtable<String, Permission> {
 			input = input.substring(index + separator.length());
 			index = input.indexOf(separator);
 		}
+		setPermission(Permission.parse(input));
 	}
 
 	public void write(OutputStream out, String prefix, String separator) {
 		try {
 			Iterator<Permission> i = values().iterator();
 			out.write(prefix.getBytes());
-			EscapingOutputStream eout = new EscapingOutputStream(out);
 			while(i.hasNext()) {
-				out.write(separator.getBytes());
-				ObjectOutputStream oout = new ObjectOutputStream(eout);
-				oout.writeObject(i.next());
-				eout.flush();
+				out.write(i.next().toString().getBytes());
+				if(i.hasNext())
+					out.write(separator.getBytes());
 			}
 			out.write("\n".getBytes());
 			out.flush();
@@ -77,5 +76,16 @@ public class PermissionSet extends Hashtable<String, Permission> {
 			System.err.println("Could not write permissions to target");
 			e.printStackTrace(System.err);
 		}
+	}
+
+	public String toString() {
+		String result = "[";
+		Iterator<Permission> i = values().iterator();
+		while(i.hasNext()) {
+			result += i.next().toString();
+			if(i.hasNext())
+				result += ',';
+		}
+		return result + "]";
 	}
 }
