@@ -39,7 +39,7 @@ class ImageTool(Tool) :
 		return ''
 	def draw(self, s,g) :
 		pass
-	def getLastImage() :
+	def getLastImage(self) :
 		if self.sendImage :
 			image = self.sendImage
 			self.sendImage = None
