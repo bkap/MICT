@@ -8,6 +8,7 @@ cachedir/*
 *.autosave
 PrivateTemporaryConfigurationClass.java
 RDETest.java
+*.old
 coverage/*
 cobertura.ser
 dbauth.conf

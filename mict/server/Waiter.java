@@ -6,8 +6,10 @@ import java.util.*;
 import javax.net.ssl.*;
 import javax.imageio.*;
 import java.util.LinkedList;
-import mict.bridge.JythonBridge;
+
+import mict.bridge.*;
 import mict.networking.*;
+import mict.util.*;
 
 /**
  * @author rde
@@ -34,6 +36,7 @@ public class Waiter extends Thread {
 	private long y = 0;
 	private long w = 1024;
 	private long h = 1024;
+	private PermissionSet perms = null;
 	//private Vector<HistoryLayer> history = new Vector<HistoryLayer>();
 
 	public void run() {
@@ -57,13 +60,16 @@ public class Waiter extends Thread {
 					username += (char)read;
 				}
 			}
-			/*perms = */parent.authenticate(username, password);
-			/*if(!perms.acceptConnection()) {
+			perms = parent.authenticate(username, password);
+			if(!capableOf("login")) {
+				System.out.println("Access denied to user claiming to be " + username);
 				close();
 				return;
-			}*/
+			} else {
+				System.out.println("User " + username + " is logging in witn permissions " + perms);
+			}
 			this.username = username;
-
+			sendPermissions();
 			sendToolSet();
 			// set prior x,y
 			String buffer = "";
@@ -100,6 +106,11 @@ public class Waiter extends Thread {
 			e.printStackTrace(System.err);
 		}
 		close();
+	}
+
+	public boolean capableOf(String action) {
+		if(perms == null) return false;
+		return perms.capableOf(action);
 	}
 
 	private void dispatch(String action, String phrase) {
@@ -198,7 +209,21 @@ public class Waiter extends Thread {
 	}
 
 	public void sendToolSet() {
-		sendEscapedData("querytools", JythonBridge.getToolDescriptions());
+		send("querytools", JythonBridge.getToolDescriptions());
+	}
+
+	public void sendPermissions() {
+		if(perms == null) return;
+		try {
+			ByteArrayOutputStream bout = new ByteArrayOutputStream();
+			perms.write(bout, "permissions ", " ");
+			bout.write('\n');
+			out.write(bout.toByteArray());
+			out.flush();
+		} catch(IOException e) {
+			System.err.println("Error while sending permission set to user:");
+			e.printStackTrace(System.err);
+		}
 	}
 
 	public void sendCanvasChange(long x, long y, String tool, String data) {

@@ -1,12 +1,10 @@
 package mict.client;
 
-import mict.tools.Tool;
-import mict.tools.ToolManager;
+import java.awt.*;
+import java.awt.image.*;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
+import mict.tools.*;
+import mict.util.*;
 
 /** This class stores the shared-state for the Client. It's basically just a collection of global attributes
  * @author  bkaplan
@@ -37,4 +35,6 @@ public class ClientState {
 	public ToolManager tools;
 
 	public Canvas canvas;
+
+	public PermissionSet permissions = new PermissionSet();
 }
