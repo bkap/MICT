@@ -6,6 +6,7 @@ import java.awt.image.*;
 
 import javax.swing.*;
 
+import mict.tools.ImageData;
 import mict.tools.ToolManager;
 
 /** This is the Canvas viewport. It contains the drawn image as well as
@@ -197,6 +198,12 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		}
 		if(phrase == null || phrase.trim().equals("")) {
 			repaint();
+			return;
+		}
+		ImageData data = state.activeTool.getLastImage();
+		if(data != null) {
+			socket.sendImage(data.x, data.y, data.img);
+			getCanvasGraphics().drawImage(data.img, data.x, data.y, this);
 			return;
 		}
 		socket.sendDraw(state.activeTool.getToolID(), phrase);

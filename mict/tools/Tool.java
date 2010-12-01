@@ -3,6 +3,7 @@ package mict.tools;
 import java.awt.Point;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.Serializable;
 
 public interface Tool extends Serializable {
@@ -67,4 +68,6 @@ public interface Tool extends Serializable {
 	/** provides the internal name of the tool
 	 */
 	String getToolID();
+	ImageData getLastImage();
+
 }
