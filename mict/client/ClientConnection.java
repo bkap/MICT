@@ -186,7 +186,11 @@ public class ClientConnection extends Thread {
 		}
 	}
 
-	public void sendImage(String type, int x, int y, BufferedImage img) {
+	public void sendImage(ImageData img) {
+		sendImage(img.x, img.y, img.img);
+	}
+
+	public void sendImage(int x, int y, BufferedImage img) {
 		try {
 			out.write(("#imgrect@" + x + '.' + y + ' ').getBytes());
 			EscapingOutputStream eout = new EscapingOutputStream(out);
