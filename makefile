@@ -12,12 +12,15 @@ DEBUG =
 build:			buildclient buildserver
 	
 buildclient:	buildcommon
+	rm -rf mict/client/*.class
 	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/client/*.java
 
 buildserver:	buildcommon
+	rm -rf mict/server/*.class
 	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/server/*.java
 
 buildcommon:
+	rm -rf mict/networking/*.class mict/tools/*.class mict/bridge/*.class mict/test/*.class mict/util/*.class
 	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/networking/*.java
 	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/tools/*.java
 	javac $(CLASSPATH) $(BUILD_OPTIONS) mict/bridge/*.java
@@ -35,6 +38,7 @@ runclient:
 	java $(CLASSPATH) $(TRUST_STORE) $(TRUST_PASSWD) $(DEBUG) mict.client.Client --config=conf/client.conf
 
 rdetest:	build
+	rm -rf RDETest.class
 	javac $(CLASSPATH) $(BUILD_OPTIONS) RDETest.java
 
 runrdetest:
