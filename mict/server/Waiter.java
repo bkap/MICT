@@ -62,8 +62,11 @@ public class Waiter extends Thread {
 			}
 			perms = parent.authenticate(username, password);
 			if(!capableOf("login")) {
+				System.out.println("Access denied to user claiming to be " + username);
 				close();
 				return;
+			} else {
+				System.out.println("User " + username + " is logging in witn permissions " + perms);
 			}
 			this.username = username;
 			sendPermissions();
@@ -148,7 +151,7 @@ public class Waiter extends Thread {
 	}
 
 	private void dispatch(String action, byte[] data) {
-		System.err.println("Nothing happened. Improper command '" + action + ", could not be handled.");
+		System.out.println("Dispatching binary phrase: " + action);
 		if(action.startsWith("imgrect")) { // receiving an image
 			try {
 				int index = action.indexOf('@');
@@ -166,6 +169,8 @@ public class Waiter extends Thread {
 				System.err.println("Wow, that really should never have happened:");
 				e.printStackTrace(System.err);
 			}
+		} else {
+			System.err.println("Nothing happened. Improper command '" + action + ", could not be handled.");
 		}
 	}
 
