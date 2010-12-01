@@ -25,6 +25,11 @@ public class AdminPanel extends JPanel {
 	public AdminPanel(ClientState state) {
 		String[] data = {"this", "is", "a", "test"};
 		JLabel users = new JLabel ("List of active users.");
+		final JTextField userName = new JTextField(15);
+		final JPasswordField userPass = new JPasswordField(15);
+		userPass.setEchoChar('*');
+		final JPasswordField confirmPass = new JPasswordField(15);
+		confirmPass.setEchoChar('*');
 		activeusers = new JList(data);
 		activeusers.setPrototypeCellValue("Index 1234567890");
 		addUserButton.setPreferredSize(new Dimension(200,50));
@@ -34,7 +39,14 @@ public class AdminPanel extends JPanel {
 			public void actionPerformed(ActionEvent e){
 				if(e.getActionCommand().equals("Add User") ){
 					JFrame userWind = new JFrame("Title");
-					userWind.setSize(100,100);
+					userWind.setSize(200,200);
+					userWind.add(new JLabel("Enter User Name"));
+					userWind.add(userName);
+					userWind.add(new JLabel("Enter Password"));
+					userWind.add(userPass);
+					userWind.add(new JLabel("Re-Enter Password"));
+					userWind.add(confirmPass);
+					userWind.getContentPane().setLayout(new java.awt.FlowLayout());
 					userWind.setVisible(true);
 				}
 			}
