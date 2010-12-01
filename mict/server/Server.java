@@ -30,7 +30,6 @@ public class Server extends Thread {
 			else if(option.equals("dbpasswd")) try { dbpasswd = options[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --dbpasswd. Ignoring."); }
 			else if(option.equals("anonymous-access")) try { anon_access_allowed = ConfigParser.is(options[++i]); } catch(IndexOutOfBoundsException e) { System.err.println("Expected boolean argument for --anon-access. Ignoring."); }
 		}
-		// read user information
 		// load whatever parts of canvas need to be loaded
 		database = new DatabaseLayer(connstring, dbusername, dbpasswd, database_enabled);
 		canvas = new CanvasManager(database, this);

@@ -211,8 +211,8 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		state.activeTool.draw(phrase, canvasGraphics);
 		if(state.activeTool.getToolID().equals("pan")) {
 			int index = phrase.indexOf(',');
-			int dx = Integer.parseInt(phrase.substring(0,index));
-			int dy = Integer.parseInt(phrase.substring(index+1));
+			long dx = Integer.parseInt(phrase.substring(0,index));
+			long dy = Integer.parseInt(phrase.substring(index+1));
 			if(dx != 0 || dy != 0)
 				requestAdditionalCanvas(x, y, dx, dy);
 			x += dx;
@@ -221,7 +221,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 			Graphics g = nc.getGraphics();
 			g.setColor(Color.GRAY);
 			g.fillRect(0, 0, getWidth(), getHeight());
-			g.drawImage(canvas, -dx, -dy, this);
+			g.drawImage(canvas, (int)(-dx), (int)(-dy), this);
 			setCanvas(nc);
 		}
 		repaint();
@@ -233,50 +233,46 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		state.tools.draw(toolid, phrase, g);
 	}
 
-	public void requestAdditionalCanvas(long x, long y, int dx, int dy) {
+	public void requestAdditionalCanvas(long x, long y, long dx, long dy) {
 		Graphics2D g = (Graphics2D)getCanvasGraphics().create();
 		g.translate(-x, -y);
+		long rx, ry, rw, rh;
+		g.setColor(Color.WHITE);
 		if(dx > 0) {
-			socket.requestCanvasRect(x + getWidth() - dx, dy < 0 ? y - dy : y, dx, getHeight() - Math.abs(dy));
-			g.setColor(Color.BLUE);
-			g.fillRect((int)(x + getWidth() - dx), (int)(dy < 0 ? y - dy : y), dx, getHeight() - Math.abs(dy));
-			g.setColor(new Color(
-				(int)(Math.random() * 256),
-				(int)(Math.random() * 256),
-				(int)(Math.random() * 256)
-			));
-			g.drawRect((int)(x + getWidth() - dx), (int)(dy < 0 ? y - dy : y), dx, getHeight() - Math.abs(dy));
+			rx = (int)(x + getWidth() - dx);
+			ry = 0;
+			rw = dx;
+			rh = getHeight();
 		} else if(dx < 0) {
-			socket.requestCanvasRect(x, dy < 0 ? y - dy : y, -1 * dx, getHeight() - Math.abs(dy));
-			g.setColor(Color.RED);
-			g.fillRect((int)x, (int)(dy < 0 ? y - dy : y), -1 * dx, getHeight() - Math.abs(dy));
-			g.setColor(new Color(
-				(int)(Math.random() * 256),
-				(int)(Math.random() * 256),
-				(int)(Math.random() * 256)
-			));
-			g.drawRect((int)x, (int)(dy < 0 ? y - dy : y), -1 * dx, getHeight() - Math.abs(dy));
+			rx = 0;
+			ry = 0;
+			rw = -dx;
+			rh = getHeight();
+		} else {
+			rx = 0;
+			ry = 0;
+			rw = 0;
+			rh = 0;
 		}
+		socket.requestCanvasRect((int)rx, (int)ry, (int)rw, (int)rh);
+		g.fillRect((int)rx, (int)ry, (int)rw, (int)rh);
 		if(dy > 0) {
-			socket.requestCanvasRect(dx < 0 ? x - dx : x, y + getHeight() - dy, getWidth() - Math.abs(dx), dy);
-			g.setColor(Color.YELLOW);
-			g.fillRect((int)(dx < 0 ? x - dx : x), (int)(y + getHeight() - dy), getWidth() - Math.abs(dx), dy);
-			g.setColor(new Color(
-				(int)(Math.random() * 256),
-				(int)(Math.random() * 256),
-				(int)(Math.random() * 256)
-			));
-			g.drawRect((int)(dx < 0 ? x - dx : x), (int)(y + getHeight() - dy), getWidth() - Math.abs(dx), dy);
+			rx = 0;
+			ry = (int)(y + getHeight() - dy);
+			rw = getWidth();
+			rh = dy;
 		} else if(dy < 0) {
-			socket.requestCanvasRect(dx < 0 ? x - dx : x, y, getWidth() - Math.abs(dx), -1 * dy);
-			g.setColor(Color.GREEN);
-			g.fillRect((int)(dx < 0 ? x - dx : x), (int)y, getWidth() - Math.abs(dx), -1 * dy);
-			g.setColor(new Color(
-				(int)(Math.random() * 256),
-				(int)(Math.random() * 256),
-				(int)(Math.random() * 256)
-			));
-			g.drawRect((int)(dx < 0 ? x - dx : x), (int)y, getWidth() - Math.abs(dx), -1 * dy);
+			rx = 0;
+			ry = 0;
+			rw = getWidth();
+			rh = -dy;
+		} else {
+			rx = 0;
+			ry = 0;
+			rw = 0;
+			rh = 0;
 		}
+		socket.requestCanvasRect((int)rx, (int)ry, (int)rw, (int)rh);
+		g.fillRect((int)rx, (int)ry, (int)rw, (int)rh);
 	}
 }
