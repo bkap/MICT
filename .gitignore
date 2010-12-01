@@ -12,5 +12,4 @@ RDETest.java
 coverage/*
 cobertura.ser
 dbauth.conf
-defaultclientauth.conf
 .passwd.*

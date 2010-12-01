@@ -82,4 +82,14 @@ public abstract class ConfigParser {
 			}
 		}
 	}
+
+	public static boolean is(String s) {
+		s = s.toLowerCase().trim();
+		return
+			"yes".startsWith(s) ||
+			"true".startsWith(s) ||
+			"allowed".startsWith(s) ||
+			"okay".startsWith(s) ||
+			"1".equals(s);
+	}
 }

@@ -15,13 +15,13 @@ public class Client extends JApplet {
 		args = ConfigParser.expand(args);
 		String server = null;
 		String username = null;
-		String passwd = null;
+		String passwd = "";
 		for(int i = 0; i < args.length; i++) {
 			String option = args[i].trim();
 			while(option.startsWith("-")) option = option.substring(1);
 			if(option.equals("server")) try { server = args[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --server. Ignoring."); }
 			else if(option.equals("username")) try { username = args[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --username. Ignoring."); }
-			else if(option.equals("passwd")) try { passwd = args[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --passwd. Ignoring."); }
+			else if(option.equals("passwd")) try { passwd = args[++i]; } catch(IndexOutOfBoundsException e) { passwd = ""; }
 		}
 		Client c = new Client(server);
 		c.username = username;

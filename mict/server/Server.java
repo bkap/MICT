@@ -5,6 +5,7 @@ import java.io.*;
 import java.util.*;
 
 import mict.networking.*;
+import mict.util.*;
 
 /**
  * @author rde
@@ -27,10 +28,11 @@ public class Server extends Thread {
 			else if(option.equals("dbconnstring")) try { connstring = options[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --dbconnstring. Ignoring."); }
 			else if(option.equals("dbusername")) try { dbusername = options[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --dbusername. Ignoring."); }
 			else if(option.equals("dbpasswd")) try { dbpasswd = options[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --dbpasswd. Ignoring."); }
+			else if(option.equals("anonymous-access")) try { anon_access_allowed = ConfigParser.is(options[++i]); } catch(IndexOutOfBoundsException e) { System.err.println("Expected boolean argument for --anon-access. Ignoring."); }
 		}
 		// read user information
 		// load whatever parts of canvas need to be loaded
-		DatabaseLayer database = new DatabaseLayer(connstring, dbusername, dbpasswd, database_enabled);
+		database = new DatabaseLayer(connstring, dbusername, dbpasswd, database_enabled);
 		canvas = new CanvasManager(database, this);
 
 		// Basically, do the crap that needs to be done before beginning to accept users.
@@ -47,6 +49,7 @@ public class Server extends Thread {
 	}
 
 	protected Vector<Waiter> clients = new Vector<Waiter>();
+	private DatabaseLayer database;
 	private SSLServerSocket servsock;
 	/**
 	 * @uml.property name="canvas"
@@ -56,6 +59,7 @@ public class Server extends Thread {
 	private int startport;
 	private Vector<Integer> portsopen = new Vector<Integer>();
 	private Hashtable<String, PermissionSet> permissions = new Hashtable<String, PermissionSet>();
+	private boolean anon_access_allowed = true;
 
 	public void refreshPermissions() {
 		Hashtable<String, PermissionSet> permissions = new Hashtable<String, PermissionSet>();
@@ -183,7 +187,11 @@ public class Server extends Thread {
 	}
 
 	public PermissionSet authenticate(String username, String password) {
-		String perms = db.authenticate(username, password);
+		if(username.equals("anonymous")) {
+			password = "";
+			if(!anon_access_allowed) return new PermissionSet();
+		}
+		String perms = database.authenticate(username, password);
 		PermissionSet ps = new PermissionSet();
 		ps.read(perms, "", ",", false);
 		return ps;

@@ -45,6 +45,7 @@ public class DatabaseLayer {
 	private PreparedStatement userexists;
 	private PreparedStatement adduser;
 	private PreparedStatement deluser;
+	private PreparedStatement moduser;
 	private PreparedStatement modpasswd;
 	private Random rand;
 	private boolean enabled;
@@ -249,12 +250,9 @@ public class DatabaseLayer {
 			try {
 				moduser.setString(1, permissions);
 				moduser.setString(2, username);
-				results = moduser.executeUpdate();
+				moduser.executeUpdate();
 			} catch(SQLException e) {
 				System.err.println("SQL is fail:");
-				e.printStackTrace(System.err);
-			} catch(IOException e) {
-				System.err.println("IO porblems. Go die in a fire, Java:");
 				e.printStackTrace(System.err);
 			}
 		}

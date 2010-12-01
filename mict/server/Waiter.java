@@ -6,8 +6,10 @@ import java.util.*;
 import javax.net.ssl.*;
 import javax.imageio.*;
 import java.util.LinkedList;
-import mict.bridge.JythonBridge;
+
+import mict.bridge.*;
 import mict.networking.*;
+import mict.util.*;
 
 /**
  * @author rde
@@ -204,16 +206,21 @@ public class Waiter extends Thread {
 	}
 
 	public void sendToolSet() {
-		sendEscapedData("querytools", JythonBridge.getToolDescriptions());
+		send("querytools", JythonBridge.getToolDescriptions());
 	}
 
 	public void sendPermissions() {
 		if(perms == null) return;
-		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		perms.write(bout, "permissions ", " ");
-		bout.write('\n');
-		out.write(bout.toByteArray());
-		out.flush();
+		try {
+			ByteArrayOutputStream bout = new ByteArrayOutputStream();
+			perms.write(bout, "permissions ", " ");
+			bout.write('\n');
+			out.write(bout.toByteArray());
+			out.flush();
+		} catch(IOException e) {
+			System.err.println("Error while sending permission set to user:");
+			e.printStackTrace(System.err);
+		}
 	}
 
 	public void sendCanvasChange(long x, long y, String tool, String data) {

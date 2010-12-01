@@ -42,7 +42,9 @@ public class PermissionSet extends Hashtable<String, Permission> {
 			value = action.substring(index+1);
 			action = action.substring(0,index);
 		}
-		return get(action).capableOf(value);
+		Permission p = get(action);
+		if(p == null) return false;
+		return p.capableOf(value);
 	}
 
 	public void read(String input, String prefix, String separator, boolean purge) {
