@@ -1,11 +1,14 @@
 from java.awt.image import BufferedImage
 from java.awt import Point, Color, Graphics, Image
-from mict.tools import Tool
+from mict.tools import Tool, ImageData
 from javax.swing import JFileChooser
 from javax.swing.filechooser import FileNameExtensionFilter
+from javax.imageio import ImageIO
+
 class ImageTool(Tool) :
 	def __init__(self, clientstate=None) :
 		self.client_state = clientstate
+		self.sendImage = None
 	def get_image_file(self) :
 		file_dialog = JFileChooser()
 		#image files
@@ -30,6 +33,15 @@ class ImageTool(Tool) :
 		f = self.get_image_file()
 		#TODO: figure out how to extract the image
 		#and encode into a string
+		if f:
+			image = ImageIO.read(f)
+			self.sendImage = ImageData(s.x, s.y, image)
 		return ''
 	def draw(self, s,g) :
 		pass
+	def getLastImage() :
+		if self.sendImage :
+			image = self.sendImage
+			self.sendImage = None
+			return image
+		return None
