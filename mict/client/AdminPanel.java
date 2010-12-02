@@ -19,13 +19,20 @@ public class AdminPanel extends JPanel {
 	private Client parent;
 	private JButton addUserButton = new JButton("Add User"); //should pop up a Window to enter information
 	private JButton getInformation  = new JButton("Get User Information"); //should retrieve information about the user in lookupuser. Same info should pop up from double clicking on a name in
+	private Vector userNames = new Vector(20);
 	//Admins and Operators should also have stuff to change permission
 	//Artists and higher should have ability to lock current section, if it's not already locked
 	//have a place to display the owner of the section if there is an owner.
 	public AdminPanel(ClientState state) {
-		String[] data = {"this", "is", "a", "test"};
 		JLabel users = new JLabel ("List of active users.");
-		activeusers = new JList(data);
+		final JButton confirmUser = new JButton("Confirm");
+		final JTextField userName = new JTextField(15);
+		final JPasswordField userPass = new JPasswordField(15);
+		userPass.setEchoChar('*');
+		final JPasswordField confirmPass = new JPasswordField(15);
+		confirmPass.setEchoChar('*');
+		
+		activeusers = new JList(userNames);
 		activeusers.setPrototypeCellValue("Index 1234567890");
 		addUserButton.setPreferredSize(new Dimension(200,50));
 		getInformation.setPreferredSize(new Dimension(200,50));
@@ -33,9 +40,28 @@ public class AdminPanel extends JPanel {
 
 			public void actionPerformed(ActionEvent e){
 				if(e.getActionCommand().equals("Add User") ){
-					JFrame userWind = new JFrame("Title");
-					userWind.setSize(100,100);
+					final JFrame userWind = new JFrame("Title");
+					userWind.setSize(200,250);
+					userWind.add(new JLabel("Enter User Name"));
+					userWind.add(userName);
+					userWind.add(new JLabel("Enter Password"));
+					userWind.add(userPass);
+					userWind.add(new JLabel("Re-Enter Password"));
+					userWind.add(confirmPass);
+					userWind.add(confirmUser);
+					userWind.getContentPane().setLayout(new java.awt.FlowLayout());
 					userWind.setVisible(true);
+					confirmUser.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e){
+							if(e.getActionCommand().equals("Confirm") && userPass.getText().equals(confirmPass.getText()) && !(userName.getText().equals("")) && !(userPass.getText().equals(""))){
+								addUser(userName.getText());
+								userName.setText("");
+								userPass.setText("");
+								confirmPass.setText("");
+								userWind.setVisible(false);
+							}
+						}
+					});
 				}
 			}
 
@@ -50,5 +76,20 @@ public class AdminPanel extends JPanel {
 		 *		this.add(kick button);
 		 * }
 		 */
+	}
+
+	public void addUser(String user){
+		userNames.add(user);
+		activeusers.setListData(userNames);
+	}
+
+	public void removeUser(String user){
+		for(int i = 0; i < userNames.size(); i++){
+			if(userNames.get(i).equals(user)){
+				userNames.remove(i);
+				break;
+			}
+		}
+		activeusers.setListData(userNames);
 	}
 }

@@ -20,8 +20,6 @@ public class ClientConnection extends Thread {
 
 	public ClientConnection(String server, int port, String username, String passwd, Canvas canvas, ToolManager t) {
 		this.server = server;
-		//this.controller = controller;
-		//this.serverport = port;
 		this.canvas = canvas;
 		if(server != "") {
 			try {
@@ -44,7 +42,6 @@ public class ClientConnection extends Thread {
 	}
 
 	private String server;
-	//private Object controller;
 	private SSLSocket waiter;
 	private OutputStream out;
 	private InputStream in;
@@ -110,6 +107,8 @@ public class ClientConnection extends Thread {
 			index = t.indexOf(',');
 			int x = Integer.parseInt(t.substring(0,index));
 			int y = Integer.parseInt(t.substring(index+1));
+			//canvas.getCanvasGraphics().setColor(Color.WHITE);
+			//canvas.getCanvasGraphics().fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 			canvas.draw(toolid, phrase, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()));
 			canvas.repaint();
 		} else { // it's not a tool
@@ -132,6 +131,8 @@ public class ClientConnection extends Thread {
 				toolManager.addTools(bout.toString());
 			} else if(action.equals("permissions")) {
 				canvas.getClientState().permissions.setPermission(Permission.parse(phrase));
+			} else if(action.equals("user")) {
+				// username is phrase
 			} else {
 				System.err.println("Nothing happened. Improper command '" + action + /*' ' + phrase +*/ "', could not be handled.");
 			}
@@ -152,15 +153,12 @@ public class ClientConnection extends Thread {
 				ebin.close();
 				bin.close();
 				if(img == null) System.err.println("Oh noes! got a null image from the server.");
-				/*else {
-					canvas.getCanvasGraphics().setColor(new Color(
-						(int)(Math.random() * 256),
-						(int)(Math.random() * 256),
-						(int)(Math.random() * 256)
-					));
-					canvas.getCanvasGraphics().fillRect(0, 0, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()));
-				}*/
-				canvas.getCanvasGraphics().drawImage(img, (int)(x - canvas.getUserX()), (int)(y - canvas.getUserY()), canvas);
+				Graphics2D g = (Graphics2D)canvas.getCanvasGraphics().create();
+				g.translate(-canvas.getUserX(), -canvas.getUserY());
+				g.setColor(Color.WHITE);
+				g.fillRect((int)x, (int)y, img.getWidth(canvas), img.getHeight(canvas));
+				//System.out.println("Canvas rect @" + x + "," + y + " at (" + img.getWidth(canvas) + "," + img.getHeight(canvas) + ")");
+				g.drawImage(img, (int)x, (int)y, canvas);
 				canvas.repaint();
 			} catch(IOException e) {
 				System.err.println("Wow, that really should never have happened:");
@@ -175,7 +173,17 @@ public class ClientConnection extends Thread {
 		return out != null;
 	}
 
+	public void requestUserList() {
+		try {
+			send("userlist", "userlist");
+		} catch(IOException e) {
+			System.err.println("Connection failed us whilst trying to request list of users:");
+			e.printStackTrace(System.err);
+		}
+	}
+
 	public void requestCanvasRect(long x, long y, long width, long height) {
+		if(width < 1 || height < 1) return;
 		try {
 			if(out != null) {
 				send("imgrect", "" + x + '.' + y + '.' + width + '.' + height);
@@ -223,7 +231,7 @@ public class ClientConnection extends Thread {
 				System.err.println("Tried to send an action before establishing a connection. Oops.");
 				return;
 			}
-			System.out.println("Drawing! ." + tool + ' ' + data);
+			//System.out.println("Drawing! ." + tool + ' ' + data);
 			send('.' + tool, data);
 		} catch(IOException e) {
 			System.err.println("Could not send a draw command:");

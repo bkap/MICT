@@ -34,7 +34,7 @@ public class Waiter extends Thread {
 	private InputStream in;
 	private long x = 0;
 	private long y = 0;
-	private long w = 1024;
+	private long w = 1024; // TODO fix
 	private long h = 1024;
 	private PermissionSet perms = null;
 	//private Vector<HistoryLayer> history = new Vector<HistoryLayer>();
@@ -67,6 +67,10 @@ public class Waiter extends Thread {
 				return;
 			} else {
 				System.out.println("User " + username + " is logging in witn permissions " + perms);
+				for(Waiter w : parent.getUsers()) {
+					send("user", w.getUserName());
+					w.send("user", username);
+				}
 			}
 			this.username = username;
 			sendPermissions();
@@ -143,6 +147,10 @@ public class Waiter extends Thread {
 				for(String file: neededFiles) {
 					sendEscapedData("tool", JythonBridge.getSerializedToolFile(file));
 				}
+			} else if(action.equals("userlist")) {
+				for(Waiter w : parent.getUsers()) {
+					send("user", w.getUserName());
+				}
 			} else {
 				System.err.println("Oops, that action doesn't exist.");
 			}
@@ -183,6 +191,7 @@ public class Waiter extends Thread {
 	}
 
 	protected void move(long x, long y) {
+		System.out.println("Hey, user@(" + x + "," + y + ")!");
 		this.x = x;
 		this.y = y;
 	}

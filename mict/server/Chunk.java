@@ -37,7 +37,7 @@ public class Chunk implements ImageObserver {
 		int top = (int)(y - getHeight() + 1) / getHeight();
 		int right = left + (int)(w + getWidth() - 1) / getWidth();
 		int bottom = top + (int)(h + getHeight() - 1) / getHeight();
-		int[] result = new int[] {left, top, right, bottom};
+		int[] result = new int[] {left - 1, top - 1, right + 1, bottom + 1};
 		return result;
 	}
 
@@ -88,7 +88,7 @@ public class Chunk implements ImageObserver {
 	 */
 	public Graphics2D getGraphics(long userx, long usery) {
 		Graphics2D c = (Graphics2D)img.getGraphics();
-		c.translate((int)(x * getWidth() - userx), (int)(y * getHeight() - usery)); // TODO PERMUTE
+		c.translate((int)(x * getWidth() + userx), (int)(y * getHeight() + usery));
 		return c;
 	}
 

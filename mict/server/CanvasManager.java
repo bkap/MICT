@@ -51,6 +51,8 @@ public class CanvasManager implements ImageObserver {
 			rect = t.getAffectedArea(data);
 		}
 		System.out.println("rect=" + rect + " phrase=" + data);
+		rect[0] += x;
+		rect[1] += y;
 		int[] area = Chunk.getAffectedChunks(rect);
 		for(int i = area[0]; i < area[2]; i++) {
 			for(int j = area[1]; j < area[3]; j++) {
@@ -91,6 +93,8 @@ public class CanvasManager implements ImageObserver {
 		BufferedImage img = new BufferedImage((int)width, (int)height, BufferedImage.TYPE_INT_ARGB);
 		int[] area = Chunk.getAffectedChunks(x, y, width, height);
 		Graphics g = img.getGraphics();
+		g.setColor(Color.WHITE);
+		g.fillRect(0, 0, (int)width, (int)height);
 		for(int i = area[0]; i < area[2]; i++) {
 			for(int j = area[1]; j < area[3]; j++) {
 				Image tile = getChunk(i, j).getImage();

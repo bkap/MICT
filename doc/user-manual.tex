@@ -1,0 +1,107 @@
+\documentclass[11pt,oneside,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\usepackage{setspace}
+\usepackage{graphicx}
+\title{Multi-User Infinite Canvas Thing}
+\author{Donald Huckle, Benjamin Kaplan, Mark Wyrzykowski, Rob Wiesler}
+\begin{document}
+\maketitle
+\pagebreak
+\tableofcontents
+\pagebreak
+\section{Welcome}
+Congratulations on being able to figure out how to open this User Manual.
+You're now well on your way to experiencing the revolutionary new image editor
+known as the Multi-User Infinite Canvas Thingy, also called MICT. This program
+creates a canvas that can be edited by multiple people at the same time
+allowing for more productive days even when you are away from the office.
+
+\section{System Requirements}
+To use MICT to its full potential, you will need a client install and a server
+install. These can be on the same machine, but that would be pointless.
+
+\subsection{Client Requirements}
+\begin{itemize}
+\item A computer running Windows XP or newer, Mac OS X 10.5 or newer, or a
+recent version of Linux (tested on Ubuntu 8.04 LTS and 10.04 LTS)
+\item Java 1.6 or later. The program has been tested with the Oracle and Apple
+JVMs. Other implementations of Java may not function properly
+\item Apache Ant (tested with v. 1.8.1)
+\item A broadband Internet connection
+\item 15 MB of hard drive space
+\item Some RAM, but so little that it's not worth discussing.
+\item A graphics card. Any one manufactured in the last 15 years or so should
+do
+
+\end{itemize}
+\subsection{Server System Requirements}
+\begin{itemize}
+\item A computer running a modern operating system. The server has only been
+tested on Ubuntu 10.04 but should run on other versions of Linux, Mac OS X, and
+Windows.
+\item The PostgreSQL database (tested with 8.2)
+\item Apache Ant (tested with v. 1.8.1) or GNU Make (Linux/Mac OS X only)
+\item A broadband Internet connection
+\item A processor
+\item (optional, but preferred) a URL that it can be reached at
+\end{itemize}
+
+\section{Installing MICT}
+First of all, please ensure that all prerequisites are installed on your
+computer. Java and Apache Ant should be on your System path. If you're using
+Linux or Mac OS X, It Just Works\texttrademark. If you are on Windows, you'll
+have to work a little bit harder
+
+TODO: Explain how to put stuff on path for Windows or find workaround
+
+Simply extract the given compressed folder wherever you want the program- no
+installation required.
+
+\section{Launching MICT}
+Double click on the included runclient script if you're running the client. If
+you're on Mac OS X or Linux, click on the runclient.sh file. If you're on
+Windows, use runclient.bat. For the server, follow the same instructions but
+do runserver instead of run client.
+
+\section{Connecting to a Server}
+Upon launching the program, you'll be presented with a dialog asking you to
+input a server name. Put the URL or IP address of the server you want to
+connect to in the dialog box and press enter. The program will then load and
+present you with the tools.
+
+\section{Navigating the Program}
+MICT's layout can be broken down into 3 parts. On the left, you have the
+Toolbox. On the right, you have user controls. And in the middle, you have the
+star of the show: the image itself.
+\subsection{Toolbox}
+The Toolbox has a very basic interface, similar to every other image editor out
+there. It has a grid of buttons each with an icon representing what the tool
+does. Hover over the button to see a more detailed description. Only one tool
+can be selected at a time, and one tool is always selected. Beneath the tools
+is a single button showing the currently selected color. All the tools that let
+you select a color (which is most of them) will be drawn in that color. Click
+on that button to change the active color.
+
+\subsection{Canvas}
+The canvas is where the magic actually happens. It shows a portion of the total
+image, and updates any time someoone makes a change to your section of the
+screen. By clicking and moving the mouse around the canvas, you can make your
+own changes to the canvas.
+
+Most of the tools are triggered by you pressing and dragging the mouse, then
+releasing when you are done. There are only a couple tools that don't work this
+way. First, you have the image tool. Click any location on the canvas and
+you'll be pressented with a File dialog box. Find your image and press okay.
+The image will be inserted into the canvas so that the top left corner of the
+image is the spot where you clicked. The paste tool places the image in a
+similar direction, although it will use the image taken with the copy tool
+rather than prompting you for your own image. The text tool will prompt you for
+a string to enter when you click.
+\subsection{Admin Panel}
+The Admin Panel has different actions available depending on your permissions.
+You may have the ability to see all other users logged into the server, the
+ability to kick other users off the server, and the ability to ban other users
+permanently.
+
+\end{document}
