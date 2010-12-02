@@ -42,15 +42,14 @@ class TextTool(Tool) :
 		if match is None:
 			return
 		x, y = match.groups()
-		g.drawString(string, x, y)
+		g.drawString(string, float(x), float(y))
 	def getAffectedArea(self, phrase) :
-		if s == "" :
+		if phrase == "" :
 			return
-		metadata, point, string = s.split('|')
-		g.setColor(Color(int(metadata)))
+		metadata, point, string = phrase.split('|')
 		match = point_re.match(point)
 		if match is None:
 			return
 		x, y = match.groups()
 		rect = TextLayout(string, font, context).getBounds()
-		return [rect.getX() + x, rect.getY() + y, rect.getWidth(), rect.getHeight()]
+		return [rect.getX() + long(x), rect.getY() + long(y), rect.getWidth(), rect.getHeight()]

@@ -8,7 +8,7 @@ public class EscapingInputStream extends FilterInputStream {
 		byte[] bs = input.getBytes();
 		for(int i = 0; i < bs.length;) {
 			byte read = bs[i++];
-			if(bs[i++] == '\\') {
+			if(read == '\\') {
 				read = bs[i++];
 				if(read == 0x6e) result += '\n';
 				if(read == 0x73) result += ' ';
