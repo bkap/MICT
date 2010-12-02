@@ -12,7 +12,13 @@ import java.awt.event.*;
 import java.awt.Dimension;
 import javax.swing.*;
 import java.util.*;
-
+/**
+ *  The Panel used for administrative options. Only avaiable if the user has permission.
+ * 
+ * @author Mark Wyrzykowski
+ * @since 112310
+ *
+ */
 public class AdminPanel extends JPanel {
 	private JList activeusers; //this list will contain the list of users logged in to the server. Double clicking brings up info
 	private JTextField lookupuser; //so you can try to find a specific user
