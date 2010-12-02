@@ -88,7 +88,7 @@ public class Chunk implements ImageObserver {
 	 */
 	public Graphics2D getGraphics(long userx, long usery) {
 		Graphics2D c = (Graphics2D)img.getGraphics();
-		c.translate((int)(x * getWidth() - userx), (int)(y * getHeight() - usery)); // TODO PERMUTE
+		c.translate((int)(x * getWidth() + userx), (int)(y * getHeight() + usery));
 		return c;
 	}
 

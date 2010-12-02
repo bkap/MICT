@@ -34,7 +34,7 @@ class ImageTool(Tool) :
 		else :
 			return None
 	def getToolID(self) :
-			return "image"
+		return "image"
 	def getIcon(self) :
 		return self._image #TODO: implement
 	def getToolName(self) :

@@ -34,7 +34,7 @@ public class Waiter extends Thread {
 	private InputStream in;
 	private long x = 0;
 	private long y = 0;
-	private long w = 1024;
+	private long w = 1024; // TODO fix
 	private long h = 1024;
 	private PermissionSet perms = null;
 	//private Vector<HistoryLayer> history = new Vector<HistoryLayer>();
@@ -191,6 +191,7 @@ public class Waiter extends Thread {
 	}
 
 	protected void move(long x, long y) {
+		System.out.println("Hey, user@(" + x + "," + y + ")!");
 		this.x = x;
 		this.y = y;
 	}

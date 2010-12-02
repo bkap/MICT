@@ -51,6 +51,8 @@ public class CanvasManager implements ImageObserver {
 			rect = t.getAffectedArea(data);
 		}
 		System.out.println("rect=" + rect + " phrase=" + data);
+		rect[0] += x;
+		rect[1] += y;
 		int[] area = Chunk.getAffectedChunks(rect);
 		for(int i = area[0]; i < area[2]; i++) {
 			for(int j = area[1]; j < area[3]; j++) {
