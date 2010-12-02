@@ -39,7 +39,7 @@ public class EscapingOutputStream extends FilterOutputStream {
 		}
 	}
 
-	public void write(String s) {
+	public void write(String s) throws IOException {
 		byte[] bs = s.getBytes();
 		write(bs, 0, bs.length);
 	}

@@ -1,4 +1,6 @@
-from java.awt import Point, Color, Graphics, Font, FontMetrics
+from java.awt import Point, Color, Graphics, Font
+from java.awt.image import BufferedImage
+from java.awt.font import TextLayout, FontRenderContext
 from mict.tools import Tool, ImageData
 from javax.swing import JOptionPane
 from mict.networking import EscapingInputStream, EscapingOutputStream
@@ -9,7 +11,8 @@ point_re = re.compile(r"\( *(\d+), *(\d+) *\) *")
 class TextTool(Tool) :
 	def __init__(self, clientstate=None) :
 		self.client_state = clientstate
-		self.f = FontMetrics(Font(Font.DIALOG, Font.PLAIN, 10));
+		self.font = Font.decode(None)
+		self.context = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).getGraphics().getFontRenderContext()
 	def getToolID(self) :
 		return "text"
 	def getIcon(self) :
@@ -49,4 +52,5 @@ class TextTool(Tool) :
 		if match is None:
 			return
 		x, y = match.groups()
-		return [x, y - self.f.getAscent(), self.f.stringWidth(string), self.f.getAscent() + self.f.getDescent()]
+		rect = TextLayout(string, font, context).getBounds()
+		return [rect.getX() + x, rect.getY() + y, rect.getWidth(), rect.getHeight()]
