@@ -13,7 +13,7 @@ import java.awt.Dimension;
 import javax.swing.*;
 import java.util.*;
 /**
- *  The Panel used for administrative options. Only avaiable if the user has permission.
+ *  The Panel used for administrative options. Only available if the user has permission.
  * 
  * @author Mark Wyrzykowski
  * @since 112310
