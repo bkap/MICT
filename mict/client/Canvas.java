@@ -175,6 +175,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		g.drawImage(canvas, (int)imgx + getWidth(), (int)imgy + getHeight(), this);
 		setCanvas(nc);
 		repaint();
+		socket.requestCanvasRect(x - getWidth(), y - getWidth(), getWidth() * 3, getHeight() * 3);
     }
 
 	public void mouseDragged(MouseEvent e) {

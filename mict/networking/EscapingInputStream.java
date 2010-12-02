@@ -3,6 +3,22 @@ package mict.networking;
 import java.io.*;
 
 public class EscapingInputStream extends FilterInputStream {
+	public static String read(String input) {
+		String result = "";
+		byte[] bs = input.getBytes();
+		for(int i = 0; i < bs.length;) {
+			byte read = bs[i++];
+			if(bs[i++] == '\\') {
+				read = bs[i++];
+				if(read == 0x6e) result += '\n';
+				if(read == 0x73) result += ' ';
+				if(read == 0x5c) result += '\\';
+				if(read == 0x00) result += (char)(read + 0x80);
+			} else result += (char)read;
+		}
+		return result;
+	}
+
 	public EscapingInputStream(InputStream in) {
 		super(in);
 	}

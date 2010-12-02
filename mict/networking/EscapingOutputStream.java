@@ -38,4 +38,9 @@ public class EscapingOutputStream extends FilterOutputStream {
 			next = i;
 		}
 	}
+
+	public void write(String s) {
+		byte[] bs = s.getBytes();
+		write(bs, 0, bs.length);
+	}
 }
