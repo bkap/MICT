@@ -1,0 +1,67 @@
+\documentclass[11pt,oneside,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\usepackage{setspace}
+\usepackage{graphicx}
+\title{Multi-User Infinite Canvas Thing}
+\author{Donald Huckle, Benjamin Kaplan, Mark Wyrzykowski, Rob Wiesler}
+\begin{document}
+\maketitle
+\pagebreak
+\tableofcontents
+\pagebreak
+\section{Welcome}
+Congratulations on being able to figure out how to open this User Manual.
+You're now well on your way to experiencing the revolutionary new image editor
+known as the Multi-User Infinite Canvas Thingy, also called MICT. This program
+creates a canvas that can be edited by multiple people at the same time
+allowing for more productive days even when you are away from the office.
+
+\section{System Requirements}
+To use MICT to its full potential, you will need a client install and a server
+install. These can be on the same machine, but that would be pointless.
+
+\subsection{Client Requirements}
+\begin{itemize}
+\item A computer running Windows XP or newer, Mac OS X 10.5 or newer, or a
+recent version of Linux (tested on Ubuntu 8.04 LTS and 10.04 LTS)
+\item Java 1.6 or later. The program has been tested with the Oracle and Apple
+JVMs. Other implementations of Java may not function properly
+\item Apache Ant (tested with v. 1.8.1)
+\item A broadband Internet connection
+\item 15 MB of hard drive space
+\item Some RAM, but so little that it's not worth discussing.
+\item A graphics card. Any one manufactured in the last 15 years or so should
+do
+
+\end{itemize}
+\subsection{Server System Requirements}
+\begin{itemize}
+\item A computer running a modern operating system. The server has only been
+tested on Ubuntu 10.04 but should run on other versions of Linux, Mac OS X, and
+Windows.
+\item The PostgreSQL database (tested with 8.2)
+\item Apache Ant (tested with v. 1.8.1) or GNU Make (Linux/Mac OS X only)
+\item A broadband Internet connection
+\item A processor
+\item (optional, but preferred) a URL that it can be reached at
+\end{itemize}
+
+\section{Installing MICT}
+First of all, please ensure that all prerequisites are installed on your
+computer. Java and Apache Ant should be on your System path. If you're using
+Linux or Mac OS X, It Just Works\texttrademark. If you are on Windows, you'll
+have to work a little bit harder
+
+TODO: Explain how to put stuff on path for Windows or find workaround
+
+Simply extract the given compressed folder wherever you want the program- no
+installation required.
+
+\section{Running MICT}
+Double click on the included runclient script if you're running the client. If
+you're on Mac OS X or Linux, click on the runclient.sh file. If you're on
+Windows, use runclient.bat. For the server, follow the same instructions but
+do runserver instead of run client.
+
+\end{document}
