@@ -58,10 +58,50 @@ TODO: Explain how to put stuff on path for Windows or find workaround
 Simply extract the given compressed folder wherever you want the program- no
 installation required.
 
-\section{Running MICT}
+\section{Launching MICT}
 Double click on the included runclient script if you're running the client. If
 you're on Mac OS X or Linux, click on the runclient.sh file. If you're on
 Windows, use runclient.bat. For the server, follow the same instructions but
 do runserver instead of run client.
+
+\section{Connecting to a Server}
+Upon launching the program, you'll be presented with a dialog asking you to
+input a server name. Put the URL or IP address of the server you want to
+connect to in the dialog box and press enter. The program will then load and
+present you with the tools.
+
+\section{Navigating the Program}
+MICT's layout can be broken down into 3 parts. On the left, you have the
+Toolbox. On the right, you have user controls. And in the middle, you have the
+star of the show: the image itself.
+\subsection{Toolbox}
+The Toolbox has a very basic interface, similar to every other image editor out
+there. It has a grid of buttons each with an icon representing what the tool
+does. Hover over the button to see a more detailed description. Only one tool
+can be selected at a time, and one tool is always selected. Beneath the tools
+is a single button showing the currently selected color. All the tools that let
+you select a color (which is most of them) will be drawn in that color. Click
+on that button to change the active color.
+
+\subsection{Canvas}
+The canvas is where the magic actually happens. It shows a portion of the total
+image, and updates any time someoone makes a change to your section of the
+screen. By clicking and moving the mouse around the canvas, you can make your
+own changes to the canvas.
+
+Most of the tools are triggered by you pressing and dragging the mouse, then
+releasing when you are done. There are only a couple tools that don't work this
+way. First, you have the image tool. Click any location on the canvas and
+you'll be pressented with a File dialog box. Find your image and press okay.
+The image will be inserted into the canvas so that the top left corner of the
+image is the spot where you clicked. The paste tool places the image in a
+similar direction, although it will use the image taken with the copy tool
+rather than prompting you for your own image. The text tool will prompt you for
+a string to enter when you click.
+\subsection{Admin Panel}
+The Admin Panel has different actions available depending on your permissions.
+You may have the ability to see all other users logged into the server, the
+ability to kick other users off the server, and the ability to ban other users
+permanently.
 
 \end{document}
