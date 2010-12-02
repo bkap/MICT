@@ -22,7 +22,7 @@ class TextTool(Tool) :
 	def getTooltip(self) :
 		return "click to insert text"
 	def mouseClicked(self, s, g) :
-		x = JOptionPane.showInputDialog("Type your text here:", self.client_state)
+		x = JOptionPane.showInputDialog(self.client_state, "Type your text here:")
 		if x is None:
 			x = ''
 		bout = ByteArrayOutputStream()
