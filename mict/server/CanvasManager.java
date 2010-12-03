@@ -54,6 +54,7 @@ public class CanvasManager implements ImageObserver {
 		rect[0] += x;
 		rect[1] += y;
 		int[] area = Chunk.getAffectedChunks(rect);
+		System.out.println("Affected chunks: (" + area[0] + ',' + area[1] + ") through (" + area[2] + ',' + area[3] + ')');
 		for(int i = area[0]; i < area[2]; i++) {
 			for(int j = area[1]; j < area[3]; j++) {
 				Graphics2D g = getChunk(i, j).getGraphics(x, y);
