@@ -67,7 +67,10 @@ public class ToolManager {
 	 * @see mict.tools.Tool#draw(String, Graphics2D)
 	 */
 	public void draw(String toolid, String phrase, Graphics2D g) {
-		getToolByID(toolid).draw(phrase,g);
+		Tool usedTool = getToolByID(toolid);
+		if(usedTool != null) {
+			usedTool.draw(phrase,g);
+		}
 	}
 	
 	/**same as {@link mict.tools.ToolManager#getNeededClientTools(String)} except that it simultaneously updates this ToolManager

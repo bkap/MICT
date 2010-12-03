@@ -46,6 +46,8 @@
 		<java fork="true" classpath="${clientclasspath}" classname="mict.client.Client">
 			<sysproperty key="javax.net.ssl.trustStore" value="${STORE}" />
 			<sysproperty key="javax.net.ssl.keyStorePassword" value="${PASSWD}" />
+		
+		<arg value="--config=conf/client.conf" />
 		</java>
 	</target>
 	<target name="buildserver">
@@ -65,6 +67,8 @@
 			<sysproperty key="javax.net.ssl.keyStore" value="${STORE}" />
 			<sysproperty key="javax.net.ssl.keyStorePassword" value="${PASSWD}" />
 			<sysproperty key="net.sourceforge.cobertura.datafile" file="${basedir}/cobertura.ser" />
+		
+		<arg value="--config=conf/server.conf" />
 		</java>
 	</target>
 
