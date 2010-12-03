@@ -124,6 +124,12 @@ public class AdminPanel extends JPanel {
 		}
 		activeusers.setListData(userNames);
 	}
+
+	public void clearUserList() {
+		userNames.removeAllElements();
+		activeusers.setListData(userNames);
+	}
+
 	public void kick(String user, ClientState state){
 		state.canvas.socket.kickUser(user);
 	}
