@@ -156,15 +156,13 @@ public class ClientConnection extends Thread {
 				t.start();
 			} else if(action.equals("close")) {
 				System.out.println("kicked!");
-				String message = "You lost the connection to the server.";
+				String message = "You didn't login properly.";
 				int index = message.indexOf('(');
 				String time = null;
 				if(index >= 0) {
 					time = message.substring(index + 1);
 					time = time.substring(0, time.length() - 2);
 					message = "You were " + message.substring(0, index) + " from the server for " + time + " seconds!";
-				} else {
-					message = "Your accout was " + phrase;
 				}
 				JOptionPane.showMessageDialog(
 					canvas,

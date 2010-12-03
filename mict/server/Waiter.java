@@ -63,7 +63,7 @@ public class Waiter extends Thread {
 			perms = parent.authenticate(username, password);
 			if(!capableOf("login")) {
 				System.out.println("Access denied to user claiming to be " + username);
-				close();
+				sendClose("auth");
 				return;
 			} else {
 				username = Server.parseUsername(username);
@@ -327,8 +327,7 @@ public class Waiter extends Thread {
 	}
 
 	protected void sendClose(String reason) {
-		String sep = reason.substring(0,1);
-		send("close", reason.substring(1).replace(" ", sep));
+		send("close", reason);
 		close();
 	}
 
