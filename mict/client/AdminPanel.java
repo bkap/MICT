@@ -108,8 +108,7 @@ public class AdminPanel extends JPanel {
 						this,
 						"Enter new permissions for " + activeusers.getSelectedValue()
 					);
-					if(!permissions.equals(""))
-						modifyUserPermissions((String)activeusers.getSelectedValue(), permissions);
+					modifyUserPermissions((String)activeusers.getSelectedValue(), permissions);
 				}
 			}
 		});

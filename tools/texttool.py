@@ -47,6 +47,8 @@ class TextTool(Tool) :
 		if phrase == "" :
 			return
 		metadata, point, string = phrase.split('|')
+		if string == "" :
+			return
 		match = point_re.match(point)
 		if match is None:
 			return

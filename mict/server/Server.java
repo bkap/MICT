@@ -172,8 +172,6 @@ public class Server extends Thread {
 	public void changeUserPermissions(String username, String permissions) {
 		username = parseUsername(username);
 		PermissionSet ps = new PermissionSet();
-		String prior = database.authenticate("registered", "");
-		ps.read(prior, "", ",", true);
 		ps.read(permissions, "", ",", false);
 		// TODO send changes to user
 		database.changeUserPermissions(username, ps.toString());

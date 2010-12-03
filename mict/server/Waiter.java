@@ -107,7 +107,7 @@ public class Waiter extends Thread {
 					buffer += (char)read;
 				}
 			}
-		} catch(IOException e) {
+		} catch(Exception e) {
 			System.err.println("Lost the connection with a user. Too bad, I guess:");
 			e.printStackTrace(System.err);
 		}

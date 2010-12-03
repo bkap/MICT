@@ -351,7 +351,7 @@ public class DatabaseLayer {
 	}
 
 	public void changeUserPermissions(String username, String permissions) {
-		if(permissions == null || permissions.equals("")) deleteUser(username);
+		if(permissions == null) deleteUser(username);
 		else if(enabled) {
 			try {
 				moduser.setString(1, permissions);
