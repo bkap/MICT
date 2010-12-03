@@ -20,7 +20,12 @@ public abstract class JythonBridge {
 	public static void resetJython() {
 		jython = new ScriptEngineManager().getEngineByName("jython");
 	}
-	                              
+	/**Usaed on the server side to get a list of tools for the ToolManaer
+	 * 
+	 * @see mict.tools.ToolManager#getServerToolManager(ClientState)
+	 * @param s
+	 * @return
+	 */
 	public static List<Tool> getToolList(ClientState s) {
 		try {
 			jython.eval("from " + SCRIPT_NAME + " import get_server_tools");
@@ -38,7 +43,12 @@ public abstract class JythonBridge {
 			return new java.util.ArrayList<Tool>();
 		}
 	}
-
+	/** Takes a String containing file names and hashes of tools, and returns a String describing which tools it doesn't already have.
+	 * 
+	 * @see #serializeTool(String)
+	 * @param server_tools the String containing the file names an hashes
+	 * @return A string containing a list of files to be transmitted
+	 */
 	public static String getNeededClientTools(String server_tools) {
 		try {
 			jython.eval("import " + SCRIPT_NAME);
@@ -50,6 +60,12 @@ public abstract class JythonBridge {
 		}
 		
 	}
+	/** Gets an instance the currently loaded tools.
+	 * 
+	 * 
+	 * @param s the ClientState the tools should use
+	 * @return
+	 */
 	public static List<Tool> getClientTools(ClientState s) {
 		try {
 			jython.eval("import " + SCRIPT_NAME);
@@ -66,6 +82,11 @@ public abstract class JythonBridge {
 			return new Vector<Tool>();
 		}
 	}
+	/** returns the text of the tool file with the given name. Used by the server to send the file to the client
+	 * 
+	 * @param file
+	 * @return
+	 */
 	public static String getSerializedToolFile(String file) {
 		try {
 			jython.eval("import " + SCRIPT_NAME);
@@ -104,6 +125,11 @@ public abstract class JythonBridge {
 		}
 
 	}
+	/** Gets the names and SHA1 hashes of every tool stored locally
+	 * 
+	 *  This is used by the server to tell the clients which tools it should use
+	 * @return
+	 */
 	public static String getToolDescriptions() {
 		try {
 			jython.eval("import " + SCRIPT_NAME);

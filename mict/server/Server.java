@@ -12,7 +12,23 @@ import mict.util.*;
  */
 public class Server extends Thread {
 	public static void main(String[] args) {
-		new Server(expand(args)).start();
+		new Server(ConfigParser.expand(args)).start();
+	}
+
+	public static String parseUsername(String username) {
+		boolean restart;
+		do {
+			restart = false;
+			for(String forbidden : new String[] { ".", ";", ",", "\n", "*", " ", "registered", "nobody" }) {
+				int index = username.indexOf(forbidden);
+				while(index >= 0) {
+					restart = true;
+					username = username.substring(0, index) + username.substring(index + forbidden.length());
+					index = username.indexOf(forbidden);
+				}
+			}
+		} while(restart);
+		return username;
 	}
 
 	public Server(String[] options) {
@@ -29,6 +45,7 @@ public class Server extends Thread {
 			else if(option.equals("dbusername")) try { dbusername = options[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --dbusername. Ignoring."); }
 			else if(option.equals("dbpasswd")) try { dbpasswd = options[++i]; } catch(IndexOutOfBoundsException e) { System.err.println("Expected argument for --dbpasswd. Ignoring."); }
 			else if(option.equals("anonymous-access")) try { anon_access_allowed = ConfigParser.is(options[++i]); } catch(IndexOutOfBoundsException e) { System.err.println("Expected boolean argument for --anon-access. Ignoring."); }
+			else if(option.equals("kick-time")) try { default_kick_time = Integer.parseInt(options[++i]); } catch(IndexOutOfBoundsException e) { System.err.println("Expected boolean argument for --anon-access. Ignoring."); } catch(NumberFormatException e) { System.err.println("Expected integer argument for --kick-time. Ignoring."); }
 		}
 		// load whatever parts of canvas need to be loaded
 		database = new DatabaseLayer(connstring, dbusername, dbpasswd, database_enabled);
@@ -59,90 +76,17 @@ public class Server extends Thread {
 	private Vector<Integer> portsopen = new Vector<Integer>();
 	private Hashtable<String, PermissionSet> permissions = new Hashtable<String, PermissionSet>();
 	private boolean anon_access_allowed = true;
+	private HashSet<String> kickedUsers = new HashSet<String>();
+	private int default_kick_time = 0;
+
+	public boolean isKicked(String username) {
+		return kickedUsers.contains(username);
+	}
 
 	public void refreshPermissions() {
 		Hashtable<String, PermissionSet> permissions = new Hashtable<String, PermissionSet>();
 		// TODO for each user, and default users, get the permission set and load it
 		this.permissions = permissions;
-	}
-
-	protected static String[] expand(String[] args) {
-		LinkedList<String> xargs = new LinkedList<String>();
-		for(int i = 0; i < args.length; i++) {
-			xargs.add(args[i]);
-		}
-		ListIterator<String> i = xargs.listIterator(0);
-		while(i.hasNext()) {
-			String s = i.next();
-			while(s.startsWith("-")) s = s.substring(1);
-			if(s.equals("")) {
-				i.remove();
-				continue;
-			}
-			if(s.startsWith("config=")) {
-				i.remove();
-				String file = s.substring("config=".length());
-				expand(i, file);
-			}
-		}
-		args = new String[xargs.size()];
-		int j = 0;
-		for(i = xargs.listIterator(); i.hasNext(); j++) {
-			String s = i.next();
-			args[j] = s;
-		}
-		return args;
-	}
-
-	protected static void expand(ListIterator<String> i, String file) {
-		LinkedList<String> yargs = new LinkedList<String>();
-		try {
-			FileInputStream fin = new FileInputStream(file);
-			String line = "";
-			boolean reading = true;
-			while(reading) {
-				int read = fin.read();
-				if(read < 0) {
-					reading = false;
-					read = '\n';
-				} else {
-					line += (char)read;
-				}
-				if(read == '\n' && !line.equals("")) {
-					int index = line.indexOf('=');
-					if(index < 0) yargs.add(line);
-					else {
-						yargs.add(line.substring(0,index).trim());
-						yargs.add(line.substring(index+1).trim());
-					}
-					line = "";
-				}
-			}
-			fin.close();
-		} catch(IOException e) {
-			System.err.println("Could not read configuration file " + file + ". Contents ignored.");
-		}
-		ListIterator<String> j = yargs.listIterator(0);
-		while(j.hasNext()) {
-			String s = j.next();
-			String t = s;
-			while(s.startsWith("-")) s = s.substring(1);
-			if(s.equals("")) {
-				continue;
-			}
-			if(s.equals("config")) {
-				j.remove();
-				if(j.hasNext()) {
-					String file2 = j.next();
-					j.remove();
-					expand(i, file2);
-				} else {
-					System.err.println("In file " + file + ", expected filename after config= directive. Ignoring.");
-				}
-			} else {
-				i.add(t);
-			}
-		}
 	}
 
 	public void run() {
@@ -173,6 +117,16 @@ public class Server extends Thread {
 		return users;
 	}
 
+	public ArrayList<Waiter> getUser(String username) {
+		username = parseUsername(username);
+		ArrayList<Waiter> result = new ArrayList<Waiter>();
+		for(Waiter w : clients) {
+			if(w.getUserName().equals(username))
+				result.add(w);
+		}
+		return result;
+	}
+
 	public int getUserCount() {
 		return clients.size();
 	}
@@ -185,15 +139,88 @@ public class Server extends Thread {
 		return canvas;
 	}
 
+	public void kickUser(String username) {
+		int milliseconds = default_kick_time;
+		kickUser(username, milliseconds, "Kicked(" + milliseconds + ")!");
+	}
+
+	public void kickUser(String username, int milliseconds) {
+		kickUser(username, milliseconds, "Kicked(" + milliseconds + ")!");
+	}
+
+	public void kickUser(String username, int milliseconds, String reason) {
+		username = parseUsername(username);
+		for(Waiter w : getUser(username))
+			w.sendClose(reason);
+		if(milliseconds < 1) return;
+		kickedUsers.add(username);
+		new KickTimer(username, milliseconds).start();
+	}
+
+	public void banUser(String username) {
+		username = parseUsername(username);
+		database.banUser(username);
+		kickUser(username, -1, "Banned!");
+	}
+
+	public void pardonUser(String username) {
+		username = parseUsername(username);
+		database.pardonUser(username);
+		kickedUsers.remove(username);
+	}
+
+	public void changeUserPermissions(String username, String permissions) {
+		username = parseUsername(username);
+		PermissionSet ps = new PermissionSet();
+		String prior = database.authenticate("registered", "");
+		ps.read(prior, "", ",", true);
+		ps.read(permissions, "", ",", false);
+		// TODO send changes to user
+		database.changeUserPermissions(username, ps.toString());
+	}
+
+	public boolean addUser(String username, String passwd, String permissions) {
+		username = parseUsername(username);
+		if(username.equals("")) return false;
+		PermissionSet ps = new PermissionSet();
+		String prior = database.authenticate("registered", "");
+		int index = prior.indexOf('*');
+		while(index >= 0) {
+			prior = prior.substring(0, index) + username + prior.substring(index + 1);
+			index = prior.indexOf('*');
+		}
+		ps.read(prior, "", ",", false);
+		ps.read(permissions, "", ",", false);
+		return database.addUser(username, passwd, ps.toString());
+	}
+
+	public void deleteUser(String username) {
+		username = parseUsername(username);
+		database.deleteUser(username);
+		kickUser(username, -1, "Deleted!");
+	}
+
+	public boolean changeUserPassword(String username, String passwd) {
+		username = parseUsername(username);
+		return database.changeUserPassword(username, passwd);
+	}
+
 	public PermissionSet authenticate(String username, String password) {
+		username = parseUsername(username);
 		if(username.equals("anonymous")) {
 			password = "";
 			if(!anon_access_allowed) return new PermissionSet();
 		}
+		if(isKicked(username)) return new PermissionSet();
 		String perms = database.authenticate(username, password);
 		PermissionSet ps = new PermissionSet();
 		ps.read(perms, "", ",", false);
 		return ps;
+	}
+
+	public String getPermissions(String username) {
+		username = parseUsername(username);
+		return database.getPermissions(username);
 	}
 
 	public void stopServer() {
@@ -231,5 +258,20 @@ public class Server extends Thread {
 
 	public String toString() {
 		return "mict.server.Server";
+	}
+
+	class KickTimer extends Thread {
+		public KickTimer(String user, int milliseconds) {
+			this.user = user;
+			this.milliseconds = milliseconds;
+		}
+
+		private String user;
+		private int milliseconds;
+
+		public void run() {
+			try { Thread.sleep(milliseconds); } catch(InterruptedException e) {}
+			kickedUsers.remove(user);
+		}
 	}
 }

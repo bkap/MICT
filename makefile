@@ -6,7 +6,7 @@ KEY_STORE = -Djavax.net.ssl.keyStore=$(STORE)
 TRUST_PASSWD = -Djavax.net.ssl.keyStorePassword=$(PASSWD)
 TRUST_STORE = -Djavax.net.ssl.trustStore=$(STORE)
 CLASSPATH = -classpath .:jython.jar:postgresql.jar
-BUILD_OPTIONS = -Xlint:unchecked
+BUILD_OPTIONS = -Xlint:unchecked -Xlint:deprecation
 DEBUG = 
 
 clean:

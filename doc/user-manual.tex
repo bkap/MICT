@@ -104,4 +104,16 @@ You may have the ability to see all other users logged into the server, the
 ability to kick other users off the server, and the ability to ban other users
 permanently.
 
+
+\section{Plug-ins}
+MICT has a powerful plugin system that makes it easy to add new tools. Simply
+place the plug-in script in the tools folder on the server and restart the
+server. Upon connecting, every client will be given the new tool. To update a
+tool, simply replace the old file with the new one. Once again, clients will be
+updated automatically.
+
+\subsection{Plugins for Developers}
+Plugins are developed using the Python scripting language. They contain classes
+which subclass mict.tools.Tool. See the developer documentation of that
+interface for more information
 \end{document}

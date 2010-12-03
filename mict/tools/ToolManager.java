@@ -9,8 +9,7 @@ import mict.client.ClientState;
 import mict.client.ToolBox;
 
 /** the ToolManager is used to create the list of tools. It then will also
- * select the appropriate tool based on the tool name. It is primarily used on
- * the server
+ * select the appropriate tool based on the tool name. 
  * 
  */
 public class ToolManager {
@@ -101,21 +100,46 @@ public class ToolManager {
 	public Tool getToolByID(String id) {
 		return tools.get(id);
 	}
-
+	/** @see #getServerToolManager(ClientState)
+	 * 
+	 * @return
+	 */
 	public static ToolManager getServerToolManager() {
 		return new ToolManager(JythonBridge.getToolList(null));
 	}
-
+	/** Creates a ToolManager for the server, using all available tools
+	 * 
+	 * This is also used on the client side when you aren't connected to a server
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static ToolManager getServerToolManager(ClientState s) {
 		return new ToolManager(JythonBridge.getToolList(s));
 	}
-
+	/** Given a list of tool descriptions from the server, returns the list of files that the client needs transmitted to it
+	 * 
+	 * @see mict.bridge.JythonBridge#getNeededClientTools(String)
+	 * @param tools
+	 * @return
+	 */
 	public static String getNeededClientTools(String tools) {
 		return JythonBridge.getNeededClientTools(tools);
 	}
+	/** Gets the client tools and adds them to the given toolbox. Not all that effective until after {@see #getNeededClientTools(String)} has been called
+	 * 
+	 * @param s
+	 * @param b
+	 * @return
+	 */
 	public static ToolManager getClientToolManager(ClientState s, ToolBox b) {
 		return new ToolManager(JythonBridge.getClientTools(s), b,s);
 	}
+	/** @see #getClientToolManager(ClientState, ToolBox)
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static ToolManager getClientToolManager(ClientState s) {
 		return new ToolManager(JythonBridge.getClientTools(s),null,s);
 	}

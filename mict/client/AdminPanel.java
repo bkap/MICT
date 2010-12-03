@@ -12,19 +12,25 @@ import java.awt.event.*;
 import java.awt.Dimension;
 import javax.swing.*;
 import java.util.*;
-
+/**
+ *  The Panel used for administrative options. Only available if the user has permission.
+ * 
+ * @author Mark Wyrzykowski
+ * @since 112310
+ *
+ */
 public class AdminPanel extends JPanel {
 	private JList activeusers; //this list will contain the list of users logged in to the server. Double clicking brings up info
 	private JTextField lookupuser; //so you can try to find a specific user
 	private Client parent;
 	private JButton addUserButton = new JButton("Add User"); //should pop up a Window to enter information
 	private JButton getInformation  = new JButton("Get User Information"); //should retrieve information about the user in lookupuser. Same info should pop up from double clicking on a name in
-	private Vector userNames = new Vector(20);
+	private Vector<String> userNames = new Vector<String>();
 	//Admins and Operators should also have stuff to change permission
 	//Artists and higher should have ability to lock current section, if it's not already locked
 	//have a place to display the owner of the section if there is an owner.
 	public AdminPanel(ClientState state) {
-		JLabel users = new JLabel ("List of active users.");
+		JLabel users = new JLabel("List of active users.");
 		final JButton confirmUser = new JButton("Confirm");
 		final JTextField userName = new JTextField(15);
 		final JPasswordField userPass = new JPasswordField(15);
@@ -53,7 +59,7 @@ public class AdminPanel extends JPanel {
 					userWind.setVisible(true);
 					confirmUser.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e){
-							if(e.getActionCommand().equals("Confirm") && userPass.getText().equals(confirmPass.getText()) && !(userName.getText().equals("")) && !(userPass.getText().equals(""))){
+							if(e.getActionCommand().equals("Confirm") && new String(userPass.getPassword()).equals(new String(confirmPass.getPassword())) && !(userName.getText().equals("")) && !(new String(userPass.getPassword()).equals(""))){
 								addUser(userName.getText());
 								userName.setText("");
 								userPass.setText("");

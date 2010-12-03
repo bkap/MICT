@@ -66,6 +66,7 @@ public class Waiter extends Thread {
 				close();
 				return;
 			} else {
+				username = Server.parseUsername(username);
 				System.out.println("User " + username + " is logging in witn permissions " + perms);
 				for(Waiter w : parent.getUsers()) {
 					send("user", w.getUserName());
@@ -131,26 +132,80 @@ public class Waiter extends Thread {
 			}
 		} else { // it's not a tool
 			if(action.startsWith("imgrect")) { // receiving a request for an image
-				int index = phrase.indexOf('.');
-				long x = Long.parseLong(phrase.substring(0,index));
-				phrase = phrase.substring(index+1);
-				index = phrase.indexOf('.');
-				long y = Long.parseLong(phrase.substring(0,index));
-				phrase = phrase.substring(index+1);
-				index = phrase.indexOf('.');
-				long w = Long.parseLong(phrase.substring(0,index));
-				long h = Long.parseLong(phrase.substring(index+1));
-				System.out.println("Stitching and sharing a rectangular portion of the canvas @(" + x + ',' + y + ") at " + w + " by " + h);
-				sendCanvasRectangle(x, y, w, h);
+				if(perms.capableOf("view") && perms.capableOf("pan")) {
+					int index = phrase.indexOf('.');
+					long x = Long.parseLong(phrase.substring(0,index));
+					phrase = phrase.substring(index+1);
+					index = phrase.indexOf('.');
+					long y = Long.parseLong(phrase.substring(0,index));
+					phrase = phrase.substring(index+1);
+					index = phrase.indexOf('.');
+					long w = Long.parseLong(phrase.substring(0,index));
+					long h = Long.parseLong(phrase.substring(index+1));
+					System.out.println("Stitching and sharing a rectangular portion of the canvas @(" + x + ',' + y + ") at " + w + " by " + h);
+					sendCanvasRectangle(x, y, w, h);
+				}
 			} else if(action.equals("requesttool")) {
 				String[] neededFiles = phrase.split(":");
 				for(String file: neededFiles) {
 					sendEscapedData("tool", JythonBridge.getSerializedToolFile(file));
 				}
 			} else if(action.equals("userlist")) {
-				for(Waiter w : parent.getUsers()) {
-					send("user", w.getUserName());
+				if(perms.capableOf("list")) {
+					for(Waiter w : parent.getUsers()) {
+						send("user", w.getUserName());
+					}
 				}
+			} else if(action.equals("kick")) {
+				String username = Server.parseUsername(phrase);
+				if(perms.capableOf("kick." + username + ';'))
+					parent.kickUser(username);
+			} else if(action.equals("ban")) {
+				String username = Server.parseUsername(phrase);
+				if(perms.capableOf("ban." + username + ';'))
+					parent.banUser(username);
+			} else if(action.equals("pardon")) {
+				String username = Server.parseUsername(phrase);
+				if(perms.capableOf("pardon." + username + ';'))
+					parent.pardonUser(username);
+			} else if(action.equals("modperms")) {
+				int index = phrase.indexOf('.');
+				if(index < 0) {
+					System.err.println("User " + username + " sent a bad command: " + action + ' ' + phrase);
+					return;
+				}
+				String username = Server.parseUsername(phrase.substring(0, index));
+				String p = phrase.substring(index + 1);
+				if(perms.capableOf("modperms." + username + ';'))
+					parent.changeUserPermissions(username, p);
+			} else if(action.equals("register")) {
+				int index = phrase.indexOf('.');
+				if(index < 0) {
+					System.err.println("User " + username + " sent a bad command: " + action + ' ' + phrase);
+					return;
+				}
+				String username = Server.parseUsername(phrase.substring(0, index));
+				String p = phrase.substring(index + 1);
+				if(perms.capableOf("register." + username + ';'))
+					parent.addUser(username, p, "");
+			} else if(action.equals("deluser")) {
+				String username = Server.parseUsername(phrase);
+				if(perms.capableOf("deluser." + username + ';'))
+					parent.deleteUser(username);
+			} else if(action.equals("modpasswd")) {
+				int index = phrase.indexOf('.');
+				if(index < 0) {
+					System.err.println("User " + username + " sent a bad command: " + action + ' ' + phrase);
+					return;
+				}
+				String username = Server.parseUsername(phrase.substring(0, index));
+				String p = phrase.substring(index + 1);
+				if(perms.capableOf("modpasswd." + username + ';'))
+					parent.changeUserPassword(username, p);
+			} else if(action.equals("seeperms")) {
+				String username = Server.parseUsername(phrase);
+				if(perms.capableOf("seeperms." + username + ';'))
+					send("perms." + username, parent.getPermissions(username).toString());
 			} else {
 				System.err.println("Oops, that action doesn't exist.");
 			}
@@ -215,9 +270,11 @@ public class Waiter extends Thread {
 		}
 	}
 
+	/*
 	public void sendMoveOrder(long x, long y) {
-		
+		// TODO implement?
 	}
+	*/
 
 	public void sendToolSet() {
 		send("querytools", JythonBridge.getToolDescriptions());
@@ -227,7 +284,7 @@ public class Waiter extends Thread {
 		if(perms == null) return;
 		try {
 			ByteArrayOutputStream bout = new ByteArrayOutputStream();
-			perms.write(bout, "permissions ", " ");
+			perms.write(bout, "permission ", " ");
 			bout.write('\n');
 			out.write(bout.toByteArray());
 			out.flush();

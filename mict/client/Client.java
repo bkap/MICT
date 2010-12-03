@@ -9,6 +9,7 @@ import mict.util.*;
 /**
  * The Client is the main class for the client side. It consists of a Canvas and a Toolbox. It also does the work to bridge those. All initialization should happen here. It is an Applet, but can be run as an application by sticking its contentPane in a JFrame.
  * @author  Ben Kaplan
+ * @since 093010
  */
 public class Client extends JApplet {
 	public static void main(String[] args) {
@@ -65,7 +66,7 @@ public class Client extends JApplet {
 	 */
 	private ToolBox toolbox;
 	private ToolManager tools;
-	private AdminPanel panel;
+	private AdminPanel adminPanel;
 
 	private String server;
 	private String username = null;
@@ -90,7 +91,7 @@ public class Client extends JApplet {
 			
 		state.tools = tools;
 		toolbox = new ToolBox(state,tools);
-		panel = new AdminPanel(state);
+		adminPanel = new AdminPanel(state);
 		tools.setToolBox(toolbox);
 
 		/* toolbox = new ToolBox(state);
@@ -98,10 +99,12 @@ public class Client extends JApplet {
 		 * state.tools = tools;
 		 */
 
+		adminPanel.setVisible(false);
+
 		this.getContentPane().add(toolbox, java.awt.BorderLayout.WEST);
 		this.getContentPane().add(canvas, java.awt.BorderLayout.CENTER);
-		this.getContentPane().add(panel, java.awt.BorderLayout.EAST);
-		canvas.start(tools, server, username, passwd);
+		this.getContentPane().add(adminPanel, java.awt.BorderLayout.EAST);
+		canvas.start(tools, server, username, passwd, adminPanel);
 	}
 
 	public ClientState getClientState() {

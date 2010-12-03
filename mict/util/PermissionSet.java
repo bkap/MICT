@@ -43,7 +43,10 @@ public class PermissionSet extends Hashtable<String, Permission> {
 			action = action.substring(0,index);
 		}
 		Permission p = get(action);
-		if(p == null) return false;
+		if(p == null) {
+			p = get("root");
+			return p != null;
+		}
 		return p.capableOf(value);
 	}
 
@@ -79,13 +82,13 @@ public class PermissionSet extends Hashtable<String, Permission> {
 	}
 
 	public String toString() {
-		String result = "[";
 		Iterator<Permission> i = values().iterator();
+		String result = "";
 		while(i.hasNext()) {
 			result += i.next().toString();
 			if(i.hasNext())
 				result += ',';
 		}
-		return result + "]";
+		return result;
 	}
 }

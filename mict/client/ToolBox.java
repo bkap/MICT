@@ -67,7 +67,7 @@ public class ToolBox extends JPanel {
 	 * @uml.associationEnd  
 	 */
 	private ClientState state;
-	/**
+	/** Adds each tool in the list to the ToolBox. Also will remove the loading label if it's still there.
 	 * @uml.property  name="tools"
 	 * @uml.associationEnd  
 	 */
@@ -81,6 +81,11 @@ public class ToolBox extends JPanel {
 		System.out.println("tools added: " + bg.getButtonCount());
 		
 	}
+	/** adds a single tool to the ToolBox. This will create a button for the tool with the Image specified in the tool or the tool's name
+	 * if there is no icon. The tooltip will be set to the result of {@see mict.tools.Tool#getTooltip()}
+	 * @see mict.client.ToolButton
+	 * @param t
+	 */
 	public void addTool(Tool t) {
 		this.remove(loading);
 		ToolButton newButton = new ToolButton(t, state);

@@ -19,6 +19,7 @@ public class DatabaseLayer {
 			write = con.prepareStatement("update chunks set img = ? where x = ? and y = ?");
 			read = con.prepareStatement("select img from chunks where x = ? and y = ?");
 			auth = con.prepareStatement("select permissions from users where username = ? and passwd = ?");
+			getperms = con.prepareStatement("select permissions from users where username = ?");
 			userexists = con.prepareStatement("select passwd from users where username = ?");
 			adduser = con.prepareStatement("insert into users values (?,?,?)");
 			deluser = con.prepareStatement("delete from users where username = ?");
@@ -42,11 +43,13 @@ public class DatabaseLayer {
 	private PreparedStatement write;
 	private PreparedStatement read;
 	private PreparedStatement auth;
+	private PreparedStatement getperms;
 	private PreparedStatement userexists;
 	private PreparedStatement adduser;
 	private PreparedStatement deluser;
 	private PreparedStatement moduser;
 	private PreparedStatement modpasswd;
+	private PreparedStatement isbanned;
 	private Random rand;
 	private boolean enabled;
 
@@ -113,6 +116,7 @@ public class DatabaseLayer {
 	}
 
 	public boolean addUser(String username, String passwd, String permissions) {
+		if(username.equals("")) return false;
 		if(enabled) {
 			try {
 				userexists.setString(1, username);
@@ -151,6 +155,82 @@ public class DatabaseLayer {
 			// @Ben: I'm not sure what this should return when running tests.
 		}
 		return false;
+	}
+
+	public void banUser(String username) {
+		if(enabled) {
+			try {
+				userexists.setString(1, username);
+				ResultSet results = userexists.executeQuery();
+				if(results.next()) {
+					InputStream in = results.getBinaryStream("passwd");
+					ByteArrayOutputStream bout = new ByteArrayOutputStream();
+					String toconsume = "banned";
+					bout.write(toconsume.getBytes());
+					boolean matches = true;
+					while(true) {
+						int read = in.read();
+						if(read == -1) break;
+						if(toconsume.startsWith("" + (char)read)) {
+							toconsume = toconsume.substring(1);
+						} else matches = false;
+						bout.write((byte)read);
+					}
+					in.close();
+					matches = matches && toconsume.equals("");
+					if(matches) return; // user is already banned
+					byte[] result = bout.toByteArray();
+					modpasswd.setBytes(1, result);
+					modpasswd.setString(2, username);
+					modpasswd.executeUpdate();
+				}
+			} catch(IOException e) {
+				System.err.println("IO porblems. Go die in a fire, Java:");
+				e.printStackTrace(System.err);
+			} catch(SQLException e) {
+				System.err.println("SQL is fail:");
+				e.printStackTrace(System.err);
+			}
+		}
+	}
+
+	public void pardonUser(String username) {
+		if(enabled) {
+			try {
+				userexists.setString(1, username);
+				ResultSet results = userexists.executeQuery();
+				if(results.next()) {
+					InputStream in = results.getBinaryStream("passwd");
+					ByteArrayOutputStream bout = new ByteArrayOutputStream();
+					String toconsume = "banned";
+					boolean matches = true;
+					while(true) {
+						int read = in.read();
+						if(read == -1) break;
+						if(toconsume.startsWith("" + (char)read)) {
+							toconsume = toconsume.substring(1);
+						} else matches = false;
+						bout.write((byte)read);
+					}
+					in.close();
+					matches = matches && toconsume.equals("");
+					if(!matches) return; // user is not banned
+					byte[] result = bout.toByteArray();
+					byte[] result2 = new byte[result.length - 6]; // array for original password
+					for(int i = 0; i < result2.length; i++)
+						result2[i] = result[i + 6];
+					modpasswd.setBytes(1, result2);
+					modpasswd.setString(2, username);
+					modpasswd.executeUpdate();
+				}
+			} catch(IOException e) {
+				System.err.println("IO porblems. Go die in a fire, Java:");
+				e.printStackTrace(System.err);
+			} catch(SQLException e) {
+				System.err.println("SQL is fail:");
+				e.printStackTrace(System.err);
+			}
+		}
 	}
 
 	public boolean changeUserPassword(String username, String passwd) {
@@ -233,6 +313,32 @@ public class DatabaseLayer {
 				e.printStackTrace(System.err);
 			} catch(NoSuchAlgorithmException e) {
 				System.err.println("SHA not supported. Upgrade your damn system.");
+				e.printStackTrace(System.err);
+			}
+		} else {
+			// @Ben: I'm not sure what this should return when running tests.
+		}
+		if(result == null) {
+			result = "";
+		}
+		return result;
+	}
+
+	public String getPermissions(String username) {
+		String result = null;
+		if(enabled) {
+			try {
+				userexists.setString(1, username);
+				ResultSet results = userexists.executeQuery();
+				if(results.next()) {
+					getperms.setString(1, username);
+					results = getperms.executeQuery();
+					if(results.next()) {
+						result = results.getString("permissions");
+					}
+				}
+			} catch(SQLException e) {
+				System.err.println("SQL is fail:");
 				e.printStackTrace(System.err);
 			}
 		} else {
