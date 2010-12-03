@@ -189,6 +189,7 @@ public class Waiter extends Thread {
 				String p = phrase.substring(index + 1);
 				if(perms.capableOf("register." + username + ';'))
 					parent.addUser(username, p, "");
+				else System.out.println("Whaaa?");
 			} else if(action.equals("deluser")) {
 				String username = Server.parseUsername(phrase);
 				if(perms.capableOf("deluser." + username + ';'))

@@ -33,7 +33,7 @@ public class Permission implements Serializable, Comparable {
 	}
 
 	public boolean capableOf(String action) {
-		return action.startsWith(value);
+		return action.startsWith(key);
 	}
 
 	public int hashCode() {

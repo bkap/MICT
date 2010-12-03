@@ -37,12 +37,11 @@ public class PermissionSet extends Hashtable<String, Permission> {
 
 	public boolean capableOf(String action) {
 		int index = action.lastIndexOf('.');
-		String value = action;
+		String key = action;
 		if(index >= 0) {
-			value = action.substring(index+1);
-			action = action.substring(0,index);
+			key = action.substring(0,index);
 		}
-		Permission p = get(value);
+		Permission p = get(key);
 		if(p == null) {
 			p = get("root");
 			return p != null;
