@@ -82,21 +82,21 @@ public class AdminPanel extends JPanel {
 		});
 		kickUser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e){
-				if(e.getActionCommand().equals("Kick")){
+				if(e.getActionCommand().equals("Kick User")){
 						kick((String)activeusers.getSelectedValue());
 				}
 			}
 		});
 		banUser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e){
-				if(e.getActionCommand().equals("Kick")){
+				if(e.getActionCommand().equals("Ban User")){
 						ban((String)activeusers.getSelectedValue());
 				}
 			}
 		});
 		pardonUser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e){
-				if(e.getActionCommand().equals("Kick")){
+				if(e.getActionCommand().equals("Pardon User")){
 						pardon((String)activeusers.getSelectedValue());
 				}
 			}
