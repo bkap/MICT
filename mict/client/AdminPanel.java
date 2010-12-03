@@ -23,13 +23,17 @@ public class AdminPanel extends JPanel {
 	private JList activeusers; //this list will contain the list of users logged in to the server. Double clicking brings up info
 	private JTextField lookupuser; //so you can try to find a specific user
 	private Client parent;
-	private JButton addUserButton = new JButton("Add User"); //should pop up a Window to enter information
 	private JButton getInformation  = new JButton("Get User Information"); //should retrieve information about the user in lookupuser. Same info should pop up from double clicking on a name in
 	private Vector<String> userNames = new Vector<String>();
+	private JButton addUserButton = new JButton("Register User");
+	private JButton kickUser = new JButton("Kick User");
+	private JButton banUser = new JButton("Ban User");
+	private JButton pardonUser = new JButton("Pardon User");
 	//Admins and Operators should also have stuff to change permission
 	//Artists and higher should have ability to lock current section, if it's not already locked
 	//have a place to display the owner of the section if there is an owner.
 	public AdminPanel(ClientState state) {
+		final ClientState stat = state;
 		JLabel users = new JLabel("List of active users.");
 		final JButton confirmUser = new JButton("Confirm");
 		final JTextField userName = new JTextField(15);
@@ -72,16 +76,38 @@ public class AdminPanel extends JPanel {
 			}
 
 		});
+
+		kickUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				if(e.getActionCommand().equals("Kick")){
+						kick(userName.getSelectedText(), stat);
+				}
+			}
+		});
+		banUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				if(e.getActionCommand().equals("Kick")){
+						ban(userName.getSelectedText(), stat);
+				}
+			}
+		});
+		pardonUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				if(e.getActionCommand().equals("Kick")){
+						pardon(userName.getSelectedText(), stat);
+				}
+			}
+		});
+
 		this.setPreferredSize(new java.awt.Dimension(200,300));
 //		parent.getCanvas();
 		this.add(addUserButton);
 		this.add(getInformation);
 		this.add(users);
 		this.add(activeusers);
-		/* if(user is an admin){
-		 *		this.add(kick button);
-		 * }
-		 */
+		this.add(kickUser);
+		this.add(banUser);
+		this.add(pardonUser);
 	}
 
 	public void addUser(String user){
@@ -97,5 +123,14 @@ public class AdminPanel extends JPanel {
 			}
 		}
 		activeusers.setListData(userNames);
+	}
+	public void kick(String user, ClientState state){
+		state.canvas.socket.kickUser(user);
+	}
+	public void ban(String user, ClientState state){
+		state.canvas.socket.banUser(user);
+	}
+	public void pardon(String user, ClientState state){
+		state.canvas.socket.pardonUser(user);
 	}
 }
