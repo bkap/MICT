@@ -28,7 +28,13 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		addMouseMotionListener(this);
 		addComponentListener(this);
 	}
-
+	/** Open the connection to the server.
+	 * Called when the program is actually running and the Swing components can actually be used
+	 * @param t
+	 * @param servername
+	 * @param username
+	 * @param passwd
+	 */
 	public void start(ToolManager t, String servername, String username, String passwd, AdminPanel opts) {
 		//if we haven't already specified a server, ask for it
 		if(username == null) username = "anonymous";
@@ -83,7 +89,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		return y;
 	}
 
-	/**
+	/** Sets the image displayed in the panel
 	 * @param canvas
 	 * @uml.property name="canvas"
 	 */
@@ -94,7 +100,10 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		imgy = (canvas.getHeight(this) - getHeight()) / -2;
 		canvasGraphics.translate(-imgx, -imgy);
 	}
-
+	/** Set's the image in the temporary buffer. Should be mostly transparent.
+	 * 
+	 * @param canvas
+	 */
 	public void setArtifactCanvas(BufferedImage canvas) {
 		this.artifacts = canvas;
 		artifactsGraphics = (Graphics2D)artifacts.getGraphics();
@@ -189,7 +198,11 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 	public void mouseClicked(MouseEvent e) {
 		render(e,MOUSE_CLICKED);
 	} 
-
+	/** Dispatch method for all the mouse events.
+	 * 
+	 * @param e
+	 * @param type
+	 */
 	public void render(MouseEvent e, int type) {
 		if(!inside || state.activeTool == null) return;
 		String phrase;
@@ -239,7 +252,14 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		}
 		repaint();
 	}
-	
+	/** Call the draw method of the tool with the given id. This is used when you get an image from another client
+	 * so the offsets are used to ensure that  the image gets drawn in the proper location on your canvas
+	 * 
+	 * @param toolid
+	 * @param phrase
+	 * @param offx
+	 * @param offy
+	 */
 	public void draw(String toolid, String phrase, int offx, int offy) {
 		Graphics2D g = (Graphics2D)getCanvasGraphics().create();
 		g.translate(offx, offy);
