@@ -7,6 +7,7 @@ import java.awt.image.*;
 import java.util.*;
 import javax.imageio.*;
 import javax.net.ssl.*;
+import javax.swing.*;
 
 import mict.networking.*;
 import mict.tools.*;
@@ -134,10 +135,23 @@ public class ClientConnection extends Thread {
 			} else if(action.equals("permission")) {
 				canvas.getClientState().permissions.setPermission(Permission.parse(phrase));
 			} else if(action.equals("user")) {
+				System.out.println("Got user! " + phrase);
 				adpanel.addUser(phrase);
 			} else if(action.startsWith("perms.")) {
-				String user = action.substring("perms.".length());
-				// TODO do something with user and phrase
+				final String user = action.substring("perms.".length());
+				final String perms = phrase;
+				Thread t = new Thread(new Runnable() {
+					public void run() {
+						JOptionPane.showMessageDialog(
+							canvas,
+							"Permissions for " + user + ": " + perms,
+							"User Information",
+							JOptionPane.PLAIN_MESSAGE
+						);
+					}
+				});
+				t.setDaemon(true);
+				t.start();
 			} else {
 				System.err.println("Nothing happened. Improper command '" + action + /*' ' + phrase +*/ "', could not be handled.");
 			}
@@ -226,7 +240,7 @@ public class ClientConnection extends Thread {
 
 	public void registerUser(String username, String passwd) {
 		try {
-			send("modperms", username + '.' + passwd);
+			send("register", username + '.' + passwd);
 		} catch(IOException e) {
 			System.err.println("Connection failed us whilst trying to register as a new user");
 			e.printStackTrace(System.err);

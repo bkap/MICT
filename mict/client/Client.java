@@ -99,7 +99,7 @@ public class Client extends JApplet {
 		 * state.tools = tools;
 		 */
 
-		adminPanel.setVisible(false);
+		//adminPanel.setVisible(false);
 
 		this.getContentPane().add(toolbox, java.awt.BorderLayout.WEST);
 		this.getContentPane().add(canvas, java.awt.BorderLayout.CENTER);

@@ -67,13 +67,14 @@ public class Waiter extends Thread {
 				return;
 			} else {
 				username = Server.parseUsername(username);
-				System.out.println("User " + username + " is logging in witn permissions " + perms);
+				System.out.println("User " + username + " is logging in with permissions " + perms);
+				this.username = username;
 				for(Waiter w : parent.getUsers()) {
 					send("user", w.getUserName());
-					w.send("user", username);
+					if(w != this)
+						w.send("user", username);
 				}
 			}
-			this.username = username;
 			sendPermissions();
 			sendToolSet();
 			// set prior x,y
@@ -203,6 +204,7 @@ public class Waiter extends Thread {
 				if(perms.capableOf("modpasswd." + username + ';'))
 					parent.changeUserPassword(username, p);
 			} else if(action.equals("seeperms")) {
+				System.out.println("Got request for permissions of " + phrase);
 				String username = Server.parseUsername(phrase);
 				if(perms.capableOf("seeperms." + username + ';'))
 					send("perms." + username, parent.getPermissions(username).toString());
