@@ -183,6 +183,63 @@ public class ClientConnection extends Thread {
 			e.printStackTrace(System.err);
 		}
 	}
+
+	public void kickUser(String username) {
+		try {
+			send("kick", username);
+		} catch(IOException e) {
+			System.err.println("Connection failed us whilst trying to defenestrate a user");
+			e.printStackTrace(System.err);
+		}
+	}
+
+	public void banUser(String username) {
+		try {
+			send("ban", username);
+		} catch(IOException e) {
+			System.err.println("Connection failed us whilst trying to more permanently defenestrate a user");
+			e.printStackTrace(System.err);
+		}
+	}
+
+	public void pardonUser(String username) {
+		try {
+			send("pardon", username);
+		} catch(IOException e) {
+			System.err.println("Connection failed us whilst trying to un-defenestrate a user");
+			e.printStackTrace(System.err);
+		}
+	}
+
+	// MARKPROGRESS
+
+	public void modifyUserPermissions(String username, String permissions) {
+		try {
+			send("modperms", username + '.' + permissions);
+		} catch(IOException e) {
+			System.err.println("Connection failed us whilst trying to modify user permissions");
+			e.printStackTrace(System.err);
+		}
+	}
+
+	public void registerUser(String username, String passwd) {
+		try {
+			send("modperms", username + '.' + passwd);
+		} catch(IOException e) {
+			System.err.println("Connection failed us whilst trying to register as a new user");
+			e.printStackTrace(System.err);
+		}
+	}
+
+	public void deleteUser(String username) {
+		try {
+			send("deluser", username); // Del User! De-Luser! It's all sorts of magic!
+		} catch(IOException e) {
+			System.err.println("Connection failed us whilst trying to register as a new user");
+			e.printStackTrace(System.err);
+		}
+	}
+
 	/** Requests the section of the Canvas bounded by the given parameters. Data will be returned asynchronously and automatically drawn to the 
 	 * canvas upon receipt. 
 	 * 

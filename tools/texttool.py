@@ -51,5 +51,5 @@ class TextTool(Tool) :
 		if match is None:
 			return
 		x, y = match.groups()
-		rect = TextLayout(string, font, context).getBounds()
-		return [rect.getX() + long(x), rect.getY() + long(y), rect.getWidth(), rect.getHeight()]
+		rect = TextLayout(string, self.font, self.context).getBounds()
+		return [int(rect.getX()) + int(x), int(rect.getY()) + int(y), int(rect.getWidth() + 1), int(rect.getHeight() + 1)]

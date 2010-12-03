@@ -97,5 +97,5 @@ class PencilTool(Tool) :
 		ay1 = min(y1, y2)
 		ax2 = max(x1, x2)
 		ay2 = max(y1, y2)
-		return [ax1, ay1, ax2 - ax1, ay2 - ay1]
+		return [ax1, ay1 - 1, ax2 - ax1, ay2 - ay1 + 2]
 
