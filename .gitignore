@@ -13,4 +13,6 @@ coverage/*
 cobertura.ser
 dbauth.conf
 rde.conf
+wyrz.conf
+huckle.conf
 .passwd.*
