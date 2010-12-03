@@ -19,10 +19,10 @@ class PasteTool(Tool) :
 		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
 		g = self.image.getGraphics()
 		g.setColor(Color(0,0,0))
-		g.drawLine(0,0,32,32)
-		g.drawLine(16,0,0,32)
-		g.drawLine(16,0,32,16)
-		g.drawLine(32,0,0,32)
+		g.drawLine(3,3,30,3)
+		g.drawLine(30,3,30,16)
+		g.drawLine(3,3,3,29)
+		g.drawLine(3,16,30,16)
 
 
 	def mousePressed(self, locationOnScreen, g) :
