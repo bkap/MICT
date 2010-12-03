@@ -65,7 +65,7 @@ public class Client extends JApplet {
 	 */
 	private ToolBox toolbox;
 	private ToolManager tools;
-	private AdminPanel panel;
+	private AdminPanel adminPanel;
 
 	private String server;
 	private String username = null;
@@ -90,7 +90,7 @@ public class Client extends JApplet {
 			
 		state.tools = tools;
 		toolbox = new ToolBox(state,tools);
-		panel = new AdminPanel(state);
+		adminPanel = new AdminPanel(state);
 		tools.setToolBox(toolbox);
 
 		/* toolbox = new ToolBox(state);
@@ -98,10 +98,12 @@ public class Client extends JApplet {
 		 * state.tools = tools;
 		 */
 
+		adminPanel.setVisible(false);
+
 		this.getContentPane().add(toolbox, java.awt.BorderLayout.WEST);
 		this.getContentPane().add(canvas, java.awt.BorderLayout.CENTER);
-		this.getContentPane().add(panel, java.awt.BorderLayout.EAST);
-		canvas.start(tools, server, username, passwd);
+		this.getContentPane().add(adminPanel, java.awt.BorderLayout.EAST);
+		canvas.start(tools, server, username, passwd, adminPanel);
 	}
 
 	public ClientState getClientState() {

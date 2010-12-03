@@ -29,18 +29,18 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		addComponentListener(this);
 	}
 
-	public void start(ToolManager t, String servername, String username, String passwd) {
+	public void start(ToolManager t, String servername, String username, String passwd, AdminPanel opts) {
 		//if we haven't already specified a server, ask for it
 		if(username == null) username = "anonymous";
 		if(passwd == null) passwd = "";
 		this.servername = servername;
-		socket = new ClientConnection(servername, username, passwd, this, t);
+		socket = new ClientConnection(servername, username, passwd, this, t, opts);
 		BufferedImage c = new BufferedImage(getWidth() * 3, getHeight() * 3, BufferedImage.TYPE_INT_ARGB);
 		setCanvas(c);
 		setArtifactCanvas(new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB));
 		Graphics g = getCanvasGraphics();
-		socket.requestCanvasRect(imgx, imgy, c.getWidth(this), c.getHeight(this));
 		socket.start();
+		socket.requestCanvasRect(imgx, imgy, c.getWidth(this), c.getHeight(this));
 	}
 
 	/**

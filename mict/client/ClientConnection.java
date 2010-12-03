@@ -18,10 +18,11 @@ import mict.util.*;
 public class ClientConnection extends Thread {
 	private static int DEFAULT_PORT = 56324;
 
-	public ClientConnection(String server, int port, String username, String passwd, Canvas canvas, ToolManager t) {
+	public ClientConnection(String server, int port, String username, String passwd, Canvas canvas, ToolManager t, AdminPanel adpanel) {
 		this.server = server;
 		this.canvas = canvas;
-		if(server != "") {
+		this.adpanel = adpanel;
+		if(!server.equals("")) {
 			try {
 				this.toolManager = t;
 				SSLSocketFactory sockfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
@@ -37,8 +38,8 @@ public class ClientConnection extends Thread {
 		setDaemon(true);
 	}
 
-	public ClientConnection(String server, String username, String passwd, Canvas canvas, ToolManager t) {
-		this(server, DEFAULT_PORT, username, passwd, canvas, t);
+	public ClientConnection(String server, String username, String passwd, Canvas canvas, ToolManager t, AdminPanel adpanel) {
+		this(server, DEFAULT_PORT, username, passwd, canvas, t, adpanel);
 	}
 
 	private String server;
@@ -47,7 +48,8 @@ public class ClientConnection extends Thread {
 	private InputStream in;
 	private ToolManager toolManager;
 	private Canvas canvas;
-	
+	private AdminPanel adpanel;
+
 	public void run() {
 		// DO WORK SON
 		String buffer = "";
@@ -129,7 +131,7 @@ public class ClientConnection extends Thread {
 				System.out.println(phrase);
 				System.out.println(bout.toString());
 				toolManager.addTools(bout.toString());
-			} else if(action.equals("permissions")) {
+			} else if(action.equals("permission")) {
 				canvas.getClientState().permissions.setPermission(Permission.parse(phrase));
 			} else if(action.equals("user")) {
 				// username is phrase
