@@ -155,6 +155,7 @@ public class ClientConnection extends Thread {
 				t.setDaemon(true);
 				t.start();
 			} else if(action.equals("close")) {
+				System.out.println("kicked!");
 				String message = "You lost the connection to the server.";
 				int index = message.indexOf('(');
 				String time = null;
