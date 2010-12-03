@@ -61,7 +61,7 @@ public class CanvasManager implements ImageObserver {
 				if(t != null)
 					t.draw(data, g);
 				else
-					g.drawImage(alt, (int)x, (int)y, this);
+					g.drawImage(alt, 0, 0, this);
 			}
 		}
 		Waiter[] users = parent.getUsers();
