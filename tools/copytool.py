@@ -7,9 +7,10 @@ from java.awt.image import BufferedImage
 
 
 class CopyTool(Tool) :
-	def __init__(self, clientState = ClientState) :
+	def __init__(self, clientState = None) :
 		self.client_state = clientState
-		self.canvas_image = ClientState.canvas.getCanvasImage()
+		if self.client_state is not None :
+			self.canvas_image = self.client_state.canvas.getCanvasImage()
 		self.start_point = None
 		self.makeImage()	
 	
@@ -61,15 +62,12 @@ class CopyTool(Tool) :
 		dy1 = min(y1, y2)
 		dx2 = max(x1, x2)
 		dy2 = max(y1, y2)
-		self.client_state = BufferedImage(dx2-dx1, dy2-dy1,BufferedImage.TYPE_INT_ARGB)		
-		a = dx1
-		b = dy1
-		for i in range(dx1,dx2+1) :
-			for j in range(dy1, dy2+1) :
-				self.client_state.clipboard.setRGB(i-a,j-b, self.canvas_image.getRGB(i,j)) 
-				#image is just a placeholder of the image... i dunno what its called actually
-				#Out of the loop	
-		return self._getmetadata() + "|" + "(%d,%d);(%d,%d) " % (x1, y1, x2, y2)
+		img = self.client_state.canvas.getCanvasImage()
+		xoff = (img.getWidth(self.client_state.canvas) - self.client_state.canvas.getWidth()) / 2
+		yoff = (img.getHeight(self.client_state.canvas) - self.client_state.canvas.getHeight()) / 2
+		self.client_state.clipboard = img.getSubimage(dx1+xoff, dy1+yoff, dx2-dx1, dy2-dy1)
+		
+		return ""
 
 
 	def draw(self, s, g) :
@@ -94,22 +92,7 @@ class CopyTool(Tool) :
 
 
 	def getAffectedArea(self, phrase) :		#TODO: Determine if this method is necessary
-		points = phrase.split('|')[1].split(';')
-		match = point_re.match(points[0])
-		if match is None:
-			return
-		x1, y1 = match.groups()
-		x1, y1 = int(x1), int(y1)
-		match = point_re.match(points[1])
-		if match is None:
-			return
-		x2, y2 = match.groups()
-		x2, y2 = int(x2), int(y2)
-		ax1 = min(x1, x2)
-		ay1 = min(y1, y2)
-		ax2 = max(x1, x2)
-		ay2 = max(y1, y2)
-		return [ax1, ay1, ax2 - ax1, ay2 - ay1]
+		return None
 
 
 	def getIcon(self) :

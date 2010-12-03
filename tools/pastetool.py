@@ -28,12 +28,6 @@ class PasteTool(Tool) :
 		self.start_point = locationOnScreen
 		x1 = self.start_point.x
 		y1 = self.start_point.y
-		#Save the Image to clipboard.
-		dx1 = min(x1, x2)
-		dy1 = min(y1, y2)
-		dx2 = max(x1, x2)
-		dy2 = max(y1, y2)
-		self.client_state = BufferedImage(dx2-dx1, dy2-dy1,BufferedImage.TYPE_INT_ARGB)		
 		#a = dx1
 		#b = dy1
 		#for i in range(dx1,dx2+1) :
