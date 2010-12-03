@@ -252,6 +252,7 @@ public class Canvas extends JPanel implements MouseListener, MouseMotionListener
 		}
 		repaint();
 	}
+
 	/** Call the draw method of the tool with the given id. This is used when you get an image from another client
 	 * so the offsets are used to ensure that  the image gets drawn in the proper location on your canvas
 	 * 

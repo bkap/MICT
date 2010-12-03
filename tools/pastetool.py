@@ -1,6 +1,6 @@
 from java.awt import Point, Color, Graphics, Image, Stroke, BasicStroke
 from java.lang import Math
-from mict.tools import Tool
+from mict.tools import Tool, ImageData
 from mict.client import ClientState
 import re
 from java.awt.image import BufferedImage
@@ -9,6 +9,7 @@ class PasteTool(Tool) :
 	def __init__(self, clientState = None) :
 		self.client_state = clientState
 		self.start_point = None
+		self._image = None
 		self.makeImage()
 	
 
@@ -43,12 +44,14 @@ class PasteTool(Tool) :
 		if self.client_state.clipboard :
 			self._image = ImageData(locationOnScreen.x, locationOnScreen.y, self.client_state.clipboard)
 		return ""
+
 	def getLastImage(self) :
 		if self._image :
 			image = self._image
 			self._image = None
 			return image
 		return None
+
 	def getAffectedArea(self, phrase) :
 		# important! 
 		return None
