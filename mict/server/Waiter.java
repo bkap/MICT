@@ -207,7 +207,7 @@ public class Waiter extends Thread {
 				if(perms.capableOf("seeperms." + username + ';'))
 					send("perms." + username, parent.getPermissions(username).toString());
 			} else {
-				System.err.println("Oops, that action doesn't exist.");
+				System.err.println("Oops, that action doesn't exist:" + action + ' ' + phrase);
 			}
 		}
 		System.out.println();

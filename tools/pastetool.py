@@ -25,7 +25,6 @@ class PasteTool(Tool) :
 
 
 	def mousePressed(self, locationOnScreen, g) :
-		
 		return ""
 
 

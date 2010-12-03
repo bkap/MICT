@@ -134,7 +134,10 @@ public class ClientConnection extends Thread {
 			} else if(action.equals("permission")) {
 				canvas.getClientState().permissions.setPermission(Permission.parse(phrase));
 			} else if(action.equals("user")) {
-				// username is phrase
+				adpanel.addUser(phrase);
+			} else if(action.startsWith("perms.")) {
+				String user = action.substring("perms.".length());
+				// TODO do something with user and phrase
 			} else {
 				System.err.println("Nothing happened. Improper command '" + action + /*' ' + phrase +*/ "', could not be handled.");
 			}
@@ -177,6 +180,7 @@ public class ClientConnection extends Thread {
 
 	public void requestUserList() {
 		try {
+			adpanel.clearUserList();
 			send("userlist", "userlist");
 		} catch(IOException e) {
 			System.err.println("Connection failed us whilst trying to request list of users:");
@@ -211,8 +215,6 @@ public class ClientConnection extends Thread {
 		}
 	}
 
-	// MARKPROGRESS
-
 	public void modifyUserPermissions(String username, String permissions) {
 		try {
 			send("modperms", username + '.' + permissions);
@@ -235,7 +237,25 @@ public class ClientConnection extends Thread {
 		try {
 			send("deluser", username); // Del User! De-Luser! It's all sorts of magic!
 		} catch(IOException e) {
-			System.err.println("Connection failed us whilst trying to register as a new user");
+			System.err.println("Connection failed us whilst trying to rid outselves of a pesky luser");
+			e.printStackTrace(System.err);
+		}
+	}
+
+	public void modifyUserPassword(String username, String password) {
+		try {
+			send("modpasswd", username + '.' + password);
+		} catch(IOException e) {
+			System.err.println("Connection failed us whilst trying to change a user's password");
+			e.printStackTrace(System.err);
+		}
+	}
+
+	public void requestUserPermissions(String username) {
+		try {
+			send("seeperms", username);
+		} catch(IOException e) {
+			System.err.println("Connection failed us whilst trying to determine another user's permissions");
 			e.printStackTrace(System.err);
 		}
 	}
