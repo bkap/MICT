@@ -137,6 +137,8 @@ public class ClientConnection extends Thread {
 			} else if(action.equals("user")) {
 				System.out.println("Got user! " + phrase);
 				adpanel.addUser(phrase);
+			} else if(action.equals("left")) {
+				adpanel.removeUser(phrase);
 			} else if(action.startsWith("perms.")) {
 				final String user = action.substring("perms.".length());
 				final String perms = phrase;
@@ -152,6 +154,24 @@ public class ClientConnection extends Thread {
 				});
 				t.setDaemon(true);
 				t.start();
+			} else if(action.equals("close")) {
+				String message = "You lost the connection to the server.";
+				int index = message.indexOf('(');
+				String time = null;
+				if(index >= 0) {
+					time = message.substring(index + 1);
+					time = time.substring(0, time.length() - 2);
+					message = "You were " + message.substring(0, index) + " from the server for " + time + " seconds!";
+				} else {
+					message = "Your accout was " + phrase;
+				}
+				JOptionPane.showMessageDialog(
+					canvas,
+					message,
+					"Lost connection",
+					JOptionPane.ERROR_MESSAGE
+				);
+				System.exit(0);
 			} else {
 				System.err.println("Nothing happened. Improper command '" + action + /*' ' + phrase +*/ "', could not be handled.");
 			}

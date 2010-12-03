@@ -335,6 +335,9 @@ public class Waiter extends Thread {
 	protected void close() {
 		System.out.println("Client is leaving!");
 		parent.clients.remove(this);
+		for(Waiter w : parent.clients) {
+			w.send("left", username);
+		}
 		try {
 			patron.close();
 			in.close();
