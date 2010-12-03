@@ -21,8 +21,13 @@ class CopyTool(Tool) :
 		self.image = BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB)
 		g = self.image.getGraphics()
 		g.setColor(Color(0,0,0))
-		g.drawLine(0,0,32,32)
-		g.drawLine(32,0,0,32)
+		g.drawLine(7,6,10,3)
+		g.drawLine(10,3,22,3)
+		g.drawLine(22,3,25,6)
+		g.drawLine(7,6,7,26)
+		g.drawLine(7,26,10,30)
+		g.drawLine(10,30,22,30)
+		g.drawLine(22,30,25,27)
 		#clear g?
 
 
